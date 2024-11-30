@@ -13,6 +13,7 @@ import {
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { ModeToggle } from "@/components/mode-toggle";
 import { Link } from "react-router-dom";
+import Avatar from "./Avatar";
 
 export default function Navbar() {
   return (
@@ -35,19 +36,22 @@ export default function Navbar() {
         <div className="hidden md:flex md:flex-1 md:justify-center">
           <DesktopNav />
         </div>
-        <div className="flex items-center space-x-4 ml-auto">
+        <div className="flex items-center space-x-2 ml-auto">
           <div className="hidden sm:flex">
             <ModeToggle />
           </div>
-          <div className="sm:space-x-4 space-x-2">
-            <Link to="/login">
-              <Button variant="ghost" className=" md:inline-flex border">
-                Login
-              </Button>
-            </Link>
-            <Link to="signup">
-              <Button>Sign up</Button>
-            </Link>
+          <div className="flex gap-x-2 items-center">
+            <div className="space-x-2 max-sm:hidden">
+              <Link to="/login">
+                <Button variant="ghost" className=" md:inline-flex border">
+                  Login
+                </Button>
+              </Link>
+              <Link to="signup">
+                <Button className="">Sign up</Button>
+              </Link>
+            </div>
+            <Avatar />
           </div>
         </div>
       </div>
@@ -58,7 +62,8 @@ export default function Navbar() {
 function Logo() {
   return (
     <a href="/" className="flex items-center space-x-2">
-      <span className="font-bold text-xl">Fcit Connect</span>
+      {/* <span className="font-bold text-xl">Fcit Connect</span> */}
+      <img src="/log.jpeg" alt="Logo" className="h-[30px] w-[50px]" />
     </a>
   );
 }
@@ -162,14 +167,14 @@ function MobileNav() {
         </Button>
       </div>
       <div className="space-x-4 flex justify-center">
-      <Link to="/login">
-              <Button variant="ghost" className=" md:inline-flex border">
-                Login
-              </Button>
-            </Link>
-            <Link to="signup">
-              <Button>Sign up</Button>
-            </Link>
+        <Link to="/login">
+          <Button variant="ghost" className=" md:inline-flex border">
+            Login
+          </Button>
+        </Link>
+        <Link to="signup">
+          <Button>Sign up</Button>
+        </Link>
       </div>
     </div>
   );

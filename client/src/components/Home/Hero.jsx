@@ -4,11 +4,9 @@ import AnimatedShinyText from "../ui/animated-shiny-text";
 import { ChevronRightIcon } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Button } from "../ui/button";
+import { useToast } from "@/hooks/use-toast";
 import { RainbowButton } from "../ui/rainbow-button";
- 
- function RainbowButtonDemo() {
-  return <RainbowButton>Get Started</RainbowButton>;
-}
+
 function AnimatedShinyTextDemo() {
   return (
     <div className="z-10 flex  items-center justify-center">
@@ -27,10 +25,11 @@ function AnimatedShinyTextDemo() {
 }
 
 const Hero = () => {
+  const { toast } = useToast();
   return (
-    <div className="flex flex-col items-center gap-6 py-20">
+    <div className="flex flex-col items-center text-center gap-6 py-20">
       <AnimatedShinyTextDemo />
-      <h1 className="text-5xl font-bold">
+      <h1 className="md:text-5xl text-3xl font-bold">
         Still writing “Hello World”? <br />
         Build real-world projects
       </h1>
@@ -47,6 +46,19 @@ const Hero = () => {
               <ChevronRightIcon className="w-4 ml-2" />
             </RainbowButton>
           </Link>
+          
+          <Button
+            variant="outline"
+            onClick={() => {
+              toast({
+                title: "Login Succesfully",
+                description: "",
+              });
+            }}
+          >
+            Show Toast
+          </Button>
+
           <Link to="/login">
             <Button variant="ghost" className="px-6 border py-5">
               Login <ChevronRightIcon />
