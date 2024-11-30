@@ -7,6 +7,9 @@ import Navbar from "./components/shared/Navbar";
 import SignUp from "./components/Forms/SignUp";
 import Login from "./components/Forms/Login";
 import Footer from "./components/shared/Footer";
+import EmailVerify from "./components/Forms/EmailVerify";
+import ForgotPassowrd from "./components/Forms/ForgotPassowrd";
+import ResetPassword from "./components/Forms/ResetPassword";
 
 function App() {
   return (
@@ -19,6 +22,9 @@ function App() {
             <Route path="/" element={<Home />} />
             <Route path="/signup" element={<SignUp />} />
             <Route path="/login" element={<Login />} />
+            <Route path="/email-verify" element={<EmailVerify />} />
+            <Route path="/forgot-password" element={<ForgotPassowrd  />} />
+            <Route path="/reset-password" element={<ResetPassword  />} />
             {/* <Route path="/signup" element={<Home />} /> */}
             {/* <Route path="/blog" element={<Blog />} /> 
             <Route path="/about" element={<About />} /> 

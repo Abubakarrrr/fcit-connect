@@ -1,7 +1,7 @@
 import { Link } from "react-router-dom";
 import { ChevronRightIcon } from "lucide-react";
 import Marquee from "../ui/marquee";
-import { BackgroundLines } from "../ui/background-lines";
+// import { BackgroundLines } from "../ui/background-lines";
 const allShowcases = [
   {
     title: "Tech Innovators",

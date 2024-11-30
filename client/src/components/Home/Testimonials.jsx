@@ -71,7 +71,7 @@ export function Testimonials() {
   return (
     <>
       <div className="text-center mt-16">
-        <h2 className="text-4xl font-semibold">What our users say</h2>
+        <h2 className="text-5xl font-bold">What our users say</h2>
         <p className="mt-3">Hear from students, alumni, and visitors who have used our platform to share, discover, and connect over academic projects.</p>
       </div>
       <div className="relative flex h-[500px] w-full flex-col items-center justify-center overflow-hidden">
