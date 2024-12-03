@@ -1,4 +1,8 @@
 ("use client");
+import { useMemo, useState } from "react";
+import { Mail } from "lucide-react";
+import { Check, Eye, EyeOff, X } from "lucide-react";
+
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -10,17 +14,29 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
-import { Link } from "react-router-dom";
-import { Check, Eye, EyeOff, X } from "lucide-react";
-import { useMemo, useState } from "react";
-import { Mail } from "lucide-react";
+import { Link, useNavigate } from "react-router-dom";
+import { useAuthStore } from "@/store/authStore";
+
 export default function SignUp() {
+  const { signup, error, isLoading } = useAuthStore();
+  const navigate = useNavigate();
+
+  const handleSignUp = async (e) => {
+    e.preventDefault();
+
+    try {
+      await signup(email, name, password);
+      navigate("/verify-email");
+    } catch (error) {
+      console.log(error);
+    }
+  };
   return (
     <>
       <div className="  px-2 sm:px-8 lg:px-16">
         <div className="py-8">
           <div className="mx-auto">
-            <form>
+            <form onSubmit={handleSignUp}>
               <div className="max-w-lg mx-auto">
                 {/* Card */}
                 <Card>
@@ -77,8 +93,8 @@ export default function SignUp() {
                       {/* Grid */}
                       <div className="flex flex-col gap-4">
                         <Input placeholder="Name" />
-                        <EmailInput/>
-                        <PasswordInput/>
+                        <EmailInput />
+                        <PasswordInput />
 
                         <div className="flex items-center space-x-2 mt-3 col-span-2">
                           <Checkbox id="terms" />
@@ -122,7 +138,7 @@ function EmailInput() {
 
 function PasswordInput() {
   const [password, setPassword] = useState("");
-  const [isVisible, setIsVisible] = useState (false); ;
+  const [isVisible, setIsVisible] = useState(false);
 
   const toggleVisibility = () => setIsVisible((prevState) => !prevState);
 
