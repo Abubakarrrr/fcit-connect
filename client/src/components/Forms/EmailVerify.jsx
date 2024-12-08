@@ -1,4 +1,7 @@
 "use client";
+import { useNavigate } from "react-router-dom";
+import { OTPInput } from "input-otp";
+
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -6,9 +9,9 @@ import {
   CardDescription,
   CardHeader,
 } from "@/components/ui/card";
-import { Label } from "@/components/ui/label";
 import { cn } from "@/lib/utils";
-import { OTPInput } from "input-otp";
+import { useAuthStore } from "@/store/authStore";
+import { useToast } from "@/hooks/use-toast";
 
 function InputDemo() {
   return (
@@ -43,12 +46,34 @@ function Slot(props) {
 }
 
 export default function EmailVerify() {
+  const { toast } = useToast();
+  const navigate = useNavigate();
+  const { error, isLoading, verifyEmail } = useAuthStore();
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      await verifyEmail(verificationCode);
+      navigate("/");
+      toast({
+        title: "Email Verified Succesfully",
+        description: "",
+      });
+    } catch (error) {
+      console.log(error);
+      toast({
+        title: error.message || "Email Verification Failed",
+        description: "",
+      });
+    }
+  };
+
   return (
     <>
       <div className="  px-2 sm:px-8 lg:px-16">
         <div className="py-8">
           <div className="mx-auto">
-            <form>
+            <form onSubmit={handleSubmit}>
               <div className="max-w-lg mx-auto">
                 {/* Card */}
                 <Card>
@@ -65,7 +90,9 @@ export default function EmailVerify() {
                       {/* Grid */}
                       <div className="flex flex-col gap-4">
                         <InputDemo />
-                        <Button className="mt-3 col-span-2">Verify Email</Button>
+                        <Button className="mt-3 col-span-2">
+                          Verify Email
+                        </Button>
                       </div>
                     </div>
                   </CardContent>

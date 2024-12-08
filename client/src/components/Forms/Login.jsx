@@ -1,4 +1,9 @@
 "use client";
+import { useState } from "react";
+import { Link } from "react-router-dom";
+import { Eye, EyeOff } from "lucide-react";
+import { Mail } from "lucide-react";
+
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -8,10 +13,8 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
-import { Link } from "react-router-dom";
-import { Eye, EyeOff } from "lucide-react";
-import { Mail } from "lucide-react";
-import { useState } from "react";
+import { useAuthStore } from "@/store/authStore";
+import { useToast } from "@/hooks/use-toast";
 
 function PasswordInput() {
   const [isVisible, setIsVisible] = useState(false);
@@ -64,12 +67,23 @@ function EmailInput() {
 }
 
 export default function Login() {
+  const { login, isLoading, error } = useAuthStore();
+  const { toast } = useToast();
+
+  const handleLogin = async (e) => {
+    e.preventDefault();
+    await login(email, password);
+    toast({
+      title: "Login Successfull",
+      description: "",
+    });
+  };
   return (
     <>
       <div className="  px-2 sm:px-8 lg:px-16">
         <div className="py-8">
           <div className="mx-auto">
-            <form>
+            <form onSubmit={handleLogin}>
               <div className="max-w-lg mx-auto">
                 {/* Card */}
                 <Card>
@@ -127,9 +141,11 @@ export default function Login() {
                       <div className="flex flex-col gap-4">
                         <EmailInput />
                         <PasswordInput />
-                       <Link to={"/forgot-password"}>
-                       <p className="text-sm underline">Forgot your password?</p>
-                       </Link>
+                        <Link to={"/forgot-password"}>
+                          <p className="text-sm underline">
+                            Forgot your password?
+                          </p>
+                        </Link>
                         <Button className="mt-3 col-span-2">Login</Button>
                       </div>
                     </div>
