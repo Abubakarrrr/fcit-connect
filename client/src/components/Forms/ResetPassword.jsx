@@ -8,39 +8,22 @@ import { Input } from "../ui/input";
 import { useAuthStore } from "@/store/authStore";
 import { useNavigate, useParams } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
-
-function PasswordInput({ title }) {
-  const [isVisible, setIsVisible] = useState(false);
-  const toggleVisibility = () => setIsVisible((prevState) => !prevState);
-
-  return (
-    <div className="space-y-2">
-      <div className="relative">
-        <Input
-          className="pe-9"
-          placeholder={title}
-          type={isVisible ? "text" : "password"}
-        />
-        <button
-          className="absolute inset-y-0 end-0 flex h-full w-9 items-center justify-center rounded-e-lg text-muted-foreground/80 outline-offset-2 transition-colors hover:text-foreground focus:z-10 focus-visible:outline focus-visible:outline-2 focus-visible:outline-ring/70 disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50"
-          type="button"
-          onClick={toggleVisibility}
-          aria-label={isVisible ? "Hide password" : "Show password"}
-          aria-pressed={isVisible}
-          aria-controls="password"
-        >
-          {isVisible ? (
-            <EyeOff size={16} strokeWidth={2} aria-hidden="true" />
-          ) : (
-            <Eye size={16} strokeWidth={2} aria-hidden="true" />
-          )}
-        </button>
-      </div>
-    </div>
-  );
-}
+import PasswordInput from "../ui/Password-Input";
 
 export default function ResetPassword() {
+  const [passwords, setPasswords] = useState({
+    newPassword: "",
+    confirmNewPassword: "",
+  });
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setPasswords((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+    console.log(passwords)
+  };
+
   const { resetPassword, error, isLoading, message } = useAuthStore();
   const { token } = useParams();
   const navigate = useNavigate();
@@ -48,7 +31,7 @@ export default function ResetPassword() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
+    // const { newPassword, confirmNewPassword } = passwords;
     if (password !== confirmPassword) {
       alert("Passwords do not match");
       return;
@@ -89,8 +72,22 @@ export default function ResetPassword() {
                     <div className="">
                       {/* Grid */}
                       <div className="flex flex-col gap-4">
-                        <PasswordInput title="New Password" />
-                        <PasswordInput title="Confirm New Password" />
+                        <PasswordInput
+                          id="newPassword"
+                          name="newPassword"
+                          type="password"
+                          placeholder="New Password"
+                          value={passwords.newPassword}
+                          onChange={handleChange}
+                        />
+                        <PasswordInput
+                          id="confirmNewPassword"
+                          name="confirmNewPassword"
+                          type="password"
+                          placeholder="Confirm New Password"
+                          value={passwords.confirmNewPassword}
+                          onChange={handleChange}
+                        />
                         <Button className="mt-3 col-span-2 capitalize">
                           set new password
                         </Button>

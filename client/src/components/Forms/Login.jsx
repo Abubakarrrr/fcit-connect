@@ -1,9 +1,4 @@
-"use client";
-import { useState } from "react";
 import { Link } from "react-router-dom";
-import { Eye, EyeOff } from "lucide-react";
-import { Mail } from "lucide-react";
-
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -11,68 +6,34 @@ import {
   CardDescription,
   CardHeader,
 } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
 import { useAuthStore } from "@/store/authStore";
 import { useToast } from "@/hooks/use-toast";
-
-function PasswordInput() {
-  const [isVisible, setIsVisible] = useState(false);
-
-  const toggleVisibility = () => setIsVisible((prevState) => !prevState);
-
-  return (
-    <div className="space-y-2">
-      <div className="relative">
-        <Input
-          id="input-23"
-          className="pe-9"
-          placeholder="Password"
-          type={isVisible ? "text" : "password"}
-        />
-        <button
-          className="absolute inset-y-0 end-0 flex h-full w-9 items-center justify-center rounded-e-lg text-muted-foreground/80 outline-offset-2 transition-colors hover:text-foreground focus:z-10 focus-visible:outline focus-visible:outline-2 focus-visible:outline-ring/70 disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50"
-          type="button"
-          onClick={toggleVisibility}
-          aria-label={isVisible ? "Hide password" : "Show password"}
-          aria-pressed={isVisible}
-          aria-controls="password"
-        >
-          {isVisible ? (
-            <EyeOff size={16} strokeWidth={2} aria-hidden="true" />
-          ) : (
-            <Eye size={16} strokeWidth={2} aria-hidden="true" />
-          )}
-        </button>
-      </div>
-    </div>
-  );
-}
-function EmailInput() {
-  return (
-    <div className="">
-      <div className="relative">
-        <Input
-          id="input-10"
-          className="peer pe-9"
-          placeholder="Email"
-          type="email"
-        />
-        <div className="pointer-events-none absolute inset-y-0 end-0 flex items-center justify-center pe-3 text-muted-foreground/80 peer-disabled:opacity-50">
-          <Mail size={16} strokeWidth={2} aria-hidden="true" />
-        </div>
-      </div>
-    </div>
-  );
-}
+import EmailInput from "../ui/Email-Input";
+import { useState } from "react";
+import PasswordInput from "../ui/Password-Input";
 
 export default function Login() {
+  const [formData, setFormData] = useState({
+    email: "",
+    password: "",
+  });
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prevData) => ({
+      ...prevData,
+      [name]: value,
+    }));
+    // console.log(formData);
+  };
+
   const { login, isLoading, error } = useAuthStore();
   const { toast } = useToast();
 
   const handleLogin = async (e) => {
     e.preventDefault();
-    await login(email, password);
+    console.log(formData);
+    // await login(email, password);
     toast({
       title: "Login Successfull",
       description: "",
@@ -80,7 +41,7 @@ export default function Login() {
   };
   return (
     <>
-      <div className="  px-2 sm:px-8 lg:px-16">
+      <div className=" px-2 sm:px-8 lg:px-16">
         <div className="py-8">
           <div className="mx-auto">
             <form onSubmit={handleLogin}>
@@ -139,10 +100,19 @@ export default function Login() {
                     <div className="mt-5">
                       {/* Grid */}
                       <div className="flex flex-col gap-4">
-                        <EmailInput />
-                        <PasswordInput />
+                        <EmailInput
+                          name="email"
+                          id="email"
+                          placeholder="Enter your email"
+                          value={formData.email}
+                          onChange={handleChange}
+                        />
+                        <PasswordInput
+                          value={formData.password}
+                          onChange={handleChange}
+                        />
                         <Link to={"/forgot-password"}>
-                          <p className="text-sm underline">
+                          <p className="text-sm underline underline-offset-2">
                             Forgot your password?
                           </p>
                         </Link>
@@ -159,3 +129,4 @@ export default function Login() {
     </>
   );
 }
+

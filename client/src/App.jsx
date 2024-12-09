@@ -20,6 +20,7 @@ import ResetPassword from "@/components/Forms/ResetPassword";
 import PageNotFound from "@/components/shared/PageNoFound";
 import { useAuthStore } from "@/store/authStore";
 import LoadingSpinner from "@/components/shared/LoadingSpinner";
+import UserProfile from "./components/Forms/UserProfile";
 
 // protected routes
 const ProtectedRoute = ({ children }) => {
@@ -64,57 +65,57 @@ function App() {
             <Route
               path="/"
               element={
-                <ProtectedRoute>
+                // <ProtectedRoute>
                   <Home />
-                </ProtectedRoute>
+                // </ProtectedRoute>
               }
             />
             <Route
               path="/signup"
               element={
-                <RedirectAuthenticatedUser>
+                // <RedirectAuthenticatedUser>
                   <SignUp />
-                </RedirectAuthenticatedUser>
+                // </RedirectAuthenticatedUser>
               }
             />
             <Route
               path="/login"
               element={
-                <RedirectAuthenticatedUser>
+                // <RedirectAuthenticatedUser>
                   <Login />
-                </RedirectAuthenticatedUser>
+                // </RedirectAuthenticatedUser>
               }
             />
             <Route
               path="/verify-email"
               element={
-                <RedirectAuthenticatedUser>
+                // <RedirectAuthenticatedUser>
                   <EmailVerify />
-                </RedirectAuthenticatedUser>
+                // </RedirectAuthenticatedUser>
               }
             />
             <Route
               path="/forgot-password"
               element={
-                <RedirectAuthenticatedUser>
+                // <RedirectAuthenticatedUser>
                   <ForgotPassowrd />
-                </RedirectAuthenticatedUser>
+                // </RedirectAuthenticatedUser>
               }
             />
             <Route
               path="/reset-password/:token"
               element={
-                <RedirectAuthenticatedUser>
+                // <RedirectAuthenticatedUser>
                   <ResetPassword />
-                </RedirectAuthenticatedUser>
+                // </RedirectAuthenticatedUser>
               }
             />
             <Route
               path="/profile"
               element={
-                <ProtectedRoute>
-                  <Home />
-                </ProtectedRoute>
+                // <ProtectedRoute>
+                  <UserProfile />
+                // </ProtectedRoute>
               }
             />
             <Route path="*" element={<PageNotFound />} />

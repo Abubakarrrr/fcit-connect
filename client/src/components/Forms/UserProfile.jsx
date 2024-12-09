@@ -7,6 +7,8 @@ import { Eye, EyeOff } from "lucide-react";
 import { Mail } from "lucide-react";
 import { useState } from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import EmailInput from "../ui/Email-Input";
+import PasswordInput from "../ui/Password-Input";
 
 function AvatarDemo() {
   return (
@@ -17,58 +19,21 @@ function AvatarDemo() {
   );
 }
 
-function PasswordInput({title}) {
-  const [isVisible, setIsVisible] = useState(false);
 
-  const toggleVisibility = () => setIsVisible((prevState) => !prevState);
-
-  return (
-    <div className="space-y-2">
-      <div className="relative">
-        <Input
-          id="input-23"
-          className="pe-9"
-          placeholder={title}
-          type={isVisible ? "text" : "password"}
-        />
-        <button
-          className="absolute inset-y-0 end-0 flex h-full w-9 items-center justify-center rounded-e-lg text-muted-foreground/80 outline-offset-2 transition-colors hover:text-foreground focus:z-10 focus-visible:outline focus-visible:outline-2 focus-visible:outline-ring/70 disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50"
-          type="button"
-          onClick={toggleVisibility}
-          aria-label={isVisible ? "Hide password" : "Show password"}
-          aria-pressed={isVisible}
-          aria-controls="password"
-        >
-          {isVisible ? (
-            <EyeOff size={16} strokeWidth={2} aria-hidden="true" />
-          ) : (
-            <Eye size={16} strokeWidth={2} aria-hidden="true" />
-          )}
-        </button>
-      </div>
-    </div>
-  );
-}
-function EmailInput() {
-  return (
-    <div className="">
-      <div className="relative">
-        <Input
-        disabled
-          id="input-10"
-          className="peer pe-9"
-          placeholder="Email"
-          type="email"
-        />
-        <div className="pointer-events-none absolute inset-y-0 end-0 flex items-center justify-center pe-3 text-muted-foreground/80 peer-disabled:opacity-50">
-          <Mail size={16} strokeWidth={2} aria-hidden="true" />
-        </div>
-      </div>
-    </div>
-  );
-}
 
 export default function UserProfile() {
+  const [passwords, setPasswords] = useState({
+    oldPassword: "",
+    newPassword: "",
+  });
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setPasswords((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+    // console.log(passwords)
+  };
   return (
     <>
       <div className="  px-2 sm:px-8 lg:px-16">
@@ -89,9 +54,23 @@ export default function UserProfile() {
                       {/* Grid */}
                       <div className="flex flex-col gap-4">
                         <Input placeholder="Name" disabled/>
-                        <EmailInput />
-                        <PasswordInput title="Enter Old Password"/>
-                        <PasswordInput title="Enter New Password"/>
+                        <EmailInput disabled placeholder="Email" />
+                        <PasswordInput
+                          id="oldPassword"
+                          name="oldPassword"
+                          type="password"
+                          placeholder="Enter Old Password"
+                          value={passwords.oldPassword}
+                          onChange={handleChange}
+                        />
+                        <PasswordInput
+                          id="newPassword"
+                          name="newPassword"
+                          type="password"
+                          placeholder="Enter New Password"
+                          value={passwords.newPassword}
+                          onChange={handleChange}
+                        />
                         <Link to={"#"}></Link>
                         <Button className="mt-3 col-span-2">
                           Change Password

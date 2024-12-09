@@ -13,26 +13,16 @@ import {
 import { Input } from "../ui/input";
 import { useAuthStore } from "@/store/authStore";
 import { useToast } from "@/hooks/use-toast";
+import { useState } from "react";
+import EmailInput from "../ui/Email-Input";
 
-function EmailInput() {
-  return (
-    <div className="">
-      <div className="relative">
-        <Input
-          id="input-10"
-          className="peer pe-9"
-          placeholder="Email"
-          type="email"
-        />
-        <div className="pointer-events-none absolute inset-y-0 end-0 flex items-center justify-center pe-3 text-muted-foreground/80 peer-disabled:opacity-50">
-          <Mail size={16} strokeWidth={2} aria-hidden="true" />
-        </div>
-      </div>
-    </div>
-  );
-}
 
 export default function ForgotPassword() {
+  const [email, setEmail] = useState("");
+  const handleChange = (e) => {
+    setEmail(e.target.value);
+  };
+  
   const { isLoading, forgotPassword, message } = useAuthStore();
   const { toast } = useToast();
 
@@ -49,7 +39,7 @@ export default function ForgotPassword() {
       <div className="  px-2 sm:px-8 lg:px-16">
         <div className="py-8">
           <div className="mx-auto">
-            <form>
+            <form onSubmit={handleSubmit}>
               <div className="max-w-lg mx-auto">
                 {/* Card */}
                 <Card>
@@ -66,7 +56,13 @@ export default function ForgotPassword() {
                     <div className="">
                       {/* Grid */}
                       <div className="flex flex-col gap-4">
-                        <EmailInput />
+                        <EmailInput
+                          name="email"
+                          id="email"
+                          placeholder="Enter your email"
+                          value={email}
+                          onChange={handleChange}
+                        />
                         <Button className="mt-3 col-span-2 capitalize">
                           Send reset Link
                         </Button>

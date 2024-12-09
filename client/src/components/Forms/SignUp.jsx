@@ -1,8 +1,4 @@
-("use client");
-import { useMemo, useState } from "react";
-import { Mail } from "lucide-react";
-import { Check, Eye, EyeOff, X } from "lucide-react";
-
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -16,21 +12,47 @@ import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuthStore } from "@/store/authStore";
+import EmailInput from "../ui/Email-Input";
+import { signupSchema } from "@/schemas";
+import { validateForm } from "@/utils/validation";
+import ErrorMessage from "../shared/ErrorMessage";
+import PasswordInputStrengthChecker from "../ui/Password-Input-Strength";
 
 export default function SignUp() {
-  const { signup, error, isLoading } = useAuthStore();
+  const [formData, setFormData] = useState({
+    name: "",
+    email: "",
+    password: "",
+  });
+  const [errors, setErrors] = useState({});
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prevData) => ({
+      ...prevData,
+      [name]: value,
+    }));
+    // console.log(formData);
+  };
+
+  // const { signup, error, isLoading } = useAuthStore();
   const navigate = useNavigate();
 
   const handleSignUp = async (e) => {
     e.preventDefault();
-
-    try {
-      await signup(email, name, password);
-      navigate("/verify-email");
-    } catch (error) {
-      console.log(error);
+    const isValid = validateForm(signupSchema, formData, setErrors);
+    if (isValid) {
+      console.log("Form submitted successfully:", formData);
     }
+    // const { name, email, password } = formData;
+    // try {
+    //   await signup(email, name, password);
+    //   navigate("/verify-email");
+    // } catch (error) {
+    //   console.log(error);
+    // }
   };
+
   return (
     <>
       <div className="  px-2 sm:px-8 lg:px-16">
@@ -42,7 +64,7 @@ export default function SignUp() {
                 <Card>
                   <CardHeader className="text-center">
                     <h2 className="text-2xl font-semibold leading-none tracking-tight capitalize">
-                      Sign up to upload your FYP
+                      Sign up
                     </h2>
                     <CardDescription>
                       Already have an account?{" "}
@@ -92,179 +114,51 @@ export default function SignUp() {
                     <div className="mt-5">
                       {/* Grid */}
                       <div className="flex flex-col gap-4">
-                        <Input placeholder="Name" />
-                        <EmailInput />
-                        <PasswordInput />
+                        <Input
+                          id="name"
+                          name="name"
+                          placeholder="Name"
+                          value={formData.name}
+                          onChange={handleChange}
+                        />
+                        <ErrorMessage message={errors.name} />
+                        <EmailInput
+                          name="email"
+                          id="email"
+                          placeholder="Email"
+                          value={formData.email}
+                          onChange={handleChange}
+                        />
+                        <ErrorMessage message={errors.email} />
+                        <PasswordInputStrengthChecker
+                          id="password"
+                          name="password"
+                          placeholder="Password"
+                          value={formData.password}
+                          onChange={handleChange}
+                        />
+                        <ErrorMessage message={errors.password} />
 
-                        <div className="flex items-center space-x-2 mt-3 col-span-2">
+                        {/* <div className="flex items-center space-x-2 mt-3 col-span-2">
                           <Checkbox id="terms" />
                           <Label htmlFor="terms">
                             Accept terms and conditions
                           </Label>
-                        </div>
-                        <Button className="mt-3 col-span-2">Get started</Button>
+                        </div>  */}
+                        <Button
+                          className="mt-3 col-span-2"
+                        >
+                          Get started
+                        </Button>
                       </div>
-                      {/* Grid End */}
                     </div>
                   </CardContent>
                 </Card>
-                {/* End Card */}
               </div>
             </form>
           </div>
         </div>
       </div>
     </>
-  );
-}
-
-function EmailInput() {
-  return (
-    <div className="">
-      <div className="relative">
-        <Input
-          id="input-10"
-          className="peer pe-9"
-          placeholder="Email"
-          type="email"
-        />
-        <div className="pointer-events-none absolute inset-y-0 end-0 flex items-center justify-center pe-3 text-muted-foreground/80 peer-disabled:opacity-50">
-          <Mail size={16} strokeWidth={2} aria-hidden="true" />
-        </div>
-      </div>
-    </div>
-  );
-}
-
-function PasswordInput() {
-  const [password, setPassword] = useState("");
-  const [isVisible, setIsVisible] = useState(false);
-
-  const toggleVisibility = () => setIsVisible((prevState) => !prevState);
-
-  const checkStrength = (pass) => {
-    const requirements = [
-      { regex: /.{8,}/, text: "At least 8 characters" },
-      { regex: /[0-9]/, text: "At least 1 number" },
-      { regex: /[a-z]/, text: "At least 1 lowercase letter" },
-      { regex: /[A-Z]/, text: "At least 1 uppercase letter" },
-    ];
-
-    return requirements.map((req) => ({
-      met: req.regex.test(pass),
-      text: req.text,
-    }));
-  };
-
-  const strength = checkStrength(password);
-
-  const strengthScore = useMemo(() => {
-    return strength.filter((req) => req.met).length;
-  }, [strength]);
-
-  const getStrengthColor = (score) => {
-    if (score === 0) return "bg-border";
-    if (score <= 1) return "bg-red-500";
-    if (score <= 2) return "bg-orange-500";
-    if (score === 3) return "bg-amber-500";
-    return "bg-emerald-500";
-  };
-
-  const getStrengthText = (score) => {
-    if (score === 0) return "Enter a password";
-    if (score <= 2) return "Weak password";
-    if (score === 3) return "Medium password";
-    return "Strong password";
-  };
-
-  return (
-    <div>
-      {/* Password input field with toggle visibility button */}
-      <div className="">
-        <Label htmlFor="input-51"></Label>
-        <div className="relative">
-          <Input
-            id="input-51"
-            className="pe-9"
-            placeholder="Password"
-            type={isVisible ? "text" : "password"}
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            aria-invalid={strengthScore < 4}
-            aria-describedby="password-strength"
-          />
-          <button
-            className="absolute inset-y-0 end-0 flex h-full w-9 items-center justify-center rounded-e-lg text-muted-foreground/80 outline-offset-2 transition-colors hover:text-foreground focus:z-10 focus-visible:outline focus-visible:outline-2 focus-visible:outline-ring/70 disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50"
-            type="button"
-            onClick={toggleVisibility}
-            aria-label={isVisible ? "Hide password" : "Show password"}
-            aria-pressed={isVisible}
-            aria-controls="password"
-          >
-            {isVisible ? (
-              <EyeOff size={16} strokeWidth={2} aria-hidden="true" />
-            ) : (
-              <Eye size={16} strokeWidth={2} aria-hidden="true" />
-            )}
-          </button>
-        </div>
-      </div>
-
-      {/* Password strength indicator */}
-      <div
-        className="mb-4 mt-3 h-1 w-full overflow-hidden rounded-full bg-border"
-        role="progressbar"
-        aria-valuenow={strengthScore}
-        aria-valuemin={0}
-        aria-valuemax={4}
-        aria-label="Password strength"
-      >
-        <div
-          className={`h-full ${getStrengthColor(
-            strengthScore
-          )} transition-all duration-500 ease-out`}
-          style={{ width: `${(strengthScore / 4) * 100}%` }}
-        ></div>
-      </div>
-
-      {/* Password strength description */}
-      <p
-        id="password-strength"
-        className="mb-2 text-sm font-medium text-foreground"
-      >
-        {getStrengthText(strengthScore)}. Must contain:
-      </p>
-
-      {/* Password requirements list */}
-      <ul className="space-y-1.5" aria-label="Password requirements">
-        {strength.map((req, index) => (
-          <li key={index} className="flex items-center gap-2">
-            {req.met ? (
-              <Check
-                size={16}
-                className="text-emerald-500"
-                aria-hidden="true"
-              />
-            ) : (
-              <X
-                size={16}
-                className="text-muted-foreground/80"
-                aria-hidden="true"
-              />
-            )}
-            <span
-              className={`text-xs ${
-                req.met ? "text-emerald-600" : "text-muted-foreground"
-              }`}
-            >
-              {req.text}
-              <span className="sr-only">
-                {req.met ? " - Requirement met" : " - Requirement not met"}
-              </span>
-            </span>
-          </li>
-        ))}
-      </ul>
-    </div>
   );
 }
