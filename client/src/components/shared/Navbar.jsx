@@ -13,7 +13,7 @@ import {
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { ModeToggle } from "@/components/mode-toggle";
 import { Link } from "react-router-dom";
-import Avatar from "./Avatar";
+import Avatar from "./AvatarDropdown";
 
 export default function Navbar() {
   return (

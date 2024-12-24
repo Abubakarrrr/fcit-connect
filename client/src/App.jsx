@@ -5,22 +5,14 @@ import {
   BrowserRouter as Router,
   Routes,
 } from "react-router-dom";
-
 import { Toaster } from "./components/ui/toaster";
 import "./App.css";
 import { ThemeProvider } from "@/components/theme-provider";
+import { Login,SignUp, ForgotPassowrd,ResetPassword, UserProfile,EmailVerify } from "./components/Forms";
+import {Navbar,Footer,PageNotFound,LoadingSpinner} from "./components/shared";
+import { AdminLayout, UserLayout } from "./layouts";
 import Home from "@/pages/Home";
-import Navbar from "@/components/shared/Navbar";
-import SignUp from "@/components/Forms/SignUp";
-import Login from "@/components/Forms/Login";
-import Footer from "./components/shared/Footer";
-import EmailVerify from "@/components/Forms/EmailVerify";
-import ForgotPassowrd from "@/components/Forms/ForgotPassowrd";
-import ResetPassword from "@/components/Forms/ResetPassword";
-import PageNotFound from "@/components/shared/PageNoFound";
 import { useAuthStore } from "@/store/authStore";
-import LoadingSpinner from "@/components/shared/LoadingSpinner";
-import UserProfile from "./components/Forms/UserProfile";
 
 // protected routes
 const ProtectedRoute = ({ children }) => {
@@ -54,19 +46,23 @@ function App() {
   if (isCheckingAuth) {
     return <LoadingSpinner />;
   }
+  const isAdminRoute = location.pathname.startsWith("/admin");
+  const isUserRoute = location.pathname.startsWith("/user");
+
   return (
     <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
       {/* <Analytics/> */}
       <Toaster />
       <Router>
         <div className="font-primary">
-          <Navbar />
+          {!isAdminRoute && !isUserRoute && <Navbar />}
           <Routes>
+            {/* Public Routes  */}
             <Route
               path="/"
               element={
                 // <ProtectedRoute>
-                  <Home />
+                <Home />
                 // </ProtectedRoute>
               }
             />
@@ -74,7 +70,7 @@ function App() {
               path="/signup"
               element={
                 // <RedirectAuthenticatedUser>
-                  <SignUp />
+                <SignUp />
                 // </RedirectAuthenticatedUser>
               }
             />
@@ -82,7 +78,7 @@ function App() {
               path="/login"
               element={
                 // <RedirectAuthenticatedUser>
-                  <Login />
+                <Login />
                 // </RedirectAuthenticatedUser>
               }
             />
@@ -90,7 +86,7 @@ function App() {
               path="/verify-email"
               element={
                 // <RedirectAuthenticatedUser>
-                  <EmailVerify />
+                <EmailVerify />
                 // </RedirectAuthenticatedUser>
               }
             />
@@ -98,7 +94,7 @@ function App() {
               path="/forgot-password"
               element={
                 // <RedirectAuthenticatedUser>
-                  <ForgotPassowrd />
+                <ForgotPassowrd />
                 // </RedirectAuthenticatedUser>
               }
             />
@@ -106,7 +102,7 @@ function App() {
               path="/reset-password/:token"
               element={
                 // <RedirectAuthenticatedUser>
-                  <ResetPassword />
+                <ResetPassword />
                 // </RedirectAuthenticatedUser>
               }
             />
@@ -114,13 +110,33 @@ function App() {
               path="/profile"
               element={
                 // <ProtectedRoute>
-                  <UserProfile />
+                <UserProfile />
                 // </ProtectedRoute>
               }
             />
+
+            {/* Admin Routes  */}
+            <Route path="/admin" element={<AdminLayout />}>
+              <Route path="" element={<h1>dashboard</h1>} />
+              <Route path="users" element={<h1>users</h1>} />
+              <Route path="fyps" element={<h1>fyps</h1>} />
+              <Route path="supervisors" element={<h1>supervisors</h1>} />
+              <Route path="categories" element={<h1>categories</h1>} />
+              <Route path="analytics" element={<h1>analytics</h1>} />
+            </Route>
+            {/* User Dashboard Routes  */}
+            <Route path="/user" element={<UserLayout />}>
+              <Route path="" element={<h1>dashboard</h1>} />
+              <Route path="users" element={<h1>users</h1>} />
+              <Route path="fyps" element={<h1>users</h1>} />
+              <Route path="supervisors" element={<h1>users</h1>} />
+              <Route path="categories" element={<h1>users</h1>} />
+              <Route path="analytics" element={<h1>users</h1>} />
+            </Route>
+
             <Route path="*" element={<PageNotFound />} />
           </Routes>
-          <Footer />
+          {!isAdminRoute && !isUserRoute && <Footer />}
         </div>
       </Router>
     </ThemeProvider>
