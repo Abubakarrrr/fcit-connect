@@ -114,6 +114,12 @@ function App() {
                 // </ProtectedRoute>
               }
             />
+            <Route
+              path="/loginwithgoogle"
+              element={
+                <></>
+              }
+            />
 
             {/* Admin Routes  */}
             <Route path="/admin" element={<AdminLayout />}>
