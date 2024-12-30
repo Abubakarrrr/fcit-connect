@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import FYPCard from "./FYPCard";
-import Dropdown from "../shared/DropDown";
+import Dropdown from "../shared/Dropdown";
 import PaginationDemo from "../shared/Pagination";
 
 const fypProjects = [
