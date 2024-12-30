@@ -1,5 +1,6 @@
 import  Benefits  from "@/components/Home/Benefits";
 import CTASection from "@/components/Home/CTA";
+import FYPsListing from "@/components/Home/FYPsListing";
 import Hero from "@/components/Home/Hero";
 import { IconCloudDemo } from "@/components/Home/IconCloud";
 import { PlaceholdersAndVanishInputDemo } from "@/components/Home/PlaceHolderVanish";
@@ -26,6 +27,9 @@ const Home = () => {
       </Layout>
       <Layout>
         <CTASection />
+      </Layout>
+      <Layout>
+      <FYPsListing/>
       </Layout>
     </>
   );

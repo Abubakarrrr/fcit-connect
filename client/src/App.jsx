@@ -13,6 +13,7 @@ import {Navbar,Footer,PageNotFound,LoadingSpinner} from "./components/shared";
 import { AdminLayout, UserLayout } from "./layouts";
 import Home from "@/pages/Home";
 import { useAuthStore } from "@/store/authStore";
+import FypDetails from "./pages/fyp/FypDetails";
 
 // protected routes
 const ProtectedRoute = ({ children }) => {
@@ -120,6 +121,7 @@ function App() {
                 <></>
               }
             />
+            <Route path="/fyps/:batch/:fypName/:id" element={<FypDetails/>} />  
 
             {/* Admin Routes  */}
             <Route path="/admin" element={<AdminLayout />}>
