@@ -1,6 +1,6 @@
 import React from "react";
 import { useParams } from "react-router-dom";
-import FypShowcase from "./fypShowcase";
+import FypShowcase from "./FypShowcase";
 import Layout from "@/components/shared/Layout";
 
 const FypDetails = () => {
