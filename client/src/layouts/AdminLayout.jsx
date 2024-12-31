@@ -14,13 +14,6 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import {
     Breadcrumb,
     BreadcrumbItem,
     BreadcrumbLink,
@@ -57,7 +50,7 @@ export default function AdminLayout() {
           <div className="flex-1">
             <nav className="grid items-start px-2 text-sm font-medium lg:px-4">
               <Link
-                to="/admin"
+                to="/admin/dashboard"
                 className="flex items-center gap-3 rounded-lg px-3 py-2 text-muted-foreground transition-all hover:text-primary"
               >
                 <Home className="h-4 w-4" />
@@ -130,7 +123,7 @@ export default function AdminLayout() {
                   <span className="sr-only">FCIT connect</span>
                 </Link>
                 <Link
-                  href="/admin"
+                  href="/admin/dashboard"
                   className="mx-[-0.65rem] flex items-center gap-4 rounded-xl px-3 py-2 text-muted-foreground hover:text-foreground"
                 >
                   <Home className="h-5 w-5" />
@@ -196,14 +189,13 @@ export default function AdminLayout() {
           </div>
           <AvatarDropdown />
         </header>
-        <main className="flex flex-1 flex-col gap-4 p-4 lg:gap-6 lg:p-6">
-        
-          <div
-            className="flex flex-1 p-8 rounded-lg border border-dashed shadow-sm"
+        <main className="flex flex-1 flex-col gap-4 p-3 lg:gap-6 lg:p-6">
+          {/* <div
+            className="flex flex-1 py-6 px-3 rounded-lg border border-dashed shadow-sm"
             x-chunk="dashboard-02-chunk-1"
-          >
+          > */}
             <Outlet />
-          </div>
+          {/* </div> */}
         </main>
       </div>
     </div>
