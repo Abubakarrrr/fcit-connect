@@ -61,7 +61,6 @@ function App() {
     <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
       {/* <Analytics/> */}
       <Toaster />
-      <Router>
         <div className="font-primary">
           {!isAdminRoute && !isUserRoute && <Navbar />}
           <Routes>
@@ -156,7 +155,6 @@ function App() {
           </Routes>
           {!isAdminRoute && !isUserRoute && <Footer />}
         </div>
-      </Router>
     </ThemeProvider>
   );
 }
