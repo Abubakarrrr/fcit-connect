@@ -55,6 +55,53 @@ export const signup = async (req, res) => {
     res.status(400).json({ success: false, message: error.message });
   }
 };
+export const loginWithGoogle = async (req, res) => {
+  const { googleUser } = req.body;
+  try {
+    if (!googleUser) {
+      throw new Error("No User Found");
+    }
+    const userFromDB = await User.findOne({ email: googleUser.email });
+
+    if (userFromDB) {
+      userFromDB.lastLogin = new Date();
+      await userFromDB.save();
+      res.status(200).json({
+        success: true,
+        message: "User logged in successfully",
+        user: {
+          ...userFromDB._doc,
+          password: undefined,
+        },
+      });
+    }
+
+    const user = new User({
+      email: googleUser.email,
+      password: undefined,
+      name: googleUser.displayName,
+      isVerified: true,
+      profilePicture: googleUser.photoUrl,
+    });
+
+    await user.save();
+
+    // jwt
+    const token = generateTokenAndSetCookie(res, user._id);
+
+    res.status(200).json({
+      success: true,
+      message: "User created successfully",
+      user: {
+        ...user._doc,
+        password: undefined,
+      },
+    });
+  } catch (error) {
+    console.log("error in signup");
+    res.status(400).json({ success: false, message: error.message });
+  }
+};
 
 export const verifyEmail = async (req, res) => {
   const { code } = req.body;

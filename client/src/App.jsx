@@ -30,6 +30,7 @@ import Start from "./components/Dashboard/admin/Start/Start";
 import UpdateTemplate from "./components/Dashboard/shared/update/UpdateTemplate";
 import ProtectedRoute from "./utils/ProtectedRoute";
 import RedirectAuthenticatedUser from "./utils/RedirectAuthenticatedUser";
+import LoginWithGoogle from "./components/Forms/LoginWithGoogle";
 
 function App() {
   const { isCheckingAuth, checkAuth } = useAuthStore();
@@ -108,7 +109,7 @@ function App() {
               </ProtectedRoute>
             }
           />
-          <Route path="/loginwithgoogle" element={<></>} />
+          <Route path="/login-with-google" element={<LoginWithGoogle></LoginWithGoogle>} />
           <Route path="/fyps/:batch/:fypName/:id" element={<FypDetails />} />
           {/* <Route path="/fyps/new" element={<AddFyp/>} />   */}
 

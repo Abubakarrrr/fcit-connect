@@ -7,12 +7,14 @@ import {
   forgotPassword,
   resetPassword,
   checkAuth,
+  loginWithGoogle,
 } from "../controllers/authController.js";
-import {verifyToken} from "../middlewares/verifyToken.js";
+import { verifyToken } from "../middlewares/verifyToken.js";
 const router = express.Router();
 
 router.post("/signup", signup);
 router.post("/login", login);
+router.post("/login-with-google", loginWithGoogle);
 router.post("/logout", logout);
 
 router.post("/verify-email", verifyEmail);
