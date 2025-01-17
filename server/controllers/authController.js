@@ -81,7 +81,7 @@ export const loginWithGoogle = async (req, res) => {
       password: undefined,
       name: googleUser.displayName,
       isVerified: true,
-      profilePicture: googleUser.photoUrl,
+      profilePicture: googleUser.photoURL,
     });
 
     await user.save();
