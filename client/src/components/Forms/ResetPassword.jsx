@@ -1,10 +1,10 @@
 "use client";
 import { useState } from "react";
-import { Eye, EyeOff } from "lucide-react";
+// import { Eye, EyeOff } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
-import { Input } from "../ui/input";
+// import { Input } from "../ui/input";
 import { useAuthStore } from "@/store/authStore";
 import { useNavigate, useParams } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
@@ -15,40 +15,51 @@ export default function ResetPassword() {
     newPassword: "",
     confirmNewPassword: "",
   });
+  const { resetPassword, error, isLoading, message } = useAuthStore();
+  const { token } = useParams();
+  const navigate = useNavigate();
+  const { toast } = useToast();
+
   const handleChange = (e) => {
     const { name, value } = e.target;
     setPasswords((prev) => ({
       ...prev,
       [name]: value,
     }));
-    console.log(passwords)
+    console.log(passwords);
   };
-
-  const { resetPassword, error, isLoading, message } = useAuthStore();
-  const { token } = useParams();
-  const navigate = useNavigate();
-  const { toast } = useToast();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    // const { newPassword, confirmNewPassword } = passwords;
-    if (password !== confirmPassword) {
+    const { newPassword, confirmNewPassword } = passwords;
+    if (newPassword !== confirmNewPassword) {
       alert("Passwords do not match");
+      toast({
+        title: "Passwords do not match",
+        description: "",
+      });
       return;
     }
     try {
-      await resetPassword(token, password, confirmPassword);
-      toast({
-        title: "Password Reset Successfully",
-        description: "redirecting to login page...",
-      });
-      setTimeout(() => {
-        navigate("/login");
-      }, 2000);
+      await resetPassword(token, newPassword, confirmNewPassword);
+      if (error) {
+        toast({
+          title: error,
+          description: "",
+        });
+      } else {
+        toast({
+          title: message || "Password Reset Successfully",
+          description: "redirecting to login page...",
+        });
+        setTimeout(() => {
+          navigate("/login");
+        }, 2000);
+      }
     } catch (error) {
       console.error(error);
       toast({
-        title: error.message || "Error Resetting Password",
+        title: error.message || "Error resetting password",
         description: "",
       });
     }
@@ -88,8 +99,12 @@ export default function ResetPassword() {
                           value={passwords.confirmNewPassword}
                           onChange={handleChange}
                         />
-                        <Button className="mt-3 col-span-2 capitalize">
-                          set new password
+                        <Button
+                          className="mt-3 col-span-2 capitalize"
+                          type="submit"
+                          disabled={isLoading}
+                        >
+                          {isLoading ? "Loading..." : "Set new password"}
                         </Button>
                       </div>
                     </div>

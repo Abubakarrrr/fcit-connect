@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -14,6 +14,8 @@ import { useState } from "react";
 import PasswordInput from "../ui/Password-Input";
 
 export default function Login() {
+  const navigate = useNavigate();
+
   const [formData, setFormData] = useState({
     email: "",
     password: "",
@@ -24,7 +26,6 @@ export default function Login() {
       ...prevData,
       [name]: value,
     }));
-    // console.log(formData);
   };
 
   const { login, isLoading, error } = useAuthStore();
@@ -32,12 +33,28 @@ export default function Login() {
 
   const handleLogin = async (e) => {
     e.preventDefault();
-    console.log(formData);
-    // await login(email, password);
-    toast({
-      title: "Login Successfull",
-      description: "",
-    });
+    try {
+      const { email, password } = formData;
+      await login(email, password);
+      if (error) {
+        toast({
+          title: error,
+          description: "",
+        });
+      } else {
+        navigate("/");
+        toast({
+          title: "Login successfull",
+          description: "",
+        });
+      }
+    } catch (error) {
+      console.log(error);
+      toast({
+        title: error.message || "Login attempt failed",
+        description: "",
+      });
+    }
   };
   return (
     <>
@@ -116,7 +133,15 @@ export default function Login() {
                             Forgot your password?
                           </p>
                         </Link>
-                        <Button className="mt-3 col-span-2">Login</Button>
+                        <Button
+                          className="mt-3 col-span-2"
+                          type="submit"
+                          disabled={isLoading}
+                        >
+                         
+                          {isLoading ? "Logging in..." : " Login"}
+
+                        </Button>
                       </div>
                     </div>
                   </CardContent>
@@ -129,4 +154,3 @@ export default function Login() {
     </>
   );
 }
-

@@ -15,29 +15,34 @@ import { useAuthStore } from "@/store/authStore";
 import { useToast } from "@/hooks/use-toast";
 
 export default function EmailVerify() {
-  const [verificationCode, setVerificationCode] = useState(""); 
+  const [verificationCode, setVerificationCode] = useState("");
   const { toast } = useToast();
   const navigate = useNavigate();
   const { error, isLoading, verifyEmail } = useAuthStore();
 
-
   const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log("Final verification code:", verificationCode); 
-    // try {
-    //   await verifyEmail(verificationCode);
-    //   navigate("/");
-    //   toast({
-    //     title: "Email Verified Successfully",
-    //     description: "",
-    //   });
-    // } catch (error) {
-    //   console.log(error);
-    //   toast({
-    //     title: error.message || "Email Verification Failed",
-    //     description: "",
-    //   });
-    // }
+    try {
+      await verifyEmail(verificationCode);
+      if (error) {
+        toast({
+          title: error,
+          description: "",
+        });
+      } else {
+        navigate("/");
+        toast({
+          title: "Email Verified Successfully",
+          description: "",
+        });
+      }
+    } catch (error) {
+      console.log(error);
+      toast({
+        title: error.message || "Email verification failed",
+        description: "",
+      });
+    }
   };
 
   return (
@@ -64,8 +69,12 @@ export default function EmailVerify() {
                           value={verificationCode}
                           onChange={setVerificationCode}
                         />
-                        <Button className="mt-3 col-span-2">
-                          Verify Email
+                        <Button
+                          className="mt-3 col-span-2"
+                          type="submit"
+                          disabled={isLoading}
+                        >
+                          {isLoading ? "Verifying" : "Verify Email"}
                         </Button>
                       </div>
                     </div>
@@ -88,7 +97,7 @@ function InputDemo({ value, onChange }) {
         containerClassName="has-[:disabled]:opacity-50"
         maxLength={6}
         value={value}
-        onChange={onChange} 
+        onChange={onChange}
         render={({ slots }) => (
           <div className="flex">
             {slots.map((slot, idx) => (

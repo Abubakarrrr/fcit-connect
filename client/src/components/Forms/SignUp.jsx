@@ -6,9 +6,9 @@ import {
   CardDescription,
   CardHeader,
 } from "@/components/ui/card";
-import { Checkbox } from "@/components/ui/checkbox";
+// import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+// import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuthStore } from "@/store/authStore";
@@ -17,8 +17,11 @@ import { signupSchema } from "@/schemas";
 import { validateForm } from "@/utils/validation";
 import ErrorMessage from "../shared/ErrorMessage";
 import PasswordInputStrengthChecker from "../ui/Password-Input-Strength";
+import { useToast } from "@/hooks/use-toast";
 
 export default function SignUp() {
+  const { toast } = useToast();
+
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -32,25 +35,35 @@ export default function SignUp() {
       ...prevData,
       [name]: value,
     }));
-    // console.log(formData);
   };
 
-  // const { signup, error, isLoading } = useAuthStore();
+  const { signup, error, isLoading } = useAuthStore();
   const navigate = useNavigate();
 
   const handleSignUp = async (e) => {
     e.preventDefault();
-    const isValid = validateForm(signupSchema, formData, setErrors);
-    if (isValid) {
-      console.log("Form submitted successfully:", formData);
+
+    try {
+      const isValid = validateForm(signupSchema, formData, setErrors);
+      if (isValid) {
+        const { name, email, password } = formData;
+        await signup(email, name, password);
+        if (error) {
+          toast({
+            title: error,
+            description: "",
+          });
+        } else {
+          navigate("/verify-email");
+        }
+      }
+    } catch (error) {
+      console.log(error);
+      toast({
+        title: error.message || "Signup attempt failed",
+        description: "",
+      });
     }
-    // const { name, email, password } = formData;
-    // try {
-    //   await signup(email, name, password);
-    //   navigate("/verify-email");
-    // } catch (error) {
-    //   console.log(error);
-    // }
   };
 
   return (
@@ -147,8 +160,10 @@ export default function SignUp() {
                         </div>  */}
                         <Button
                           className="mt-3 col-span-2"
+                          type="submit"
+                          disabled={isLoading}
                         >
-                          Get started
+                          {isLoading ? "Signing up..." : "Get started"}
                         </Button>
                       </div>
                     </div>
