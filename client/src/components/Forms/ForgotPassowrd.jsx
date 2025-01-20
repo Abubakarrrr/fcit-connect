@@ -1,6 +1,6 @@
 "use client";
 import { Link } from "react-router-dom";
-import { Mail } from "lucide-react";
+// import { Mail } from "lucide-react";
 import { MoveLeft } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
@@ -10,29 +10,43 @@ import {
   CardDescription,
   CardHeader,
 } from "@/components/ui/card";
-import { Input } from "../ui/input";
+// import { Input } from "../ui/input";
 import { useAuthStore } from "@/store/authStore";
 import { useToast } from "@/hooks/use-toast";
 import { useState } from "react";
 import EmailInput from "../ui/Email-Input";
-
 
 export default function ForgotPassword() {
   const [email, setEmail] = useState("");
   const handleChange = (e) => {
     setEmail(e.target.value);
   };
-  
-  const { isLoading, forgotPassword, message } = useAuthStore();
+
+  const { isLoading, forgotPassword, message, error } = useAuthStore();
   const { toast } = useToast();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    await forgotPassword(email);
-    toast({
-      title: message,
-      description: "",
-    });
+    try {
+      await forgotPassword(email);
+      if (error) {
+        toast({
+          title: error,
+          description: "",
+        });
+      } else {
+        toast({
+          title: message,
+          description: "",
+        });
+      }
+    } catch (error) {
+      console.log(error);
+      toast({
+        title: error.message || "Failed attempt please try again",
+        description: "",
+      });
+    }
   };
   return (
     <>
@@ -63,8 +77,12 @@ export default function ForgotPassword() {
                           value={email}
                           onChange={handleChange}
                         />
-                        <Button className="mt-3 col-span-2 capitalize">
-                          Send reset Link
+                        <Button
+                          className="mt-3 col-span-2 capitalize"
+                          type="submit"
+                          disabled={isLoading}
+                        >
+                          {isLoading ? "Sending link..." : "Send reset link"}
                         </Button>
                         <Link to="/login">
                           <div className="flex items-center justify-center">
