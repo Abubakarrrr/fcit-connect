@@ -39,7 +39,7 @@ const Stats = () => {
         {statsData.map((stat) => (
           <div
             key={stat.title}
-            className="flex flex-col items-center justify-center gap-2 rounded-lg bg-[#06B6D4] p-6 dark:bg-gray-800"
+            className="flex flex-col items-center justify-center gap-2 rounded-lg bg-gray-800 p-6 dark:bg-gray-800"
           >
             <h2 className="text-2xl font-bold text-white">{stat.title}</h2>
             <p className="whitespace-pre-wrap text-5xl font-medium tracking-tighter text-white dark:text-white te">

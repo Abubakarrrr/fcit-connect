@@ -72,7 +72,7 @@ function DesktopNav() {
   return (
     <NavigationMenu>
       <NavigationMenuList>
-        <NavigationMenuItem>
+        {/* <NavigationMenuItem>
           <NavigationMenuTrigger>Products</NavigationMenuTrigger>
           <NavigationMenuContent>
             <ul className="grid gap-3 p-6 md:w-[400px] lg:w-[500px] lg:grid-cols-[.75fr_1fr]">
@@ -102,8 +102,8 @@ function DesktopNav() {
               </ListItem>
             </ul>
           </NavigationMenuContent>
-        </NavigationMenuItem>
-        <NavigationMenuItem>
+        </NavigationMenuItem> */}
+        {/* <NavigationMenuItem>
           <NavigationMenuTrigger>Resources</NavigationMenuTrigger>
           <NavigationMenuContent>
             <ul className="grid w-[400px] gap-3 p-4 md:w-[500px] md:grid-cols-2 lg:w-[600px]">
@@ -115,10 +115,26 @@ function DesktopNav() {
               </ListItem>
             </ul>
           </NavigationMenuContent>
+        </NavigationMenuItem> */}
+
+        <NavigationMenuItem>
+          <a href="/fyps" className={navigationMenuTriggerStyle()}>
+            FYPs
+          </a>
         </NavigationMenuItem>
         <NavigationMenuItem>
-          <a href="/about" className={navigationMenuTriggerStyle()}>
-            About
+          <a href="/analysis" className={navigationMenuTriggerStyle()}>
+            Analysis
+          </a>
+        </NavigationMenuItem>
+        <NavigationMenuItem>
+          <a href="/resources" className={navigationMenuTriggerStyle()}>
+            Resources
+          </a>
+        </NavigationMenuItem>
+        <NavigationMenuItem>
+          <a href="/contact" className={navigationMenuTriggerStyle()}>
+            Contact
           </a>
         </NavigationMenuItem>
       </NavigationMenuList>

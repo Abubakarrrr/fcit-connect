@@ -15,10 +15,11 @@ function AnimatedShinyTextDemo() {
           "group rounded-full border border-black/5 bg-neutral-100 text-base text-white transition-all ease-in hover:cursor-pointer hover:bg-neutral-200 dark:border-white/5 dark:bg-neutral-900 dark:hover:bg-neutral-800"
         )}
       >
-        <AnimatedShinyText className="inline-flex items-center justify-center px-4 py-1 transition ease-out hover:text-neutral-600 hover:duration-300 hover:dark:text-neutral-400">
-          <span>✨ Introducing Real World Projects</span>
+      <Link to="/fyps">
+      <AnimatedShinyText className="inline-flex items-center justify-center px-4 py-1 transition ease-out hover:text-neutral-600 hover:duration-300 hover:dark:text-neutral-400">
+          <span>✨ See what our students are building</span>
           <ArrowRightIcon className="ml-1 size-3 transition-transform duration-300 ease-in-out group-hover:translate-x-0.5" />
-        </AnimatedShinyText>
+        </AnimatedShinyText></Link>
       </div>
     </div>
   );
@@ -30,8 +31,8 @@ const Hero = () => {
     <div className="flex flex-col items-center text-center gap-6 py-20">
       <AnimatedShinyTextDemo />
       <h1 className="md:text-5xl text-3xl font-bold">
-        Still writing “Hello World”? <br />
-        Build real-world projects
+        FCIT Connect <br />
+        All Our FYPs in one place
       </h1>
       <p className="max-w-3xl text-center">
         {" "}
@@ -47,7 +48,7 @@ const Hero = () => {
             </RainbowButton>
           </Link>
           
-          <Button
+          {/* <Button
             variant="outline"
             onClick={() => {
               toast({
@@ -57,7 +58,7 @@ const Hero = () => {
             }}
           >
             Show Toast
-          </Button>
+          </Button> */}
 
           <Link to="/login">
             <Button variant="ghost" className="px-6 border py-5">

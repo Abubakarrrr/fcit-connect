@@ -19,10 +19,10 @@ export default function SearchWithKeywords() {
         <div className=" py-10">
           <div className="text-center">
             <h1 className="scroll-m-20 text-4xl font-extrabold tracking-tight lg:text-5xl">
-              Insights
+              All FYPs
             </h1>
             <p className="mt-3 text-xl text-muted-foreground">
-              Stay in the know with insights from industry experts.
+               Type the keywords to search
             </p>
             <div className="mt-7 sm:mt-12 mx-auto max-w-xl relative">
               {/* Form */}

@@ -36,7 +36,7 @@ const PasswordInputStrengthChecker = ({ value, onChange, ...props }) => {
   };
 
   const getStrengthText = (score) => {
-    if (score === 0) return "Enter a password";
+    if (score === 0) return "Password";
     if (score <= 2) return "Weak password";
     if (score === 3) return "Medium password";
     return "Strong password";
@@ -95,7 +95,7 @@ const PasswordInputStrengthChecker = ({ value, onChange, ...props }) => {
         id="password-strength"
         className="mb-2 text-sm font-medium text-foreground"
       >
-        {getStrengthText(strengthScore)}. Must contain:
+        {getStrengthText(strengthScore)} . Must contain:
       </p>
 
       {/* Password requirements list */}

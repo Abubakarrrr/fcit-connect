@@ -15,7 +15,7 @@ export default function Footer() {
                 <h2 className="text-2xl font-bold">FCIT Connect</h2>
               </Link>
               <p className="text-muted-foreground">
-                A collection of 100+ responsive HTML templates for your startup business or side project.
+                A collection of 100+ FYPs of our Academic community.
               </p>
             </div>
             <div className="flex gap-4">
@@ -55,42 +55,34 @@ export default function Footer() {
             <div className="space-y-4">
               <h3 className="text-lg font-semibold">Product</h3>
               <nav className="flex flex-col space-y-2">
-                <Link href="#" className="text-muted-foreground hover:text-foreground">
-                  Overview
+                <Link to="/fyps" className="text-muted-foreground hover:text-foreground">
+                  FYPs
                 </Link>
-                <Link href="#" className="text-muted-foreground hover:text-foreground">
-                  Pricing
+                <Link to="/analysis" className="text-muted-foreground hover:text-foreground">
+                  Analysis
                 </Link>
-                <Link href="#" className="text-muted-foreground hover:text-foreground">
-                  Marketplace
+                <Link to="/resources" className="text-muted-foreground hover:text-foreground">
+                  Resources
                 </Link>
-                <Link href="#" className="text-muted-foreground hover:text-foreground">
-                  Features
-                </Link>
-                <Link href="#" className="text-muted-foreground hover:text-foreground">
-                  Integrations
-                </Link>
-                <Link href="#" className="text-muted-foreground hover:text-foreground">
-                  Marketing
-                </Link>
+               
               </nav>
             </div>
             <div className="space-y-4">
               <h3 className="text-lg font-semibold">Company</h3>
               <nav className="flex flex-col space-y-2">
-                <Link href="#" className="text-muted-foreground hover:text-foreground">
+                <Link to="/about" className="text-muted-foreground hover:text-foreground">
                   About
                 </Link>
-                <Link href="#" className="text-muted-foreground hover:text-foreground">
+                {/* <Link to="#" className="text-muted-foreground hover:text-foreground">
                   Team
+                </Link> */}
+                <Link to="/blogs" className="text-muted-foreground hover:text-foreground">
+                  Blogs
                 </Link>
-                <Link href="#" className="text-muted-foreground hover:text-foreground">
-                  Blog
+                <Link to="/privacy-policy" className="text-muted-foreground hover:text-foreground">
+                  Privacy Policy
                 </Link>
-                <Link href="#" className="text-muted-foreground hover:text-foreground">
-                  Careers
-                </Link>
-                <Link href="#" className="text-muted-foreground hover:text-foreground">
+                <Link to="/contact" className="text-muted-foreground hover:text-foreground">
                   Contact
                 </Link>
               </nav>
@@ -112,7 +104,7 @@ export default function Footer() {
             </form>
             <p className="text-sm text-muted-foreground">
               By submitting, you agree to our{" "}
-              <Link href="#" className="underline underline-offset-4 hover:text-foreground">
+              <Link to="#" className="underline underline-offset-4 hover:text-foreground">
                 Privacy Policy
               </Link>
             </p>

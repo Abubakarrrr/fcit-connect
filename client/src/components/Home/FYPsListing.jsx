@@ -109,7 +109,7 @@ const FYPsListing = () => {
         />
         <Dropdown
           trigger={"Supervisor"}
-          list={["All", "Hassan Khan", "Abdul Mateen", "Umair Babar"]}
+          list={["All", "Sir Hassan Khan", "Sir Abdul Mateen", "Sir Umair Babar"]}
           selected={selectedSupervisor}
           handleSelect={setSelectedSupervisor}
         />

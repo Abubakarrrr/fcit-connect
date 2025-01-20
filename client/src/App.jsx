@@ -10,6 +10,7 @@ import {
   ResetPassword,
   UserProfile,
   EmailVerify,
+  LoginWithGoogle
 } from "./components/Forms";
 import {
   Navbar,
@@ -17,8 +18,8 @@ import {
   PageNotFound,
   LoadingSpinner,
 } from "./components/shared";
+import {Home , Resources,Contact,Analysis,PublicFYPs,Blogs,About,PrivacyPolicy} from "../src/pages/index.js"
 import { AdminLayout, UserLayout } from "./layouts";
-import Home from "@/pages/Home";
 import { useAuthStore } from "@/store/authStore";
 import FypDetails from "./pages/fyp/FypDetails";
 import Fyps from "./components/Dashboard/admin/fyp/Fyps";
@@ -30,7 +31,6 @@ import Start from "./components/Dashboard/admin/Start/Start";
 import UpdateTemplate from "./components/Dashboard/shared/update/UpdateTemplate";
 import ProtectedRoute from "./utils/ProtectedRoute";
 import RedirectAuthenticatedUser from "./utils/RedirectAuthenticatedUser";
-import LoginWithGoogle from "./components/Forms/LoginWithGoogle";
 
 function App() {
   const { isCheckingAuth, checkAuth } = useAuthStore();
@@ -50,15 +50,15 @@ function App() {
       {/* <Analytics/> */}
       <Toaster />
       <div className="font-primary">
-        {!isAdminRoute && !isUserRoute && <Navbar />}
+        {!isAdminRoute && <Navbar />}
         <Routes>
           {/* Public Routes  */}
           <Route
             path="/"
             element={
-              <ProtectedRoute>
-                <Home />
-              </ProtectedRoute>
+              // <ProtectedRoute>
+              <Home />
+              //  </ProtectedRoute> 
             }
           />
           <Route
@@ -109,7 +109,17 @@ function App() {
               </ProtectedRoute>
             }
           />
-          <Route path="/login-with-google" element={<LoginWithGoogle></LoginWithGoogle>} />
+          <Route path="/fyps" element={<PublicFYPs />} />
+          <Route path="/analysis" element={<Analysis />} />
+          <Route path="/resources" element={<Resources />} />
+          <Route path="/contact" element={<Contact />} />
+          <Route path="/blogs" element={<Blogs />} />
+          <Route path="/about" element={<About />} />
+          <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+          <Route
+            path="/login-with-google"
+            element={<LoginWithGoogle/>}
+          />
           <Route path="/fyps/:batch/:fypName/:id" element={<FypDetails />} />
           {/* <Route path="/fyps/new" element={<AddFyp/>} />   */}
 
@@ -136,7 +146,7 @@ function App() {
 
           <Route path="*" element={<PageNotFound />} />
         </Routes>
-        {!isAdminRoute && !isUserRoute && <Footer />}
+        {!isAdminRoute  && <Footer />}
       </div>
     </ThemeProvider>
   );
