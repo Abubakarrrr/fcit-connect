@@ -9,9 +9,12 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { MoreHorizontal, Pencil, Trash, Check } from "lucide-react";
 import { RxCross1 } from "react-icons/rx";
+import { useLocation } from "react-router-dom";
 
 const FypRow = ({ data }) => {
   const { image, name, status, uploadedAt, link } = data;
+  const location = useLocation();
+  const isAdminRoute = location.pathname.startsWith("/admin");
   return (
     <tr>
       {/* Image Cell */}
@@ -59,18 +62,22 @@ const FypRow = ({ data }) => {
                 <span>Delete</span>
               </div>
             </DropdownMenuItem>
-            <DropdownMenuItem>
-              <div className="flex items-center gap-2">
-                <Check className="h-4 w-4 text-green-400" />
-                <span>Approve</span>
+            {isAdminRoute && (
+              <div>
+                <DropdownMenuItem>
+                  <div className="flex items-center gap-2">
+                    <Check className="h-4 w-4 text-green-400" />
+                    <span>Approve</span>
+                  </div>
+                </DropdownMenuItem>
+                <DropdownMenuItem>
+                  <div className="flex items-center gap-2">
+                    <RxCross1 className="h-4 w-4 text-red-400" />
+                    <span>Reject</span>
+                  </div>
+                </DropdownMenuItem>
               </div>
-            </DropdownMenuItem>
-            <DropdownMenuItem>
-              <div className="flex items-center gap-2">
-                <RxCross1 className="h-4 w-4 text-red-400" />
-                <span>Reject</span>
-              </div>
-            </DropdownMenuItem>
+            )}
           </DropdownMenuContent>
         </DropdownMenu>
       </td>

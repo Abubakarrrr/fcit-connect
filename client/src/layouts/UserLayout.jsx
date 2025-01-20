@@ -2,16 +2,11 @@ import { Link, Outlet, useLocation } from "react-router-dom";
 import {
   Bell,
   Home,
-  LineChart,
   Menu,
-  Package,
   Package2,
-  ShoppingCart,
   Users,
-  List,
 } from "lucide-react";
 
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -57,52 +52,20 @@ export default function  UserLayout() {
           <div className="flex-1">
             <nav className="grid items-start px-2 text-sm font-medium lg:px-4">
               <Link
-                to="/admin"
+                to="/user/dashboard"
                 className="flex items-center gap-3 rounded-lg px-3 py-2 text-muted-foreground transition-all hover:text-primary"
               >
                 <Home className="h-4 w-4" />
                 Dashboard
               </Link>
               <Link
-                to="/admin/users"
+                to="/user/listedfyp"
                 className="flex items-center gap-3 rounded-lg px-3 py-2 text-muted-foreground transition-all hover:text-primary"
               >
                 <Users className="h-4 w-4" />
-                Users
-              </Link>
-              <Link
-                to="/admin/fyps"
-                className="flex items-center gap-3 rounded-lg px-3 py-2 text-muted-foreground transition-all hover:text-primary"
-              >
-                <Package className="h-4 w-4" />
-                FYPs
-                <Badge className="ml-auto flex h-6 w-6 shrink-0 items-center justify-center rounded-full">
-                  6
-                </Badge>
-              </Link>
-            
-              <Link
-                to="/admin/supervisors"
-                className="flex items-center gap-3 rounded-lg px-3 py-2 text-muted-foreground transition-all hover:text-primary"
-              >
-                <Users className="h-4 w-4" />
-                Supervisors
-              </Link>
-              <Link
-                to="/admin/categories"
-                className="flex items-center gap-3 rounded-lg px-3 py-2 text-muted-foreground transition-all hover:text-primary"
-              >
-                <List className="h-4 w-4" />
-                Categories
+                Your FYP
               </Link>
 
-              <Link
-                to="/admin/analytics"
-                className="flex items-center gap-3 rounded-lg px-3 py-2 text-muted-foreground transition-all hover:text-primary"
-              >
-                <LineChart className="h-4 w-4" />
-                Analytics
-              </Link>
             </nav>
           </div>
         </div>
@@ -137,36 +100,14 @@ export default function  UserLayout() {
                   Dashboard
                 </Link>
                 <Link
-                  to="#"
-                  className="mx-[-0.65rem] flex items-center gap-4 rounded-xl bg-muted px-3 py-2 text-foreground hover:text-foreground"
-                >
-                  <ShoppingCart className="h-5 w-5" />
-                  Orders
-                  <Badge className="ml-auto flex h-6 w-6 shrink-0 items-center justify-center rounded-full">
-                    6
-                  </Badge>
-                </Link>
-                <Link
-                  to="#"
+                  href="#"
                   className="mx-[-0.65rem] flex items-center gap-4 rounded-xl px-3 py-2 text-muted-foreground hover:text-foreground"
                 >
-                  <Package className="h-5 w-5" />
-                  Products
+                  <Home className="h-5 w-5" />
+                  Your FYP
                 </Link>
-                <Link
-                  to="#"
-                  className="mx-[-0.65rem] flex items-center gap-4 rounded-xl px-3 py-2 text-muted-foreground hover:text-foreground"
-                >
-                  <Users className="h-5 w-5" />
-                  Customers
-                </Link>
-                <Link
-                  to="#"
-                  className="mx-[-0.65rem] flex items-center gap-4 rounded-xl px-3 py-2 text-muted-foreground hover:text-foreground"
-                >
-                  <LineChart className="h-5 w-5" />
-                  Analytics
-                </Link>
+                
+                
               </nav>
               <div className="mt-auto">
                 <Card>
@@ -203,14 +144,13 @@ export default function  UserLayout() {
           </div>
           <AvatarDropdown />
         </header>
-        <main className="flex flex-1 flex-col gap-4 p-4 lg:gap-6 lg:p-6">
-        
-          <div
-            className="flex flex-1 p-8 rounded-lg border border-dashed shadow-sm"
+        <main className="flex flex-1 flex-col gap-4 p-3 lg:gap-6 lg:p-6">
+          {/* <div
+            className="flex flex-1 py-6 px-3 rounded-lg border border-dashed shadow-sm"
             x-chunk="dashboard-02-chunk-1"
-          >
+          > */}
             <Outlet />
-          </div>
+          {/* </div> */}
         </main>
       </div>
     </div>
