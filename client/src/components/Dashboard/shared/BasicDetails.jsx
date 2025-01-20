@@ -1,12 +1,18 @@
 import React, { useState } from "react";
-import Joi from "joi";
 import FypForm from "./fyp-form";
 import FypThumbnail from "./fyp-thumbnail";
 import { initialState, validationSchema } from "./formSchema";
 import { Button } from "@/components/ui/button";
 import { PlusCircle } from "lucide-react";
+import { useLocation, useNavigate } from "react-router-dom";
 
 const BasicDetails = () => {
+  const location = useLocation();
+  const isAdminRoute = location.pathname.startsWith("/admin");
+  const saveTemplateLink = isAdminRoute
+    ? "/admin/fyps/update/1"
+    : "/user/fyps/update/1";
+  const navigate = useNavigate();
   const [formState, setFormState] = useState(initialState);
   const [errors, setErrors] = useState({});
   const [thumbnailUrl, setThumbnailUrl] = useState(null);
@@ -18,7 +24,11 @@ const BasicDetails = () => {
   };
 
   const handleChange = (field, value) => {
+    // Update form state
     setFormState((prev) => ({ ...prev, [field]: value }));
+
+    // Clear error for that field when user starts typing
+    setErrors((prev) => ({ ...prev, [field]: "" }));
   };
 
   const handleFileSelect = (e) => {
@@ -30,9 +40,11 @@ const BasicDetails = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
+
     const { error } = validationSchema.validate(formState, {
       abortEarly: false,
     });
+
     if (error) {
       const errorMessages = error.details.reduce(
         (acc, curr) => ({ ...acc, [curr.path[0]]: curr.message }),
@@ -41,8 +53,10 @@ const BasicDetails = () => {
       setErrors(errorMessages);
       return;
     }
+
     // Submit form logic
     console.log("Form submitted successfully!", formState);
+    navigate(saveTemplateLink);
   };
 
   return (
@@ -64,7 +78,19 @@ const BasicDetails = () => {
           </div>
         </div>
         <div className="flex justify-end">
-          <ButtonDemo />
+          <Button
+            variant=""
+            className="aspect-square max-sm:p-0"
+            // onClick={handleSubmit}
+          >
+            <PlusCircle
+              className=" sm:-ms-1 sm:me-2"
+              size={16}
+              strokeWidth={2}
+              aria-hidden="true"
+            />
+            <span className="max-sm:sr-only">Save Changes</span>
+          </Button>
         </div>
       </form>
     </div>
@@ -72,17 +98,3 @@ const BasicDetails = () => {
 };
 
 export default BasicDetails;
-
-function ButtonDemo() {
-  return (
-    <Button variant="" className="aspect-square max-sm:p-0">
-      <PlusCircle
-        className=" sm:-ms-1 sm:me-2"
-        size={16}
-        strokeWidth={2}
-        aria-hidden="true"
-      />
-      <span className="max-sm:sr-only">Save Changes</span>
-    </Button>
-  );
-}

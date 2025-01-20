@@ -21,12 +21,13 @@ export default function SelectWithSearch({
   labelText = "Select an option",
   items = [],
   emptyText = "No items found.",
+  value,
+  onChange,
 }) {
   const [open, setOpen] = useState(false);
-  const [value, setValue] = useState("");
 
   return (
-    <div className="space-y-2 ">
+    <div className="space-y-2">
       <Label htmlFor="dynamic-select">{labelText}</Label>
       <div className="flex gap-2">
         <Popover open={open} onOpenChange={setOpen}>
@@ -41,7 +42,7 @@ export default function SelectWithSearch({
               <span
                 className={cn("truncate", !value && "text-muted-foreground")}
               >
-                {value ? value : `${labelText}`}
+                {value || labelText}
               </span>
               <ChevronDown
                 size={16}
@@ -66,9 +67,9 @@ export default function SelectWithSearch({
                     <CommandItem
                       key={index}
                       value={item}
-                      onSelect={(currentValue) => {
-                        setValue(currentValue === value ? "" : currentValue);
-                        setOpen(false);
+                      onSelect={() => {
+                        onChange(item); // Notify parent of the selected value
+                        setOpen(false); // Close the dropdown
                       }}
                     >
                       {item}
@@ -82,9 +83,6 @@ export default function SelectWithSearch({
             </Command>
           </PopoverContent>
         </Popover>
-        {/* <Button variant="outline" size="icon">
-          +
-        </Button> */}
       </div>
     </div>
   );

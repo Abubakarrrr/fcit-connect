@@ -14,8 +14,8 @@ const UpdateTemplate = () => {
       <div className="flex justify-between items-center py-2 border-b">
         <h1 className="font-bold text-xl">ecommerce app</h1>
         <div className="space-x-2">
-          <Button variant="outline">Preview</Button>
-          <Button className="">View Live</Button>
+          <Button >Upload FYP</Button>
+          {/* <Button className="">View Live</Button> */}
         </div>
       </div>
 

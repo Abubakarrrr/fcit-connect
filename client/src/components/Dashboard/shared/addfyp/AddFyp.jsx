@@ -6,19 +6,19 @@ import BasicDetails from "../BasicDetails";
 
 export default function AddFyp() {
   const navigate = useNavigate();
-  const location = useLocation();
+  // const location = useLocation();
 
-  // Determine if the current route is for admin or user
-  const isAdminRoute = location.pathname.startsWith("/admin");
+  // // Determine if the current route is for admin or user
+  // const isAdminRoute = location.pathname.startsWith("/admin");
 
   const handleGoBack = () => {
     navigate(-1);
   };
 
   // Dynamically set the save template link based on the route
-  const saveTemplateLink = isAdminRoute
-    ? "/admin/fyps/update/1"
-    : "/user/fyps/update/1";
+  // const saveTemplateLink = isAdminRoute
+  //   ? "/admin/fyps/update/1"
+  //   : "/user/fyps/update/1";
 
   return (
     <div className="">
@@ -33,12 +33,12 @@ export default function AddFyp() {
           <Button variant="outline" onClick={handleGoBack}>
             Close
           </Button>
-          <Link to={saveTemplateLink}>
+          {/* <Link to={saveTemplateLink}>
             <Button>
               <Plus className="w-3 h-3" />
               Save Template
             </Button>
-          </Link>
+          </Link> */}
         </div>
       </div>
 

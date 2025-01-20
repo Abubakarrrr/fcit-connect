@@ -7,11 +7,17 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 
-export default function SimpleSelect({ labelText, placeholderText, items }) {
+export default function SimpleSelect({
+  labelText,
+  placeholderText,
+  items,
+  value,
+  onChange,
+}) {
   return (
     <div className="space-y-2">
       <Label htmlFor="dynamic-select">{labelText}</Label>
-      <Select>
+      <Select value={value} onValueChange={onChange}>
         <SelectTrigger id="dynamic-select">
           <SelectValue placeholder={placeholderText} />
         </SelectTrigger>

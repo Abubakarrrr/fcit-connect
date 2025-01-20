@@ -1,7 +1,6 @@
 import React from "react";
 
 const ScreenShotsTab = () => {
-  const images = [];
   return (
     <div className="py-6 px-4 rounded-lg border shadow-sm">
       <h1 className="text-lg font-semibold">Screenshots</h1>

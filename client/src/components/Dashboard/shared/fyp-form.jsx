@@ -70,7 +70,7 @@ export default function FypForm({ formState, onChange, errors }) {
 
         <SimpleSelect
           labelText="Select Department"
-          placeholderText="Select Department" 
+          placeholderText="Select Department"
           items={departments}
           value={formState.department}
           onChange={(value) => onChange("department", value)}
@@ -79,7 +79,7 @@ export default function FypForm({ formState, onChange, errors }) {
 
         <SimpleSelect
           labelText="Select Year"
-          placeholderText="Select Year" 
+          placeholderText="Select Year"
           items={years}
           value={formState.year}
           onChange={(value) => onChange("year", value)}
@@ -99,7 +99,7 @@ export default function FypForm({ formState, onChange, errors }) {
       <FormInput
         id="githubLink"
         label="GitHub Link"
-          placeholder="https://github.com/Abubakarrrr/fcit-connect"
+        placeholder="https://github.com/Abubakarrrr/fcit-connect"
         value={formState.githubLink}
         onChange={(e) => onChange("githubLink", e.target.value)}
       />
