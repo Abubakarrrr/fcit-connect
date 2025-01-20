@@ -52,6 +52,7 @@ export default function TeamMemberTab() {
     } else {
       setMembers([...members, { ...currentMember, id: Date.now() }])
     }
+    // console.log(members)
     setCurrentMember({
       id: null,
       name: '',
@@ -72,7 +73,6 @@ export default function TeamMemberTab() {
     setMembers(members.filter(member => member.id !== id))
     setDeleteId(null)
   }
-
   return (
     <div className="container mx-auto p-4">
       <Card className="mb-8">

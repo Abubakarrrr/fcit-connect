@@ -70,6 +70,7 @@ export default function TechStackTab() {
       [category]: !prev[category]
     }))
   }
+  // console.log(techStack);
 
   return (
     <div className="container mx-auto p-4 space-y-8">

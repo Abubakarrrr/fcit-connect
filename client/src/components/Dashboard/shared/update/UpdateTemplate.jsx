@@ -2,7 +2,6 @@ import React from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import BasicDetails from "../BasicDetails";
 import { Button } from "@/components/ui/button";
-import { PlusCircle } from "lucide-react";
 import DocumentationTab from "./DocumentationTab";
 import ScreenShotsTab from "./ScreenShotsTab";
 import TeamMemberTab from "./TeamMemberTab";
@@ -48,25 +47,11 @@ const UpdateTemplate = () => {
           <TechStackTab />
         </TabsContent>
       </Tabs>
-      <div className="flex justify-end">
-        <ButtonDemo />
-      </div>
+      
     </div>
   );
 };
 
 export default UpdateTemplate;
 
-function ButtonDemo() {
-  return (
-    <Button variant="" className="aspect-square max-sm:p-0">
-      <PlusCircle
-        className=" sm:-ms-1 sm:me-2"
-        size={16}
-        strokeWidth={2}
-        aria-hidden="true"
-      />
-      <span className="max-sm:sr-only">Save Changes</span>
-    </Button>
-  );
-}
+

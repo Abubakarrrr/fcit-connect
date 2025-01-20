@@ -82,9 +82,9 @@ export default function SelectWithSearch({
             </Command>
           </PopoverContent>
         </Popover>
-        <Button variant="outline" size="icon">
+        {/* <Button variant="outline" size="icon">
           +
-        </Button>
+        </Button> */}
       </div>
     </div>
   );
