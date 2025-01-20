@@ -7,6 +7,7 @@ import DocumentationTab from "./DocumentationTab";
 import ScreenShotsTab from "./ScreenShotsTab";
 import TeamMemberTab from "./TeamMemberTab";
 import TechStackTab from "./TechStackTab";
+import ReadmeTab from "./ReadmeTab";
 
 const UpdateTemplate = () => {
   return (
@@ -39,6 +40,9 @@ const UpdateTemplate = () => {
         </TabsContent>
         <TabsContent value="team">
           <TeamMemberTab />
+        </TabsContent>
+        <TabsContent value="readme">
+          <ReadmeTab />
         </TabsContent>
         <TabsContent value="techstack">
           <TechStackTab />
