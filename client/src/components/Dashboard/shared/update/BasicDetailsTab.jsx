@@ -1,27 +1,27 @@
 import React, { useState } from "react";
-import FypForm from "./fyp-form";
-import FypThumbnail from "./fyp-thumbnail";
-import { initialState, validationSchema } from "./formSchema";
+
 import { Button } from "@/components/ui/button";
 import { PlusCircle } from "lucide-react";
 import { useLocation, useNavigate } from "react-router-dom";
-import { ID, storage } from "../../../utils/appwriteConfig";
-const BasicDetails = () => {
+import FypForm from "../fyp-form";
+import FypThumbnail from "../fyp-thumbnail";
+import { initialState, validationSchema } from "../formSchema";
+import { ID } from "appwrite";
+import { storage } from "@/utils/appwriteConfig";
+const BasicDetailsTab = ({
+  formState,
+  setFormState,
+  thumbnailUrl,
+  setThumbnailUrl,
+  errors,
+  setErrors,
+}) => {
   const location = useLocation();
   const isAdminRoute = location.pathname.startsWith("/admin");
   const saveTemplateLink = isAdminRoute
     ? "/admin/fyps/update/1"
     : "/user/fyps/update/1";
   const navigate = useNavigate();
-  const [formState, setFormState] = useState(initialState);
-  const [errors, setErrors] = useState({});
-  const [thumbnailUrl, setThumbnailUrl] = useState(null);
-
-  const validateField = (name, value) => {
-    const fieldSchema = Joi.object({ [name]: validationSchema.extract(name) });
-    const { error } = fieldSchema.validate({ [name]: value });
-    return error ? error.details[0].message : null;
-  };
 
   const handleChange = (field, value) => {
     // Update form state
@@ -45,7 +45,8 @@ const BasicDetails = () => {
     setThumbnailUrl(null);
   };
 
-  const handleSubmit = async (e) => {
+  const handleUpdate = () => {
+    console.log("update");
     e.preventDefault();
 
     const { error } = validationSchema.validate(formState, {
@@ -61,21 +62,7 @@ const BasicDetails = () => {
       return;
     }
 
-    // Submit form logic
-    console.log("Thumbnail url", thumbnailUrl);
-    console.log("File", File);
-    const screenshotResult = await storage.createFile(
-      "678faed20020cb101db1",
-      ID.unique(),
-      File
-    );
-    if (screenshotResult) {
-      console.log("File Uploadd: ", screenshotResult);
-    }
-
-    // navigate(saveTemplateLink);
   };
-
 
   return (
     <div className="py-6 px-4 rounded-lg border shadow-sm">
@@ -100,7 +87,7 @@ const BasicDetails = () => {
           <Button
             variant=""
             className="aspect-square max-sm:p-0"
-            onClick={ handleSubmit}
+            onClick={ handleUpdate }
           >
             <PlusCircle
               className=" sm:-ms-1 sm:me-2"
@@ -108,9 +95,7 @@ const BasicDetails = () => {
               strokeWidth={2}
               aria-hidden="true"
             />
-            <span className="max-sm:sr-only">
-                    Upload FYP
-            </span>
+            <span className="max-sm:sr-only">Update FYP</span>
           </Button>
         </div>
       </form>
@@ -118,4 +103,4 @@ const BasicDetails = () => {
   );
 };
 
-export default BasicDetails;
+export default BasicDetailsTab;

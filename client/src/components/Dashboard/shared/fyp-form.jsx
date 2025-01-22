@@ -44,7 +44,7 @@ export default function FypForm({ formState, onChange, errors }) {
         id="templateName"
         label="Name of your FYP"
         placeholder="Enter FYP name"
-        value={formState.templateName}
+        value={formState.templateName || ""}
         onChange={(e) => onChange("templateName", e.target.value)}
       />
       <ErrorMessage message={errors.templateName} />
@@ -53,7 +53,7 @@ export default function FypForm({ formState, onChange, errors }) {
         id="description"
         label="FYP Description"
         placeholder="Enter FYP description"
-        value={formState.description}
+        value={formState.description || ""}
         onChange={(e) => onChange("description", e.target.value)}
       />
       <ErrorMessage message={errors.description} />
@@ -63,7 +63,7 @@ export default function FypForm({ formState, onChange, errors }) {
           labelText="Select Campus"
           placeholderText="Select Campus"
           items={["NC", "OC"]}
-          value={formState.campus}
+          value={formState.campus || ""}
           onChange={(value) => onChange("campus", value)}
         />
         <ErrorMessage message={errors.campus} />
@@ -72,7 +72,7 @@ export default function FypForm({ formState, onChange, errors }) {
           labelText="Select Department"
           placeholderText="Select Department"
           items={departments}
-          value={formState.department}
+          value={formState.department || ""}
           onChange={(value) => onChange("department", value)}
         />
         <ErrorMessage message={errors.department} />
@@ -81,7 +81,7 @@ export default function FypForm({ formState, onChange, errors }) {
           labelText="Select Year"
           placeholderText="Select Year"
           items={years}
-          value={formState.year}
+          value={formState.year || ""}
           onChange={(value) => onChange("year", value)}
         />
         <ErrorMessage message={errors.year} />
@@ -91,7 +91,7 @@ export default function FypForm({ formState, onChange, errors }) {
         id="deployedLink"
         label="Deployed Link"
         placeholder="https://fcit-connect.vercel.app"
-        value={formState.deployedLink}
+        value={formState.deployedLink || ""}
         onChange={(e) => onChange("deployedLink", e.target.value)}
       />
       <ErrorMessage message={errors.deployedLink} />
@@ -100,7 +100,7 @@ export default function FypForm({ formState, onChange, errors }) {
         id="githubLink"
         label="GitHub Link"
         placeholder="https://github.com/Abubakarrrr/fcit-connect"
-        value={formState.githubLink}
+        value={formState.githubLink || ""}
         onChange={(e) => onChange("githubLink", e.target.value)}
       />
       <ErrorMessage message={errors.githubLink} />
@@ -109,7 +109,7 @@ export default function FypForm({ formState, onChange, errors }) {
         id="figmaLink"
         label="Figma Link"
         placeholder="https://www.figma.com"
-        value={formState.figmaLink}
+        value={formState.figmaLink || ""}
         onChange={(e) => onChange("figmaLink", e.target.value)}
       />
       <ErrorMessage message={errors.figmaLink} />
@@ -118,7 +118,7 @@ export default function FypForm({ formState, onChange, errors }) {
         labelText="Select Category"
         emptyText="No categories"
         items={categories}
-        value={formState.category}
+        value={formState.category || ""}
         onChange={(value) => onChange("category", value)}
       />
       <ErrorMessage message={errors.category} />
@@ -127,7 +127,7 @@ export default function FypForm({ formState, onChange, errors }) {
         labelText="Select Supervisor"
         emptyText="No supervisor with this name."
         items={supervisors}
-        value={formState.supervisor}
+        value={formState.supervisor || ""}
         onChange={(value) => onChange("supervisor", value)}
       />
       <ErrorMessage message={errors.supervisor} />

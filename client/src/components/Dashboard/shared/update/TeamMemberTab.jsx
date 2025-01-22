@@ -23,8 +23,7 @@ import {
   TableRow,
 } from "@/components/ui/table"
 
-export default function TeamMemberTab() {
-  const [members, setMembers] = useState([])
+export default function TeamMemberTab({members, setMembers}) {
   const [currentMember, setCurrentMember] = useState({
     id: null,
     name: '',

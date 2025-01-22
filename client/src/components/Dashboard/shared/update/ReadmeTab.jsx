@@ -3,8 +3,7 @@ import React, { useState } from "react";
 import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
 
-function ReadmeTab() {
-  const [value, setValue] = useState("");
+function ReadmeTab({value,setValue}) {
   const updateReadme= ()=>{
     console.log(JSON.stringify(value))
   }

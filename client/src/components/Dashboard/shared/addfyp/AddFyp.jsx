@@ -1,7 +1,5 @@
-import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Plus } from "lucide-react";
-import { Link, useNavigate, useLocation } from "react-router-dom";
+import {  useNavigate } from "react-router-dom";
 import BasicDetails from "../BasicDetails";
 
 export default function AddFyp() {
