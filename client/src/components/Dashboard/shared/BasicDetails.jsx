@@ -3,9 +3,9 @@ import FypForm from "./fyp-form";
 import FypThumbnail from "./fyp-thumbnail";
 import { initialState, validationSchema } from "./formSchema";
 import { Button } from "@/components/ui/button";
-import { PlusCircle } from "lucide-react";
+import { CookingPot, PlusCircle } from "lucide-react";
 import { useLocation, useNavigate } from "react-router-dom";
-
+import { ID, storage } from "../../../utils/appwriteConfig";
 const BasicDetails = () => {
   const location = useLocation();
   const isAdminRoute = location.pathname.startsWith("/admin");
@@ -30,33 +30,44 @@ const BasicDetails = () => {
     // Clear error for that field when user starts typing
     setErrors((prev) => ({ ...prev, [field]: "" }));
   };
-
+  const [File, setFile] = useState(null);
   const handleFileSelect = (e) => {
     const file = e.target.files[0];
     if (file) {
+      setFile(file);
       setThumbnailUrl(URL.createObjectURL(file));
     }
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
-    const { error } = validationSchema.validate(formState, {
-      abortEarly: false,
-    });
+    // const { error } = validationSchema.validate(formState, {
+    //   abortEarly: false,
+    // });
 
-    if (error) {
-      const errorMessages = error.details.reduce(
-        (acc, curr) => ({ ...acc, [curr.path[0]]: curr.message }),
-        {}
-      );
-      setErrors(errorMessages);
-      return;
-    }
+    // if (error) {
+    //   const errorMessages = error.details.reduce(
+    //     (acc, curr) => ({ ...acc, [curr.path[0]]: curr.message }),
+    //     {}
+    //   );
+    //   setErrors(errorMessages);
+    //   return;
+    // }
 
     // Submit form logic
-    console.log("Form submitted successfully!", formState);
-    navigate(saveTemplateLink);
+    console.log("Thumbnail url", thumbnailUrl);
+    console.log("File", File);
+    const screenshotResult = await storage.createFile(
+      "678faed20020cb101db1",
+      ID.unique(),
+      File
+    );
+    if (screenshotResult) {
+      console.log("File Uploadd: ", screenshotResult);
+    }
+
+    // navigate(saveTemplateLink);
   };
 
   return (
