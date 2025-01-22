@@ -15,7 +15,7 @@ const UserSchema = new mongoose.Schema({
   profilePicture: { type: String, default: null },
   isVerified: { type: Boolean, default: false },
   projects: {
-    type: [{ type: Schema.Types.ObjectId, ref: 'Project' }],
+    type: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Project' }],
     default: [],
   },
 });

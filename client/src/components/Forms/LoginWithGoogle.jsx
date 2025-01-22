@@ -14,12 +14,13 @@ const LoginWithGoogle = () => {
 
   const handleLoginWithGooggle = async () => {
     setIsrequesting(true);
-    const provider = new GoogleAuthProvider();
-    const { user } = await signInWithPopup(firebaseAuth, provider);
     try {
+      const provider = new GoogleAuthProvider();
+      const { user } = await signInWithPopup(firebaseAuth, provider);
       if (user) {
         setIsrequesting(false);
         await loginWithGoogle(user);
+
         if (error) {
           toast({
             title: error,
@@ -34,7 +35,7 @@ const LoginWithGoogle = () => {
         }
       }
     } catch (error) {
-      console.log("ERRRRRRRRORRRR",error);
+      console.log(error);
       toast({
         title: error.message || "Failed to login with Google.",
         description: "",
