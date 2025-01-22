@@ -33,10 +33,10 @@ export default function AddFyp() {
           <Button variant="outline" onClick={handleGoBack}>
             Close
           </Button>
-          {/* <Link to={saveTemplateLink}>
+          {/* <Link >
             <Button>
               <Plus className="w-3 h-3" />
-              Save Template
+              Upload FYP
             </Button>
           </Link> */}
         </div>

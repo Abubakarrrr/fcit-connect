@@ -1,4 +1,5 @@
-import IconCloud from "../ui/icon-cloud";
+import { IconCloud } from "../ui/icon-cloud";
+
 const slugs = [
   "typescript",
   "javascript",
@@ -33,9 +34,15 @@ const slugs = [
 ];
 
 export function IconCloudDemo() {
+  const images = slugs.map(
+    (slug) => `https://cdn.simpleicons.org/${slug}/${slug}`,
+  );
+
   return (
-    <div className="relative flex size-full max-w-lg mx-auto items-center justify-center overflow-hidden  px-20 pb-20 pt-8 ">
-      <IconCloud iconSlugs={slugs} />
+    <div className="relative flex size-full max-w-lg mx-auto items-center justify-center overflow-hidden">
+      <IconCloud images={images} />
     </div>
   );
 }
+
+// relative flex size-full max-w-lg mx-auto items-center justify-center overflow-hidden  px-20 pb-20 pt-8

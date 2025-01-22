@@ -6,12 +6,13 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { cn } from "@/lib/utils";
 import { Star } from "lucide-react";
+import { Input } from "@/components/ui/input";
 const Contact = () => {
   return (
     <div>
       <Layout>
-        <ShareYourFeedback/>
         <ContactSection />
+        <ShareYourFeedback/>
       </Layout>
     </div>
   );
@@ -80,22 +81,23 @@ const ContactSection = () => {
 };
 
 
-
 function ShareYourFeedback() {
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
   const [rating, setRating] = useState(0);
   const [comment, setComment] = useState("");
   const [submitted, setSubmitted] = useState(false);
   const [error, setError] = useState("");
 
   const handleSubmit = () => {
-    if (!rating || !comment.trim()) {
-      setError("Please provide a rating and a comment.");
+    if (!name.trim() || !email.trim() || !rating || !comment.trim()) {
+      setError("Please provide your name, email, rating, and a comment.");
       return;
     }
     setError("");
     setSubmitted(true);
     // Handle submission logic (e.g., send feedback to server)
-    console.log("Feedback Submitted:", { rating, comment });
+    console.log("Feedback Submitted:", { name, email, rating, comment });
   };
 
   if (submitted) {
@@ -116,6 +118,31 @@ function ShareYourFeedback() {
         Your feedback helps us improve our services.
       </p>
       <div className="mt-4 space-y-4">
+        {/* Name Input */}
+        <div>
+          <Label htmlFor="feedback-name">Your Name:</Label>
+          <Input
+            id="feedback-name"
+            type="text"
+            placeholder="Enter your name"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+          />
+        </div>
+
+        {/* Email Input */}
+        <div>
+          <Label htmlFor="feedback-email">Your Email:</Label>
+          <Input
+            id="feedback-email"
+            type="email"
+            placeholder="Enter your email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+          />
+        </div>
+
+        {/* Rating */}
         <div>
           <Label>Rate your experience:</Label>
           <div className="mt-2 flex items-center space-x-2">
@@ -135,6 +162,7 @@ function ShareYourFeedback() {
           </div>
         </div>
 
+        {/* Comment */}
         <div>
           <Label htmlFor="feedback-comment">Your Comments:</Label>
           <Textarea
@@ -145,8 +173,10 @@ function ShareYourFeedback() {
           />
         </div>
 
+        {/* Error Message */}
         {error && <p className="text-sm text-red-500">{error}</p>}
 
+        {/* Submit Button */}
         <Button onClick={handleSubmit} className="w-full">
           Submit Feedback
         </Button>
@@ -154,6 +184,8 @@ function ShareYourFeedback() {
     </div>
   );
 }
+
+
 
 
 

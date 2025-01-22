@@ -104,7 +104,7 @@ export default function Footer() {
             </form>
             <p className="text-sm text-muted-foreground">
               By submitting, you agree to our{" "}
-              <Link to="#" className="underline underline-offset-4 hover:text-foreground">
+              <Link to="/privacy-policy" className="underline underline-offset-4 hover:text-foreground">
                 Privacy Policy
               </Link>
             </p>
