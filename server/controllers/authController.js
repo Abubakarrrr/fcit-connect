@@ -66,7 +66,7 @@ export const loginWithGoogle = async (req, res) => {
     if (userFromDB) {
       userFromDB.lastLogin = new Date();
       await userFromDB.save();
-      res.status(200).json({
+      return res.status(200).json({
         success: true,
         message: "User logged in successfully",
         user: {

@@ -25,7 +25,7 @@ import TeamMember from "./TeamMembersTab";
 import TechStack from "./TechStackTab";
 
 export default function FypShowcase({ fyp }) {
-  const { name, description, images, likes, views } = fyp;
+  const { title, description, thumbnail, likes, views } = fyp;
   return (
     <div>
       <div className="">
@@ -33,7 +33,7 @@ export default function FypShowcase({ fyp }) {
           {/* Left Column */}
           <div className="space-y-6">
             <div className="space-y-4">
-              <h1 className="text-4xl font-bold tracking-tight">{name}</h1>
+              <h1 className="text-4xl font-bold tracking-tight">{title}</h1>
               <p className="text-xl text-gray-600">{description}</p>
             </div>
 
@@ -85,7 +85,7 @@ export default function FypShowcase({ fyp }) {
           </div>
 
           {/* Right Column - Carousel */}
-          <div className="relative aspect-[4/3] bg-[#15171B] rounded-xl">
+          {/* <div className="relative aspect-[4/3] bg-[#15171B] rounded-xl">
             <div className="absolute inset-5 bg-[#FFD84D] rounded-xl overflow-hidden">
               <Carousel
                 className="w-full h-full"
@@ -111,7 +111,7 @@ export default function FypShowcase({ fyp }) {
                 <CarouselNext className="absolute right-4 bg-white hover:bg-white/20 border-0" />
               </Carousel>
             </div>
-          </div>
+          </div> */}
         </div>
       </div>
 

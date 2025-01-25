@@ -15,16 +15,17 @@ export const useAuthStore = create((set) => ({
     set({ isLoading: true, error: null });
 
     try {
+      console.log("object")
       const response = await axios.post(`${API_URL}/signup`, {
         email,
         password,
         name,
       });
-      set({ user: response.data.user, isAthenticated: true, isLoading: false });
+      set({ user: response?.data?.user, isAthenticated: true, isLoading: false });
     } catch (error) {
       set({
         isLoading: false,
-        error: error.response.data.message || "Error singing up",
+        error: error.response?.data?.message || "Error singing up",
       });
       throw error;
     }

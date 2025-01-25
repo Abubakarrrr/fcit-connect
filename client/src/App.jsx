@@ -10,7 +10,7 @@ import {
   ResetPassword,
   UserProfile,
   EmailVerify,
-  LoginWithGoogle
+  LoginWithGoogle,
 } from "./components/Forms";
 import {
   Navbar,
@@ -18,12 +18,26 @@ import {
   PageNotFound,
   LoadingSpinner,
 } from "./components/shared";
-import {Home, Resources,Contact,Analysis,PublicFYPs,Blogs,About,PrivacyPolicy} from "../src/pages/index.js"
+import {
+  Home,
+  Resources,
+  Contact,
+  Analysis,
+  PublicFYPs,
+  Blogs,
+  About,
+  PrivacyPolicy,
+} from "../src/pages/index.js";
 import FypDetails from "./pages/fyp/FypDetails";
 import { AdminLayout, UserLayout } from "./layouts";
 import { useAuthStore } from "@/store/authStore";
-import { UserManagementPage,CategoryPage,SupervisorPage,AdminFypsListing } from "./components/Dashboard/admin";
-import { AddFyp,Start,UpdateTemplate } from "./components/Dashboard/shared";
+import {
+  UserManagementPage,
+  CategoryPage,
+  SupervisorPage,
+  AdminFypsListing,
+} from "./components/Dashboard/admin";
+import { AddFyp, Start, UpdateTemplate } from "./components/Dashboard/shared";
 import ProtectedRoute from "./utils/ProtectedRoute";
 import RedirectAuthenticatedUser from "./utils/RedirectAuthenticatedUser";
 import ListedFyp from "./components/Dashboard/user/listedfyp/ListedFyp";
@@ -54,47 +68,47 @@ function App() {
             element={
               // <ProtectedRoute>
               <Home />
-              //  </ProtectedRoute> 
+              //  </ProtectedRoute>
             }
           />
           <Route
             path="/signup"
             element={
-              <RedirectAuthenticatedUser>
-                <SignUp />
-              </RedirectAuthenticatedUser>
+              // <RedirectAuthenticatedUser>
+              <SignUp />
+              // </RedirectAuthenticatedUser>
             }
           />
           <Route
             path="/login"
             element={
-              <RedirectAuthenticatedUser>
-                <Login />
-              </RedirectAuthenticatedUser>
+              // <RedirectAuthenticatedUser>
+              <Login />
+              // </RedirectAuthenticatedUser>
             }
           />
           <Route
             path="/verify-email"
             element={
-              <RedirectAuthenticatedUser>
-                <EmailVerify />
-              </RedirectAuthenticatedUser>
+              // <RedirectAuthenticatedUser>
+              <EmailVerify />
+              // </RedirectAuthenticatedUser>
             }
           />
           <Route
             path="/forgot-password"
             element={
-              <RedirectAuthenticatedUser>
-                <ForgotPassowrd />
-              </RedirectAuthenticatedUser>
+              // <RedirectAuthenticatedUser>
+              <ForgotPassowrd />
+              // </RedirectAuthenticatedUser>
             }
           />
           <Route
             path="/reset-password/:token"
             element={
-              <RedirectAuthenticatedUser>
-                <ResetPassword />
-              </RedirectAuthenticatedUser>
+              // <RedirectAuthenticatedUser>
+              <ResetPassword />
+              // </RedirectAuthenticatedUser>
             }
           />
           <Route
@@ -112,11 +126,8 @@ function App() {
           <Route path="/blogs" element={<Blogs />} />
           <Route path="/about" element={<About />} />
           <Route path="/privacy-policy" element={<PrivacyPolicy />} />
-          <Route
-            path="/login-with-google"
-            element={<LoginWithGoogle/>}
-          />
-          <Route path="/fyps/:batch/:fypName/:id" element={<FypDetails />} />
+          <Route path="/login-with-google" element={<LoginWithGoogle />} />
+          <Route path="/fyps/:id" element={<FypDetails />} />
           {/* <Route path="/fyps/new" element={<AddFyp/>} />   */}
 
           {/* Admin Routes  */}
@@ -132,7 +143,7 @@ function App() {
           </Route>
           {/* User Dashboard Routes  */}
           <Route path="/user" element={<UserLayout />}>
-            <Route path="dashboard" element={<Start/>} />
+            <Route path="dashboard" element={<Start />} />
             <Route path="fyps/new" element={<AddFyp />} />
             <Route path="fyps/update/:id" element={<UpdateTemplate />} />
             <Route path="listedfyp" element={<ListedFyp />} />
@@ -140,7 +151,7 @@ function App() {
 
           <Route path="*" element={<PageNotFound />} />
         </Routes>
-        {!isAdminRoute && !isUserRoute  && <Footer />}
+        {!isAdminRoute && !isUserRoute && <Footer />}
       </div>
     </ThemeProvider>
   );
