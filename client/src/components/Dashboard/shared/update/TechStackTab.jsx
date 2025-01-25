@@ -67,7 +67,7 @@ export default function TechStackTab({techStack, setTechStack}) {
     <div className="container mx-auto p-4 space-y-8">
         <div className="flex justify-between">
         <h1 className="text-3xl font-bold mb-6">Tech Stack</h1>
-        <div className="">
+        {/* <div className="">
           <Button variant="" className="aspect-square max-sm:p-0">
             <PlusCircle
               className=" sm:-ms-1 sm:me-2"
@@ -77,7 +77,7 @@ export default function TechStackTab({techStack, setTechStack}) {
             />
             <span className="max-sm:sr-only">Save Changes</span>
           </Button>
-        </div>
+        </div> */}
       </div>
 
       {categories.map(({ id, label }) => (

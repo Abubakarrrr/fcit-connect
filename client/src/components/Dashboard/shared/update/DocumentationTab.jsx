@@ -73,7 +73,7 @@ const DocumentationTab = ({file,setFile}) => {
           <p className="text-[12px] mt-1 text-gray-500">Less than (1 MB)</p>
         </div>
       </div>
-      <div className="flex justify-end mt-6">
+      {/* <div className="flex justify-end mt-6">
         <Button variant="" className="aspect-square max-sm:p-0">
           <PlusCircle
             className=" sm:-ms-1 sm:me-2"
@@ -83,7 +83,7 @@ const DocumentationTab = ({file,setFile}) => {
           />
           <span className="max-sm:sr-only">Save Changes</span>
         </Button>
-      </div>
+      </div> */}
     </div>
   );
 };

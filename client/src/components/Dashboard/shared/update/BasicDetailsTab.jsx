@@ -9,6 +9,7 @@ import { initialState, validationSchema } from "../formSchema";
 import { ID } from "appwrite";
 import { storage } from "@/utils/appwriteConfig";
 import { useProjectStore } from "@/store/projectStore";
+
 const BasicDetailsTab = ({
   formState,
   setFormState,
@@ -16,16 +17,17 @@ const BasicDetailsTab = ({
   setThumbnailUrl,
   errors,
   setErrors,
+  fileError
 }) => {
   const location = useLocation();
   const isAdminRoute = location.pathname.startsWith("/admin");
   const saveTemplateLink = isAdminRoute
     ? "/admin/fyps/update/1"
     : "/user/fyps/update/1";
+
   const navigate = useNavigate();
   const { project } = useProjectStore();
 
-  
   const handleChange = (field, value) => {
     // Update form state
     setFormState((prev) => ({ ...prev, [field]: value }));
@@ -33,38 +35,19 @@ const BasicDetailsTab = ({
     // Clear error for that field when user starts typing
     setErrors((prev) => ({ ...prev, [field]: "" }));
   };
-  const [File, setFile] = useState(null);
+
   const handleFileSelect = (e) => {
     const file = e.target.files[0];
     if (file) {
-      setFile(file);
       setThumbnailUrl(URL.createObjectURL(file));
     }
   };
 
-  // Handle removing the image
   const handleRemoveImage = () => {
-    setFile(null);
     setThumbnailUrl(null);
   };
 
-  const handleUpdate = (e) => {
-    console.log("update");
-    e.preventDefault();
 
-    const { error } = validationSchema.validate(formState, {
-      abortEarly: false,
-    });
-
-    if (error) {
-      const errorMessages = error.details.reduce(
-        (acc, curr) => ({ ...acc, [curr.path[0]]: curr.message }),
-        {}
-      );
-      setErrors(errorMessages);
-      return;
-    }
-  };
 
   return (
     <div className="py-6 px-4 rounded-lg border shadow-sm">
@@ -79,13 +62,14 @@ const BasicDetailsTab = ({
           </div>
           <div className="col-span-1">
             <FypThumbnail
+             fileError={fileError}
               imageUrl={thumbnailUrl}
               onFileSelect={handleFileSelect}
               onRemoveImage={handleRemoveImage}
             />
           </div>
         </div>
-        <div className="flex justify-end">
+        {/* <div className="flex justify-end">
           <Button
             variant=""
             className="aspect-square max-sm:p-0"
@@ -99,7 +83,7 @@ const BasicDetailsTab = ({
             />
             <span className="max-sm:sr-only">Update FYP</span>
           </Button>
-        </div>
+        </div> */}
       </form>
     </div>
   );

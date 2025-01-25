@@ -1,5 +1,6 @@
 import Joi from "joi";
 
+
 export const initialState = {
   templateName: "",
   description: "",
@@ -24,4 +25,9 @@ export const validationSchema = Joi.object({
   figmaLink: Joi.string().uri().allow("").label("Figma Link"),
   category: Joi.string().required().label("Category"),
   supervisor: Joi.string().required().label("Supervisor"),
+});
+export const thumbnailValidation = Joi.object({
+  thumbnail: Joi.string().required().messages({
+    "any.required": "Please upload a thumbnail image.",
+  }),
 });

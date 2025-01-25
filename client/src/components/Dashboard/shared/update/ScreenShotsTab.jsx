@@ -91,7 +91,7 @@ function ImageUploader({images,setImages}) {
           </p>
         </div>
       </div> 
-      <div className="flex justify-end mt-6">
+      {/* <div className="flex justify-end mt-6">
         <Button variant="" className="aspect-square max-sm:p-0">
           <PlusCircle
             className=" sm:-ms-1 sm:me-2"
@@ -101,7 +101,7 @@ function ImageUploader({images,setImages}) {
           />
           <span className="max-sm:sr-only">Save Changes</span>
         </Button>
-      </div>
+      </div> */}
     </div>
   );
 }

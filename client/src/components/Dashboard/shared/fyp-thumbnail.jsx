@@ -1,8 +1,9 @@
 import React from "react";
 import { Button } from "@/components/ui/button";
 import { XCircle } from "lucide-react";
+import ErrorMessage from "@/components/shared/ErrorMessage";
 
-export default function FypThumbnail({ imageUrl, onFileSelect, onRemoveImage }) {
+export default function FypThumbnail({ imageUrl, onFileSelect, onRemoveImage ,fileError}) {
   return (
     <div className="p-4 border rounded-lg relative">
       <h2 className="text-lg text-center font-semibold">FYP Thumbnail</h2>
@@ -41,18 +42,19 @@ export default function FypThumbnail({ imageUrl, onFileSelect, onRemoveImage }) 
             variant=""
             className=""
             type="button"
-            onClick={() => document.getElementById("thumbnail-upload").click()}
+            onClick={() => document.getElementById("thumbnail").click()}
           >
             Choose File
           </Button>
           <input
-            id="thumbnail-upload"
+            id="thumbnail"
             type="file"
             className="hidden"
             accept="image/*"
             onChange={onFileSelect}
           />
           <span className="text-[12px] text-gray-500">Image (1MB)</span>
+          <ErrorMessage message={fileError}/>
         </div>
       )}
     </div>

@@ -98,7 +98,7 @@ export default function SearchWithKeywords() {
               </div>
               {/* End SVG Element */}
             </div>
-            <div className="mt-10 sm:mt-20 flex flex-wrap gap-2 justify-center">
+            {/* <div className="mt-10 sm:mt-20 flex flex-wrap gap-2 justify-center">
               <Button variant={"outline"}>
                 <BriefcaseIcon className="flex-shrink-0 w-3 h-auto mr-2" />
                 Business
@@ -123,7 +123,7 @@ export default function SearchWithKeywords() {
                 <MountainSnow className="flex-shrink-0 w-3 h-auto mr-2" />
                 Adventure
               </Button>
-            </div>
+            </div> */}
           </div>
         </div>
       </div>
