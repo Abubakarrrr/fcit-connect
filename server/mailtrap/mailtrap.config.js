@@ -10,7 +10,7 @@ export const mailtrapClient = new MailtrapClient({
 
 export const sender = {
   email: "hello@demomailtrap.com",
-  name: "MERN_AUTH",
+  name: "FCIT-Connect",
 };
 // const recipients = [
 //   {

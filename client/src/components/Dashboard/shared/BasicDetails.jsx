@@ -5,17 +5,26 @@ import { initialState, validationSchema } from "./formSchema";
 import { Button } from "@/components/ui/button";
 import { PlusCircle } from "lucide-react";
 import { useLocation, useNavigate } from "react-router-dom";
-import { ID, storage } from "../../../utils/appwriteConfig";
+import { useProjectStore } from "@/store/projectStore";
+import { useAuthStore } from "@/store/authStore";
+import { useToast } from "@/hooks/use-toast";
+
 const BasicDetails = () => {
   const location = useLocation();
-  const isAdminRoute = location.pathname.startsWith("/admin");
-  const saveTemplateLink = isAdminRoute
-    ? "/admin/fyps/update/1"
-    : "/user/fyps/update/1";
   const navigate = useNavigate();
+  const { createIntialProject, getSingleProject, project } = useProjectStore();
+  const { user } = useAuthStore();
+  const { toast } = useToast();
+
   const [formState, setFormState] = useState(initialState);
   const [errors, setErrors] = useState({});
   const [thumbnailUrl, setThumbnailUrl] = useState(null);
+  const [File, setFile] = useState(null);
+
+  const isAdminRoute = location.pathname.startsWith("/admin");
+  const saveTemplateLink = isAdminRoute
+    ? "/admin/fyps/update"
+    : "/user/fyps/update";
 
   const validateField = (name, value) => {
     const fieldSchema = Joi.object({ [name]: validationSchema.extract(name) });
@@ -26,11 +35,9 @@ const BasicDetails = () => {
   const handleChange = (field, value) => {
     // Update form state
     setFormState((prev) => ({ ...prev, [field]: value }));
-
     // Clear error for that field when user starts typing
     setErrors((prev) => ({ ...prev, [field]: "" }));
   };
-  const [File, setFile] = useState(null);
   const handleFileSelect = (e) => {
     const file = e.target.files[0];
     if (file) {
@@ -47,35 +54,39 @@ const BasicDetails = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    // const { error } = validationSchema.validate(formState, {
+    //   abortEarly: false,
+    // });
+    // if (error) {
+    //   const errorMessages = error.details.reduce(
+    //     (acc, curr) => ({ ...acc, [curr.path[0]]: curr.message }),
+    //     {}
+    //   );
+    //   setErrors(errorMessages);
+    //   return;
+    // }
 
-    const { error } = validationSchema.validate(formState, {
-      abortEarly: false,
-    });
-
-    if (error) {
-      const errorMessages = error.details.reduce(
-        (acc, curr) => ({ ...acc, [curr.path[0]]: curr.message }),
-        {}
-      );
-      setErrors(errorMessages);
-      return;
+    try {
+      // const projectId = await createIntialProject(
+      //   { ...formState, thumbnail: File },
+      //   user?._id
+      // );
+      // if (projectId) {
+      //   navigate(`${saveTemplateLink}/${projectId}`);
+      // }
+      // else{
+      //   // show toast
+      // }
+      await getSingleProject("6794d388fba7713459f1ecb9");
+      console.log(project)
+    } catch (error) {
+      console.log(error);
+      toast({
+        title: error.message || "Failed to upload project",
+        description: "",
+      });
     }
-
-    // Submit form logic
-    console.log("Thumbnail url", thumbnailUrl);
-    console.log("File", File);
-    const screenshotResult = await storage.createFile(
-      "678faed20020cb101db1",
-      ID.unique(),
-      File
-    );
-    if (screenshotResult) {
-      console.log("File Uploadd: ", screenshotResult);
-    }
-
-    // navigate(saveTemplateLink);
   };
-
 
   return (
     <div className="py-6 px-4 rounded-lg border shadow-sm">
@@ -100,7 +111,7 @@ const BasicDetails = () => {
           <Button
             variant=""
             className="aspect-square max-sm:p-0"
-            onClick={ handleSubmit}
+            onClick={handleSubmit}
           >
             <PlusCircle
               className=" sm:-ms-1 sm:me-2"
@@ -108,9 +119,7 @@ const BasicDetails = () => {
               strokeWidth={2}
               aria-hidden="true"
             />
-            <span className="max-sm:sr-only">
-                    Upload FYP
-            </span>
+            <span className="max-sm:sr-only">Upload FYP</span>
           </Button>
         </div>
       </form>

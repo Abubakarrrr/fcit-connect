@@ -1,4 +1,147 @@
-import { Project } from "../models/index.js";
+import { Project, User } from "../models/index.js";
+
+export const createInitialProject = async (req, res) => {
+  try {
+    const {
+      title,
+      description,
+      campus,
+      department,
+      year,
+      category,
+      supervisor,
+      figmaLink,
+      githubLink,
+      deployLink,
+    } = req.body;
+    const userId = req.userId;
+
+    if (
+      !title ||
+      !description ||
+      !campus ||
+      !department ||
+      !year ||
+      !category ||
+      !supervisor ||
+      !githubLink
+    ) {
+      return res.status(400).json({ error: "Missing required fields" });
+    }
+    if (!userId) {
+      return res.status(400).json({
+        status: false,
+        messaage: "Unothorized - No user found",
+      });
+    }
+
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(403).json({ error: "Forbidden: No user found" });
+    }
+    if (user.project) {
+      return res.status(403).json({ error: "User has already a project" });
+    }
+    const project = new Project({
+      title,
+      description,
+      campus,
+      department,
+      year,
+      category,
+      supervisor,
+      githubLink,
+      figmaLink,
+      deployLink,
+      user: user._id,
+    });
+    user.project = project._id;
+    await user.save();
+    await project.save();
+
+    return res.status(200).json({
+      success: true,
+      message: "Project uploaded successfully",
+      projectData: {
+        ...project._doc,
+      },
+    });
+  } catch (error) {
+    console.log("error in project upload");
+    res.status(400).json({ success: false, message: error.message });
+  }
+};
+
+export const getSingleUserProject = async (req, res) => {
+  try {
+    const userId = req.userId;
+
+    if (!userId) {
+      return res.status(400).json({
+        status: false,
+        messaage: "Unothorized - No user found",
+      });
+    }
+
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(403).json({ error: "Forbidden: No user found" });
+    }
+    const project = await Project.findOne({ user: user._id });
+    if (!project) {
+      return res.status(403).json({ error: "No project found for the user" });
+    }
+
+    return res.status(200).json({
+      success: true,
+      message: "Project found successfully",
+      projectData: {
+        ...project._doc,
+      },
+    });
+  } catch (error) {
+    console.log("error in finding single project");
+    res.status(400).json({ success: false, message: error.message });
+  }
+};
+export const getSingleProject = async (req, res) => {
+  try {
+    const projectId = req.params.projectId;
+
+    const project = await Project.findById(projectId);
+    if (!project) {
+      return res.status(403).json({ error: "No project found" });
+    }
+
+    return res.status(200).json({
+      success: true,
+      message: "Project found successfully",
+      projectData: {
+        ...project._doc,
+      },
+    });
+  } catch (error) {
+    console.log("error in finding single project");
+    res.status(400).json({ success: false, message: error.message });
+  }
+};
+export const getAllProjects = async (req, res) => {
+  try {
+    const projects = await Project.find();
+    if (!projects) {
+      return res.status(403).json({ error: "No project found" });
+    }
+
+    return res.status(200).json({
+      success: true,
+      message: "Project found successfully",
+      projects,
+    });
+  } catch (error) {
+    console.log("error in finding single project");
+    res.status(400).json({ success: false, message: error.message });
+  }
+};
 
 export const uploadProject = async (req, res) => {
   try {
@@ -67,7 +210,7 @@ export const uploadProject = async (req, res) => {
       return res.status(200).json({
         success: true,
         message: "Project uploaded successfully",
-        data: {
+        projectData: {
           ...project._doc,
         },
       });

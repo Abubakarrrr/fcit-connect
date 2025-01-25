@@ -8,6 +8,7 @@ import FypThumbnail from "../fyp-thumbnail";
 import { initialState, validationSchema } from "../formSchema";
 import { ID } from "appwrite";
 import { storage } from "@/utils/appwriteConfig";
+import { useProjectStore } from "@/store/projectStore";
 const BasicDetailsTab = ({
   formState,
   setFormState,
@@ -22,7 +23,9 @@ const BasicDetailsTab = ({
     ? "/admin/fyps/update/1"
     : "/user/fyps/update/1";
   const navigate = useNavigate();
+  const { project } = useProjectStore();
 
+  
   const handleChange = (field, value) => {
     // Update form state
     setFormState((prev) => ({ ...prev, [field]: value }));
@@ -45,7 +48,7 @@ const BasicDetailsTab = ({
     setThumbnailUrl(null);
   };
 
-  const handleUpdate = () => {
+  const handleUpdate = (e) => {
     console.log("update");
     e.preventDefault();
 
@@ -61,7 +64,6 @@ const BasicDetailsTab = ({
       setErrors(errorMessages);
       return;
     }
-
   };
 
   return (
@@ -87,7 +89,7 @@ const BasicDetailsTab = ({
           <Button
             variant=""
             className="aspect-square max-sm:p-0"
-            onClick={ handleUpdate }
+            onClick={handleUpdate}
           >
             <PlusCircle
               className=" sm:-ms-1 sm:me-2"
