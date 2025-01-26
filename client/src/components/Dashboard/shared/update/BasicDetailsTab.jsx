@@ -16,10 +16,7 @@ const BasicDetailsTab = ({
   const { deleteFile, uploadFile, project } = useProjectStore();
 
   const handleChange = (field, value) => {
-    // Update form state
     setFormState((prev) => ({ ...prev, [field]: value }));
-
-    // Clear error for that field when user starts typing
     setErrors((prev) => ({ ...prev, [field]: "" }));
   };
 
@@ -27,7 +24,6 @@ const BasicDetailsTab = ({
     const file = e.target.files[0];
     if (project?._id) {
       const fileUrl = await uploadFile(file, "thumbnail", project?._id);
-      console.log(fileUrl);
       if (fileUrl) {
         setThumbnailUrl(fileUrl);
       }
@@ -38,8 +34,6 @@ const BasicDetailsTab = ({
     await deleteFile(thumbnailUrl);
     setThumbnailUrl(null);
   };
-
-  console.log(thumbnailUrl);
   return (
     <div className="py-6 px-4 rounded-lg border shadow-sm">
       <form>

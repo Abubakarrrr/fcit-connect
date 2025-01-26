@@ -66,6 +66,7 @@ export const loginWithGoogle = async (req, res) => {
     if (userFromDB) {
       userFromDB.lastLogin = new Date();
       await userFromDB.save();
+      generateTokenAndSetCookie(res, userFromDB._id);
       return res.status(200).json({
         success: true,
         message: "User logged in successfully",
@@ -87,7 +88,7 @@ export const loginWithGoogle = async (req, res) => {
     await user.save();
 
     // jwt
-    const token = generateTokenAndSetCookie(res, user._id);
+    generateTokenAndSetCookie(res, user._id);
 
     res.status(200).json({
       success: true,

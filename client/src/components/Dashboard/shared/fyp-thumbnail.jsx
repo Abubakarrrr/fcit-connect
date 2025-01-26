@@ -9,7 +9,6 @@ export default function FypThumbnail({
   onRemoveImage,
   fileError,
 }) {
-  console.log(imageUrl)
   return (
     <div className="p-4 border rounded-lg relative">
       <h2 className="text-lg text-center font-semibold">FYP Thumbnail</h2>
