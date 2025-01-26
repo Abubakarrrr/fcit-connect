@@ -262,7 +262,7 @@ export const deleteTeamMember = async (req, res) => {
 
     return res.status(200).json({
       success: true,
-      message: "Team Member Deleted Successfully",
+      message: "Team Member Deleted Successfully ",
     });
   } catch (error) {
     console.log("error deleting team member");
