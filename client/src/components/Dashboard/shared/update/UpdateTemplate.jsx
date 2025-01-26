@@ -34,25 +34,24 @@ const UpdateTemplate = () => {
     testing: [],
   });
 
-
   useEffect(() => {
     const getProjectState = async () => {
+      console.log("Getting Project");
       await getSingleUserProject();
-      if (project) {
-        setFormState({
-          templateName: project?.title || "",
-          description: project?.description || "",
-          campus: project?.campus || "",
-          department: project?.department || "",
-          year: project?.year || "",
-          deployedLink: project?.deployedLink || "",
-          githubLink: project?.githubLink||"",
-          figmaLink: project?.figmaLink||"",
-          category: project?.category || "",
-          supervisor: project?.supervisor || "",
-        });
-        setThumbnailUrl(project?.images[0] || null);
-      }
+      console.log(project);
+      setFormState({
+        templateName: project?.title || "",
+        description: project?.description || "",
+        campus: project?.campus || "",
+        department: project?.department || "",
+        year: project?.year || "",
+        deployedLink: project?.deployedLink || "",
+        githubLink: project?.githubLink || "",
+        figmaLink: project?.figmaLink || "",
+        category: project?.category || "",
+        supervisor: project?.supervisor || "",
+      });
+      setThumbnailUrl(project?.images[0] || null);
     };
     getProjectState();
   }, []);
