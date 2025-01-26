@@ -167,8 +167,7 @@ export const getSingleUserProject = async (req, res) => {
 export const getSingleProject = async (req, res) => {
   try {
     const id = req.params.id;
-
-    const project = await Project.findById(projectId);
+    const project = await Project.findById(id);
     if (!project) {
       return res.status(403).json({ error: "No project found" });
     }

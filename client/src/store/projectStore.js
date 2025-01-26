@@ -371,6 +371,7 @@ export const useProjectStore = create((set) => ({
         message: response?.data?.message,
         isLoading: false,
       });
+      return projectsRes;
     } catch (error) {
       set({
         isLoading: false,

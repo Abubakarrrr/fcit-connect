@@ -8,7 +8,7 @@ function ReadmeTab({value,setValue}) {
   //   console.log(JSON.stringify(value))
   // }
   return (
-    <div className="container mx-auto p-4">
+    <div className="container mx-auto p-4">   
       <ReactQuill theme="snow" placeholder="Write the detailed readme of your fyp" value={value} onChange={setValue} />
       {/* <Button className="flex justify-end my-4 ml-auto" onClick={updateReadme}>Update Changes</Button> */}
     </div>  
