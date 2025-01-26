@@ -486,7 +486,7 @@ export const useProjectStore = create((set) => ({
 
     try {
       const response = await axios.post(
-        `${API_URL}/delete-team-member/:${memberId}`
+        `${API_URL}/delete-team-member/${memberId}`
       );
 
       if (response.data.message) {
@@ -510,7 +510,7 @@ export const useProjectStore = create((set) => ({
 
     try {
       const response = await axios.get(
-        `${API_URL}/get-team-member/:${memberId}`
+        `${API_URL}/get-team-member/${memberId}`
       );
 
       if (response.data.teamMember) {

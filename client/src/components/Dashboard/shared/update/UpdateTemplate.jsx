@@ -58,8 +58,10 @@ const UpdateTemplate = () => {
       setThumbnailUrl(project?.thumbnail);
       setImages(project?.images);
       setMembers(teamMembers);
+      console.log("members")
+      console.log(members)
     }
-  }, [project]);
+  }, [project,members,teamMembers]);
 
   const handleUpdate = (e) => {
     e.preventDefault();

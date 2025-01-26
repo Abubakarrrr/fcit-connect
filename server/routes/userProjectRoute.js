@@ -21,9 +21,9 @@ router.get("/get-project/:id", getSingleProject);
 router.get("/get-projects", getAllProjects);
 
 router.post("/add-team-member", verifyToken, addTeamMember);
-router.post("/update-team-member/:Id", verifyToken, updateTeamMember);
-router.post("/delete-team-member/:Id", verifyToken, deleteTeamMember);
-router.get("/get-team-member/:Id", verifyToken, getTeamMember);
+router.post("/update-team-member/:id", verifyToken, updateTeamMember);
+router.post("/delete-team-member/:id", verifyToken, deleteTeamMember);
+router.get("/get-team-member/:id", verifyToken, getTeamMember);
 router.get("/get-all-team-members", verifyToken, getAllTeamMembers);
 
 export default router;

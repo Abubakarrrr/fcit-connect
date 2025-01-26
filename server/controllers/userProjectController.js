@@ -220,9 +220,9 @@ export const addTeamMember = async (req, res) => {
       name,
       rollNo,
       email,
-      role,
-      github,
-      linkedIn,
+      role: role || null,
+      github: github || null,
+      linkedIn: linkedIn || null,
       project: user.project,
       teamLeader: userId,
     });
@@ -242,8 +242,8 @@ export const addTeamMember = async (req, res) => {
   }
 };
 export const deleteTeamMember = async (req, res) => {
-  const userId = req.userID;
-  const teamMemberId = req.params.Id;
+  const userId = req.userId;
+  const teamMemberId = req.params.id;
   try {
     const user = await User.findById(userId);
     if (!user) {
@@ -270,7 +270,7 @@ export const deleteTeamMember = async (req, res) => {
   }
 };
 export const updateTeamMember = async (req, res) => {
-  const teamMemberId = req.params.Id;
+  const teamMemberId = req.params.id;
   const updateData = req.body;
   try {
     const existingTeamMember = await TeamMember.findById(teamMemberId);
@@ -303,7 +303,7 @@ export const updateTeamMember = async (req, res) => {
   }
 };
 export const getTeamMember = async (req, res) => {
-  const teamMemberId = req.params.Id;
+  const teamMemberId = req.params.id;
 
   try {
     const teamMember = await TeamMember.findById(teamMemberId);
