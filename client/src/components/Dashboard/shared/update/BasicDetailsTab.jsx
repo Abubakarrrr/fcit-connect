@@ -7,7 +7,7 @@ import { useProjectStore } from "@/store/projectStore";
 const BasicDetailsTab = ({
   formState,
   setFormState,
-  thumbnailUrl,
+  thumbnailUrl="",
   setThumbnailUrl,
   errors,
   setErrors,
@@ -25,7 +25,6 @@ const BasicDetailsTab = ({
 
   const handleFileSelect = async (e) => {
     const file = e.target.files[0];
-
     if (project?._id) {
       const fileUrl = await uploadFile(file, "thumbnail", project?._id);
       console.log(fileUrl);
@@ -40,6 +39,7 @@ const BasicDetailsTab = ({
     setThumbnailUrl(null);
   };
 
+  console.log(thumbnailUrl);
   return (
     <div className="py-6 px-4 rounded-lg border shadow-sm">
       <form>

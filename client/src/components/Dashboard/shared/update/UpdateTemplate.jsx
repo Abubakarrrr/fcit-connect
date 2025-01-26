@@ -36,9 +36,12 @@ const UpdateTemplate = () => {
 
   useEffect(() => {
     const getProjectState = async () => {
-      console.log("Getting Project");
       await getSingleUserProject();
-      console.log(project);
+    };
+    getProjectState();
+  }, []);
+  useEffect(() => {
+    if (project) {
       setFormState({
         templateName: project?.title || "",
         description: project?.description || "",
@@ -51,10 +54,11 @@ const UpdateTemplate = () => {
         category: project?.category || "",
         supervisor: project?.supervisor || "",
       });
-      setThumbnailUrl(project?.images[0] || null);
-    };
-    getProjectState();
-  }, []);
+      console.log(project?.images)
+      setThumbnailUrl(project?.images[0] || null );
+      console.log(thumbnailUrl)
+    }
+  }, [project]);
 
   const handleUpdate = (e) => {
     e.preventDefault();
@@ -94,7 +98,12 @@ const UpdateTemplate = () => {
     );
   };
 
+  if (!project ) {
+    return <div>Loading project...</div>;
+  }
+
   return (
+
     <div>
       <div className="flex justify-between items-center py-2 border-b">
         <h1 className="font-bold text-xl">{formState?.templateName}</h1>
