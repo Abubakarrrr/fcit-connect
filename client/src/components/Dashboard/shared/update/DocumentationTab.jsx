@@ -2,14 +2,15 @@ import React, { useState, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { PlusCircle, X } from "lucide-react";
 import { FilePlus } from "lucide-react";
-const DocumentationTab = ({file,setFile}) => {
+import { useProjectStore } from "@/store/projectStore";
+const DocumentationTab = ({ file, setFile }) => {
+  const { deleteFile, uploadFile, project } = useProjectStore();
   const fileInputRef = useRef(null);
 
-  const handleFileSelect = (e) => {
+  const handleFileSelect = async(e) => {
     const selectedFile = e.target.files[0];
-    if (selectedFile) {
-      setFile(selectedFile);
-    }
+    const url = await uploadFile(selectedFile,"documentation",project?._id);
+    console.log(url);
   };
 
   const handleRemoveFile = () => {

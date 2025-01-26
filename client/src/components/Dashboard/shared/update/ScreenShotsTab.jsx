@@ -1,6 +1,12 @@
 import React from "react";
+import { useState } from "react";
+import { PlusCircle, X } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
+import { useProjectStore } from "@/store/projectStore";
 
 const ScreenShotsTab = ({ images, setImages }) => {
+  console.log(images);
   return (
     <div className="py-6 px-4 rounded-lg border shadow-sm">
       <h1 className="text-lg font-semibold">Screenshots</h1>
@@ -13,24 +19,35 @@ const ScreenShotsTab = ({ images, setImages }) => {
 
 export default ScreenShotsTab;
 
-import { useState } from "react";
-import { PlusCircle, X } from "lucide-react";
-import { Button } from "@/components/ui/button";
-
 function ImageUploader({ images, setImages }) {
-  const handleRemoveImage = (index) => {
-    setImages((prevImages) => prevImages.filter((_, i) => i !== index));
+  const { deleteFile, uploadFile, project } = useProjectStore();
+  const handleRemoveImage = async (index) => {
+    try {
+      // setImages(images.filter((_, i) => i !== index));
+      await deleteFile(images[index]);
+    } catch (error) {
+      console.log(url);
+    }
   };
 
-  const handleImageUpload = (event) => {
+  const handleImageUpload = async (event) => {
     const files = Array.from(event.target.files);
     if (files.length + images.length > 3) {
       alert("You can upload a maximum of 3 images.");
       return;
     }
-    const newImages = files.map((file) => URL.createObjectURL(file));
-    setImages((prevImages) => [...prevImages, ...newImages]);
-    console.log(images);
+    // for (const file of files) {
+    //   try {
+    //     const url = await uploadFile(
+    //       file,
+    //       `screenshot${images.length + 1}`,
+    //       project?._id
+    //     );
+    //     setImages((prevImages) => [...prevImages, url]);
+    //   } catch (error) {
+    //     console.log(error);
+    //   }
+    // }
   };
 
   return (
@@ -57,13 +74,16 @@ function ImageUploader({ images, setImages }) {
                   alt={`Uploaded ${index + 1}`}
                   className="w-full h-full object-cover"
                 />
-                <button
-                  onClick={() => handleRemoveImage(index)}
-                  className="absolute top-2 right-2 bg-red-500 text-white rounded-full p-1 hover:bg-red-600"
-                  aria-label={`Remove image ${index + 1}`}
-                >
-                  <X size={16} />
-                </button>
+                {index + 1 == images.length && (
+                  <button
+                    onClick={() => handleRemoveImage(index)}
+                    className="absolute top-2 right-2 bg-red-500 text-white rounded-full p-1 hover:bg-red-600"
+                    aria-label={`Remove image ${index + 1}`}
+                  >
+                    <X size={16} />
+                  </button>
+                )}
+
                 <div className="absolute bottom-2 left-2 bg-black/50 text-white text-xs px-2 py-1 rounded">
                   {index + 1}/3
                 </div>

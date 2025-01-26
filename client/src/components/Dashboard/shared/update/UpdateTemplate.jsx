@@ -55,6 +55,9 @@ const UpdateTemplate = () => {
         supervisor: project?.supervisor || "",
       });
       setThumbnailUrl(project?.images[0]);
+      const newImages = project?.images.slice(1); 
+      setImages(newImages);
+      
     }
   }, [project]);
 
