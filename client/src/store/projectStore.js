@@ -8,8 +8,9 @@ axios.defaults.withCredentials = true;
 const checkImagesURL = async (images) => {
   let finalImages = [];
   for (const image of images) {
+    const cacheBusterUrl = `${image}&cacheBuster=${new Date().getTime()}`;
     try {
-      const res = await axios.get(image);
+      const res = await axios.get(cacheBusterUrl);
       finalImages.push(image);
     } catch (error) {
       if (axios.isAxiosError(error)) {
@@ -23,8 +24,9 @@ const checkImagesURL = async (images) => {
 };
 
 const checkImageURLSingle = async (imageUrl) => {
+  const cacheBusterUrl = `${imageUrl}&cacheBuster=${new Date().getTime()}`;
   try {
-    const res = await axios.get(imageUrl);
+    const res = await axios.get(cacheBusterUrl);
     return imageUrl;
   } catch (error) {
     if (axios.isAxiosError(error)) {
@@ -225,7 +227,7 @@ export const useProjectStore = create((set) => ({
 
       if (response.data.projectData) {
         const projectId = response.data.projectData._id;
-        const thumbnail = storage.getFileView(
+        const thumbnailTemp = storage.getFileView(
           "678faed20020cb101db1",
           `${projectId}-thumbnail`
         );
@@ -245,18 +247,15 @@ export const useProjectStore = create((set) => ({
           "678faed20020cb101db1",
           `${projectId}-screenshot3`
         );
-        const images = Array.from([
-          thumbnail,
-          screenshot1,
-          screenshot2,
-          screenshot3,
-        ]);
+        const images = Array.from([screenshot1, screenshot2, screenshot3]);
         const finalImages = await checkImagesURL(images);
         const documentation = await checkImageURLSingle(documentationTemp);
+        const thumbnail = await checkImageURLSingle(thumbnailTemp);
         set({
           project: {
             ...response?.data?.projectData,
             images: finalImages,
+            thumbnail,
             documentation,
           },
           message: response?.data?.message,
@@ -279,7 +278,7 @@ export const useProjectStore = create((set) => ({
       if (response.data.projectData) {
         const projectId = response.data.projectData._id;
 
-        const thumbnail = storage.getFileView(
+        const thumbnailTemp = storage.getFileView(
           "678faed20020cb101db1",
           `${projectId}-thumbnail`
         );
@@ -299,19 +298,17 @@ export const useProjectStore = create((set) => ({
           "678faed20020cb101db1",
           `${projectId}-screenshot3`
         );
-        const images = Array.from([
-          thumbnail,
-          screenshot1,
-          screenshot2,
-          screenshot3,
-        ]);
+        const images = Array.from([screenshot1, screenshot2, screenshot3]);
         const finalImages = await checkImagesURL(images);
         const documentation = await checkImageURLSingle(documentationTemp);
+        const thumbnail = await checkImageURLSingle(thumbnailTemp);
+
         set({
           project: {
             ...response?.data?.projectData,
             images: finalImages,
             documentation,
+            thumbnail,
           },
           message: response?.data?.message,
           isLoading: false,
@@ -335,7 +332,7 @@ export const useProjectStore = create((set) => ({
         response.data.projects.forEach(async (project) => {
           const projectId = project._id;
 
-          const thumbnail = storage.getFileView(
+          const thumbnailTemp = storage.getFileView(
             "678faed20020cb101db1",
             `${projectId}-thumbnail`
           );
@@ -356,19 +353,16 @@ export const useProjectStore = create((set) => ({
             "678faed20020cb101db1",
             `${projectId}-screenshot3`
           );
-          const images = Array.from([
-            thumbnail,
-            screenshot1,
-            screenshot2,
-            screenshot3,
-          ]);
+          const images = Array.from([screenshot1, screenshot2, screenshot3]);
           const finalImages = await checkImagesURL(images);
           const documentation = await checkImageURLSingle(documentationTemp);
+          const thumbnail = await checkImageURLSingle(thumbnailTemp);
 
           projectsRes.push({
             ...project,
             images: finalImages,
             documentation,
+            thumbnail,
           });
         });
       }

@@ -54,10 +54,9 @@ const UpdateTemplate = () => {
         category: project?.category || "",
         supervisor: project?.supervisor || "",
       });
-      setThumbnailUrl(project?.images[0]);
-      const newImages = project?.images.slice(1); 
-      setImages(newImages);
-      
+      setThumbnailUrl(project?.thumbnail);
+      console.log("These Are tthe new Images Now: ",project.images)
+      setImages(project?.images);
     }
   }, [project]);
 
