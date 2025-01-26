@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import DocumentationTab from "./DocumentationTab";
 import ScreenShotsTab from "./ScreenShotsTab";
@@ -6,9 +6,14 @@ import TeamMemberTab from "./TeamMemberTab";
 import TechStackTab from "./TechStackTab";
 import ReadmeTab from "./ReadmeTab";
 import BasicDetailsTab from "./BasicDetailsTab";
-import { thumbnailValidation, initialState, validationSchema } from "../formSchema";
+import {
+  thumbnailValidation,
+  initialState,
+  validationSchema,
+} from "../formSchema";
 import { Button } from "@/components/ui/button";
 import { PlusCircle } from "lucide-react";
+import { useProjectStore } from "@/store/projectStore";
 
 const UpdateTemplate = () => {
   const [formState, setFormState] = useState(initialState);
@@ -28,8 +33,22 @@ const UpdateTemplate = () => {
     testing: [],
   });
 
+  // const { getSingleUserProject, project,updateProject } = useProjectStore();
+
+  // useEffect(() => {
+  //   const getProjectState = async () => {
+  //     await getSingleUserProject();
+  //   };
+  //   getProjectState();
+  // }, []);
+  // if (project) {
+  //   console.log("Got the Project")
+  //   console.log(project)
+  // }
+
   const handleUpdate = (e) => {
     e.preventDefault();
+
     const { error } = validationSchema.validate(formState, {
       abortEarly: false,
     });
@@ -43,15 +62,26 @@ const UpdateTemplate = () => {
     } else {
       setErrors({});
     }
-    const validationResult = thumbnailValidation.validate({ thumbnail: thumbnailUrl });
+    const validationResult = thumbnailValidation.validate({
+      thumbnail: thumbnailUrl,
+    });
     if (validationResult.error) {
       setThumbnailError("Please upload a thumbnail image");
-      console.log(validationResult)
+      console.log(validationResult);
       return;
     } else {
       setThumbnailError("");
     }
-    console.log(formState,thumbnailUrl,file,images,JSON.stringify(readme),techStack,members);
+    // await updateProject({...formState,readme:JSON.stringify(readme),...techStack})
+    console.log(
+      formState,
+      thumbnailUrl,
+      file,
+      images,
+      JSON.stringify(readme),
+      techStack,
+      members
+    );
   };
 
   return (

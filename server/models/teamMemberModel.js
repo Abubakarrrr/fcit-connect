@@ -14,5 +14,5 @@ const TeamMemberSchema = new mongoose.Schema({
     type: { type: Schema.Types.ObjectId, ref: "User" },
   },
 });
-const User = mongoose.model("User", UserSchema);
-export { User };
+const TeamMember = mongoose.model("TeamMember", TeamMemberSchema);
+export { TeamMember };

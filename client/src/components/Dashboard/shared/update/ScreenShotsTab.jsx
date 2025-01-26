@@ -1,13 +1,11 @@
 import React from "react";
 
-const ScreenShotsTab = ({images,setImages}) => {
+const ScreenShotsTab = ({ images, setImages }) => {
   return (
     <div className="py-6 px-4 rounded-lg border shadow-sm">
       <h1 className="text-lg font-semibold">Screenshots</h1>
       <div>
-        <ImageUploader
-        images={images}
-        setImages={setImages} />
+        <ImageUploader images={images} setImages={setImages} />
       </div>
     </div>
   );
@@ -19,9 +17,7 @@ import { useState } from "react";
 import { PlusCircle, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
-function ImageUploader({images,setImages}) {
- 
-
+function ImageUploader({ images, setImages }) {
   const handleRemoveImage = (index) => {
     setImages((prevImages) => prevImages.filter((_, i) => i !== index));
   };
@@ -34,6 +30,7 @@ function ImageUploader({images,setImages}) {
     }
     const newImages = files.map((file) => URL.createObjectURL(file));
     setImages((prevImages) => [...prevImages, ...newImages]);
+    console.log(images);
   };
 
   return (
@@ -90,7 +87,7 @@ function ImageUploader({images,setImages}) {
             Images upto 1 MB,max 3
           </p>
         </div>
-      </div> 
+      </div>
       {/* <div className="flex justify-end mt-6">
         <Button variant="" className="aspect-square max-sm:p-0">
           <PlusCircle

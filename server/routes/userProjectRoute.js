@@ -1,11 +1,29 @@
 import express from "express";
 import { verifyToken } from "../middlewares/verifyToken.js";
-import { createInitialProject, getAllProjects, getSingleProject, getSingleUserProject } from "../controllers/userProjectController.js";
-import { isStudent } from "../middlewares/isStudent.js";
+import {
+  createInitialProject,
+  updateProject,
+  getAllProjects,
+  getSingleProject,
+  getSingleUserProject,
+  addTeamMember,
+  deleteTeamMember,
+  updateTeamMember,
+  getTeamMember,
+  getAllTeamMembers,
+} from "../controllers/userProjectController.js";
 
 const router = express.Router();
 router.post("/create-project", verifyToken, createInitialProject);
+router.post("/update-project/:id", verifyToken, updateProject);
 router.get("/get-user-project", verifyToken, getSingleUserProject);
-router.get("/get-project/:projectId", getSingleProject);
+router.get("/get-project/:id", getSingleProject);
 router.get("/get-projects", getAllProjects);
+
+router.post("/add-team-member", verifyToken, addTeamMember);
+router.post("/update-team-member/:Id", verifyToken, updateTeamMember);
+router.post("/delete-team-member/:Id", verifyToken, deleteTeamMember);
+router.get("/get-team-member/:Id", verifyToken, getTeamMember);
+router.get("/get-all-team-members", verifyToken, getAllTeamMembers);
+
 export default router;
