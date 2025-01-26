@@ -22,6 +22,20 @@ const checkImagesURL = async (images) => {
   return finalImages;
 };
 
+const checkImageURLSingle = async (imageUrl) => {
+  try {
+    const res = await axios.get(imageUrl);
+    return imageUrl;
+  } catch (error) {
+    if (axios.isAxiosError(error)) {
+      console.log(`Failed to load image: ${imageUrl}`);
+    } else {
+      console.error(error);
+    }
+    return null;
+  }
+};
+
 export const useProjectStore = create((set) => ({
   project: null,
   allProjects: [],
@@ -204,7 +218,7 @@ export const useProjectStore = create((set) => ({
     }
   },
   getSingleUserProject: async () => {
-    console.log("Inside Store: ");
+    console.log("Getting Single Project");
     set({ isLoading: true, storeError: null });
     try {
       const response = await axios.get(`${API_URL}/get-user-project`);
@@ -215,7 +229,7 @@ export const useProjectStore = create((set) => ({
           "678faed20020cb101db1",
           `${projectId}-thumbnail`
         );
-        const documentation = storage.getFileView(
+        const documentationTemp = storage.getFileView(
           "678faed20020cb101db1",
           `${projectId}-documentation`
         );
@@ -236,13 +250,14 @@ export const useProjectStore = create((set) => ({
           screenshot1,
           screenshot2,
           screenshot3,
-          documentation,
         ]);
         const finalImages = await checkImagesURL(images);
+        const documentation = await checkImageURLSingle(documentationTemp);
         set({
           project: {
             ...response?.data?.projectData,
             images: finalImages,
+            documentation,
           },
           message: response?.data?.message,
           isLoading: false,
@@ -268,7 +283,7 @@ export const useProjectStore = create((set) => ({
           "678faed20020cb101db1",
           `${projectId}-thumbnail`
         );
-        const documentation = storage.getFileView(
+        const documentationTemp = storage.getFileView(
           "678faed20020cb101db1",
           `${projectId}-documentation`
         );
@@ -289,13 +304,14 @@ export const useProjectStore = create((set) => ({
           screenshot1,
           screenshot2,
           screenshot3,
-          documentation,
         ]);
         const finalImages = await checkImagesURL(images);
+        const documentation = await checkImageURLSingle(documentationTemp);
         set({
           project: {
             ...response?.data?.projectData,
             images: finalImages,
+            documentation,
           },
           message: response?.data?.message,
           isLoading: false,
@@ -323,10 +339,11 @@ export const useProjectStore = create((set) => ({
             "678faed20020cb101db1",
             `${projectId}-thumbnail`
           );
-          const documentation = storage.getFileView(
+          const documentationTemp = storage.getFileView(
             "678faed20020cb101db1",
             `${projectId}-documentation`
           );
+
           const screenshot1 = storage.getFileView(
             "678faed20020cb101db1",
             `${projectId}-screenshot1`
@@ -344,16 +361,17 @@ export const useProjectStore = create((set) => ({
             screenshot1,
             screenshot2,
             screenshot3,
-            documentation,
           ]);
           const finalImages = await checkImagesURL(images);
+          const documentation = await checkImageURLSingle(documentationTemp);
+
           projectsRes.push({
             ...project,
             images: finalImages,
+            documentation,
           });
         });
       }
-
       set({
         allProjects: projectsRes,
         message: response?.data?.message,
