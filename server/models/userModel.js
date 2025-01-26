@@ -17,6 +17,9 @@ const UserSchema = new mongoose.Schema({
   project: {
      type: mongoose.Schema.Types.ObjectId, ref: "Project" ,
   },
+  teamMembers: [{
+     type: mongoose.Schema.Types.ObjectId, ref: "Project" ,
+  }],
 });
 const User = mongoose.model("User", UserSchema);
 export { User };

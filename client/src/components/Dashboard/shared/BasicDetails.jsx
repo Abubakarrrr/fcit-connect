@@ -1,14 +1,17 @@
 import React, { useState } from "react";
 import FypForm from "./fyp-form";
 import FypThumbnail from "./fyp-thumbnail";
-import { initialState, validationSchema, thumbnailValidation } from "./formSchema";
+import {
+  initialState,
+  validationSchema,
+  thumbnailValidation,
+} from "./formSchema";
 import { Button } from "@/components/ui/button";
 import { PlusCircle } from "lucide-react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useProjectStore } from "@/store/projectStore";
 import { useAuthStore } from "@/store/authStore";
 import { useToast } from "@/hooks/use-toast";
-
 
 const BasicDetails = () => {
   const location = useLocation();
@@ -69,18 +72,15 @@ const BasicDetails = () => {
       setfileError("");
     }
     try {
-      // const projectId = await createIntialProject(
-      //   { ...formState, thumbnail: File },
-      //   user?._id
-      // );
-      // if (projectId) {
-      //   navigate(`${saveTemplateLink}/${projectId}`);
-      // }
-      // else{
-      //   // show toast
-      // }
-      await getSingleProject("6794d388fba7713459f1ecb9");
-      console.log(project);
+      const projectId = await createIntialProject({
+        ...formState,
+        thumbnail: File,
+      });
+      if (projectId) {
+        navigate(`${saveTemplateLink}/${projectId}`);
+      } else {
+        // show toast
+      }
     } catch (error) {
       console.log(error);
       toast({
