@@ -378,12 +378,12 @@ export const useProjectStore = create((set) => ({
         newFileName,
         newFile
       );
-      const fileUrl = storage.getFileView("678faed20020cb101db1", fileId);
+      // const fileUrl = storage.getFileView("678faed20020cb101db1", fileId);
       set({
         message: "file uploaded successfully",
         isLoading: false,
       });
-      return fileUrl;
+      return`https://cloud.appwrite.io/v1/storage/buckets/678faed20020cb101db1/files/${fileId}/view?project=678facfe000f2b37b63f&project=678facfe000f2b37b63f&mode=admin`;
     } catch (error) {
       set({
         isLoading: false,
@@ -396,16 +396,12 @@ export const useProjectStore = create((set) => ({
     set({ isLoading: true, storeError: null });
     try {
       const regex = /\/files\/([^\/]+)\/view/;
-
       const match = fileURL.match(regex);
-
-      if (match && match[1]) {
-        const deleted = await storage.deleteFile(
-          "678faed20020cb101db1",
-          match[0]
-        );
-        console.log(deleted);
-      }
+      const deleted = await storage.deleteFile(
+        "678faed20020cb101db1",
+        match[1]
+      );
+      console.log(deleted);
       set({
         message: "file deleted successfully",
         isLoading: false,

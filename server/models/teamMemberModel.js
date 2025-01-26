@@ -1,4 +1,4 @@
-import mongoose from "mongoose";
+import mongoose, { Schema } from "mongoose";
 
 const TeamMemberSchema = new mongoose.Schema({
   name: { type: String, required: true },
@@ -7,12 +7,8 @@ const TeamMemberSchema = new mongoose.Schema({
   role: { type: String },
   github: { type: String },
   linkedIn: { type: String },
-  project: {
-    type: { type: Schema.Types.ObjectId, ref: "Project" },
-  },
-  teamLeader: {
-    type: { type: Schema.Types.ObjectId, ref: "User" },
-  },
+  project: { type: Schema.Types.ObjectId, ref: "Project" },
+  teamLeader: { type: Schema.Types.ObjectId, ref: "User" },
 });
 const TeamMember = mongoose.model("TeamMember", TeamMemberSchema);
 export { TeamMember };

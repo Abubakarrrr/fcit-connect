@@ -14,11 +14,12 @@ import { useAuthStore } from "@/store/authStore";
 import { useToast } from "@/hooks/use-toast";
 
 const BasicDetails = () => {
+  const { toast } = useToast();
   const location = useLocation();
   const navigate = useNavigate();
-  const { createIntialProject, getSingleProject, project } = useProjectStore();
+  const { createIntialProject, isLoading, storeError, message } =
+    useProjectStore();
   const { user } = useAuthStore();
-  const { toast } = useToast();
   const [formState, setFormState] = useState(initialState);
   const [errors, setErrors] = useState({});
   const [fileError, setfileError] = useState("");
@@ -51,6 +52,7 @@ const BasicDetails = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
     const { error } = validationSchema.validate(formState, {
       abortEarly: false,
     });
@@ -64,9 +66,12 @@ const BasicDetails = () => {
     } else {
       setErrors({});
     }
-    const validationResult = thumbnailValidation.validate({ thumbnail: File });
+    const validationResult = thumbnailValidation.validate({
+      thumbnail: thumbnailUrl,
+    });
     if (validationResult.error) {
       setfileError("Please upload a thumbnail image");
+      console.log(validationResult);
       return;
     } else {
       setfileError("");
@@ -77,9 +82,16 @@ const BasicDetails = () => {
         thumbnail: File,
       });
       if (projectId) {
+        toast({
+          title: message,
+          description: "",
+        });
         navigate(`${saveTemplateLink}/${projectId}`);
       } else {
-        // show toast
+        toast({
+          title: storeError,
+          description: "",
+        });
       }
     } catch (error) {
       console.log(error);
@@ -115,6 +127,7 @@ const BasicDetails = () => {
             variant=""
             className="aspect-square max-sm:p-0"
             onClick={handleSubmit}
+            disabled={isLoading}
           >
             <PlusCircle
               className=" sm:-ms-1 sm:me-2"
@@ -122,7 +135,9 @@ const BasicDetails = () => {
               strokeWidth={2}
               aria-hidden="true"
             />
-            <span className="max-sm:sr-only">Upload FYP</span>
+            <span className="max-sm:sr-only">
+              {isLoading ? "Uploading..." : "Upload FYP"}
+            </span>
           </Button>
         </div>
       </form>

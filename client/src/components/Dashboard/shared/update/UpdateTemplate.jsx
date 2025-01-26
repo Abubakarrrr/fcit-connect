@@ -7,8 +7,8 @@ import TechStackTab from "./TechStackTab";
 import ReadmeTab from "./ReadmeTab";
 import BasicDetailsTab from "./BasicDetailsTab";
 import {
-  thumbnailValidation,
   initialState,
+  thumbnailValidation,
   validationSchema,
 } from "../formSchema";
 import { Button } from "@/components/ui/button";
@@ -16,6 +16,7 @@ import { PlusCircle } from "lucide-react";
 import { useProjectStore } from "@/store/projectStore";
 
 const UpdateTemplate = () => {
+  const { getSingleUserProject, project, updateProject } = useProjectStore();
   const [formState, setFormState] = useState(initialState);
   const [thumbnailUrl, setThumbnailUrl] = useState(null);
   const [errors, setErrors] = useState({});
@@ -33,18 +34,28 @@ const UpdateTemplate = () => {
     testing: [],
   });
 
-  // const { getSingleUserProject, project,updateProject } = useProjectStore();
 
-  // useEffect(() => {
-  //   const getProjectState = async () => {
-  //     await getSingleUserProject();
-  //   };
-  //   getProjectState();
-  // }, []);
-  // if (project) {
-  //   console.log("Got the Project")
-  //   console.log(project)
-  // }
+  useEffect(() => {
+    const getProjectState = async () => {
+      await getSingleUserProject();
+      if (project) {
+        setFormState({
+          templateName: project?.title || "",
+          description: project?.description || "",
+          campus: project?.campus || "",
+          department: project?.department || "",
+          year: project?.year || "",
+          deployedLink: project?.deployedLink || "",
+          githubLink: project?.githubLink||"",
+          figmaLink: project?.figmaLink||"",
+          category: project?.category || "",
+          supervisor: project?.supervisor || "",
+        });
+        setThumbnailUrl(project?.images[0] || null);
+      }
+    };
+    getProjectState();
+  }, []);
 
   const handleUpdate = (e) => {
     e.preventDefault();
@@ -87,7 +98,7 @@ const UpdateTemplate = () => {
   return (
     <div>
       <div className="flex justify-between items-center py-2 border-b">
-        <h1 className="font-bold text-xl">ecommerce app</h1>
+        <h1 className="font-bold text-xl">{formState?.templateName}</h1>
         <Button
           variant=""
           className="aspect-square max-sm:p-0"

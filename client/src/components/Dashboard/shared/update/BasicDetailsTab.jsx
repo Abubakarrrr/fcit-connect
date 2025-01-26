@@ -1,13 +1,8 @@
-import React, { useState } from "react";
+import React from "react";
 
-import { Button } from "@/components/ui/button";
-import { PlusCircle } from "lucide-react";
-import { useLocation, useNavigate } from "react-router-dom";
+
 import FypForm from "../fyp-form";
 import FypThumbnail from "../fyp-thumbnail";
-import { initialState, validationSchema } from "../formSchema";
-import { ID } from "appwrite";
-import { storage } from "@/utils/appwriteConfig";
 import { useProjectStore } from "@/store/projectStore";
 
 const BasicDetailsTab = ({
@@ -17,16 +12,11 @@ const BasicDetailsTab = ({
   setThumbnailUrl,
   errors,
   setErrors,
-  fileError
+  fileError,
 }) => {
-  const location = useLocation();
-  const isAdminRoute = location.pathname.startsWith("/admin");
-  const saveTemplateLink = isAdminRoute
-    ? "/admin/fyps/update/1"
-    : "/user/fyps/update/1";
+  
 
-  const navigate = useNavigate();
-  const { project } = useProjectStore();
+  const { deleteFile,uploadFile,project } = useProjectStore();
 
   const handleChange = (field, value) => {
     // Update form state
@@ -36,18 +26,19 @@ const BasicDetailsTab = ({
     setErrors((prev) => ({ ...prev, [field]: "" }));
   };
 
-  const handleFileSelect = (e) => {
+  const handleFileSelect =async (e) => {
     const file = e.target.files[0];
-    if (file) {
-      setThumbnailUrl(URL.createObjectURL(file));
+    const fileUrl = await uploadFile(file, "thumbnail", project._id);
+    console.log(fileUrl);
+    if (fileUrl) {
+      setThumbnailUrl(fileUrl);
     }
   };
 
-  const handleRemoveImage = () => {
+  const handleRemoveImage = async () => {
+    // await deleteFile(thumbnailUrl); 
     setThumbnailUrl(null);
   };
-
-
 
   return (
     <div className="py-6 px-4 rounded-lg border shadow-sm">
@@ -62,7 +53,7 @@ const BasicDetailsTab = ({
           </div>
           <div className="col-span-1">
             <FypThumbnail
-             fileError={fileError}
+              fileError={fileError}
               imageUrl={thumbnailUrl}
               onFileSelect={handleFileSelect}
               onRemoveImage={handleRemoveImage}

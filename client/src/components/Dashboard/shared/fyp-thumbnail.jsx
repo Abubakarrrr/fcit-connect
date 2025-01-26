@@ -3,7 +3,12 @@ import { Button } from "@/components/ui/button";
 import { XCircle } from "lucide-react";
 import ErrorMessage from "@/components/shared/ErrorMessage";
 
-export default function FypThumbnail({ imageUrl, onFileSelect, onRemoveImage ,fileError}) {
+export default function FypThumbnail({
+  imageUrl,
+  onFileSelect,
+  onRemoveImage,
+  fileError,
+}) {
   return (
     <div className="p-4 border rounded-lg relative">
       <h2 className="text-lg text-center font-semibold">FYP Thumbnail</h2>
@@ -21,6 +26,7 @@ export default function FypThumbnail({ imageUrl, onFileSelect, onRemoveImage ,fi
             />
             {/* Remove Button */}
             <button
+              type="button"
               onClick={onRemoveImage}
               className="absolute top-2 right-2 bg-white rounded-full shadow p-1 text-red-600 hover:text-red-800 transition"
               title="Remove Image"
@@ -54,7 +60,7 @@ export default function FypThumbnail({ imageUrl, onFileSelect, onRemoveImage ,fi
             onChange={onFileSelect}
           />
           <span className="text-[12px] text-gray-500">Image (1MB)</span>
-          <ErrorMessage message={fileError}/>
+          <ErrorMessage message={fileError} />
         </div>
       )}
     </div>
