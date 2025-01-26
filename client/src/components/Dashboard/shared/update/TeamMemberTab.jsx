@@ -167,7 +167,7 @@ export default function TeamMemberTab({ members, setMembers }) {
             <TableBody>
               {members &&
                 members.map((member) => (
-                  <TableRow key={member.id}>
+                  <TableRow key={member._id}>
                     <TableCell>{member.name}</TableCell>
                     <TableCell>{member.rollNo}</TableCell>
                     <TableCell>{member.email}</TableCell>
