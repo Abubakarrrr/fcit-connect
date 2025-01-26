@@ -54,9 +54,7 @@ const UpdateTemplate = () => {
         category: project?.category || "",
         supervisor: project?.supervisor || "",
       });
-      console.log(project?.images)
-      setThumbnailUrl(project?.images[0] || null );
-      console.log(thumbnailUrl)
+      setThumbnailUrl(project?.images[0]);
     }
   }, [project]);
 
@@ -98,12 +96,11 @@ const UpdateTemplate = () => {
     );
   };
 
-  if (!project ) {
+  if (!project) {
     return <div>Loading project...</div>;
   }
 
   return (
-
     <div>
       <div className="flex justify-between items-center py-2 border-b">
         <h1 className="font-bold text-xl">{formState?.templateName}</h1>

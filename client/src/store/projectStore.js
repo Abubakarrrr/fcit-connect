@@ -7,16 +7,18 @@ axios.defaults.withCredentials = true;
 
 const checkImagesURL = async (images) => {
   let finalImages = [];
-  images?.forEach(async (image) => {
+  for (const image of images) {
     try {
       const res = await axios.get(image);
-      if (res.data) {
-        finalImages.push(image);
-      }
+      finalImages.push(image);
     } catch (error) {
-      // console.log(error.response?.data.message);
+      if (axios.isAxiosError(error)) {
+        console.log(`Failed to load image: ${image}`);
+      } else {
+        console.error(error);
+      }
     }
-  });
+  }
   return finalImages;
 };
 
@@ -378,7 +380,10 @@ export const useProjectStore = create((set) => ({
         newFileName,
         newFile
       );
-      const fileUrl = storage.getFileView("678faed20020cb101db1", createdFile.$id);
+      const fileUrl = storage.getFileView(
+        "678faed20020cb101db1",
+        createdFile.$id
+      );
       set({
         message: "file uploaded successfully",
         isLoading: false,
@@ -397,10 +402,7 @@ export const useProjectStore = create((set) => ({
     try {
       const regex = /\/files\/([^\/]+)\/view/;
       const match = fileURL.match(regex);
-      await storage.deleteFile(
-        "678faed20020cb101db1",
-        match[1]
-      );
+      await storage.deleteFile("678faed20020cb101db1", match[1]);
       set({
         message: "file deleted successfully",
         isLoading: false,
