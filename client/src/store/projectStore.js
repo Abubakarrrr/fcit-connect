@@ -427,12 +427,14 @@ export const useProjectStore = create((set) => ({
       throw error;
     }
   },
+
   addTeamMember: async (teamMember) => {
     set({ isLoading: true, storeError: null });
 
     try {
+      const { name, rollNo, email, role, github, linkedIn } = teamMember;
       const response = await axios.post(`${API_URL}/add-team-member`, {
-        teamMember,
+        name,rollNo,email,role,github,linkedIn
       });
 
       if (response.data.teamMember) {

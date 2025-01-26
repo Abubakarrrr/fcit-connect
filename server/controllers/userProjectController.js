@@ -205,6 +205,7 @@ export const getAllProjects = async (req, res) => {
 export const addTeamMember = async (req, res) => {
   const userId = req.userId;
   const { name, rollNo, email, role, github, linkedIn } = req.body;
+  // console.log(name,rollNo,email,role,github,linkedIn);
   try {
     const user = await User.findById(userId);
     if (!user) {
@@ -326,7 +327,6 @@ export const getAllTeamMembers = async (req, res) => {
   try {
     const teamMembers = await TeamMember.find({ teamLeader: userId });
 
-    res.status(200).json(teamMembers);
     return res.status(200).json({
       success: true,
       message: "Team Members Found Successfully",

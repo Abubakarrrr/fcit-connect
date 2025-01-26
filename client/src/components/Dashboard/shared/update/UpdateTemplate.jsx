@@ -16,7 +16,7 @@ import { PlusCircle } from "lucide-react";
 import { useProjectStore } from "@/store/projectStore";
 
 const UpdateTemplate = () => {
-  const { getSingleUserProject, project, updateProject } = useProjectStore();
+  const { getSingleUserProject, project, updateProject,getAllTeamMembers ,teamMembers} = useProjectStore();
   const [formState, setFormState] = useState(initialState);
   const [thumbnailUrl, setThumbnailUrl] = useState(null);
   const [errors, setErrors] = useState({});
@@ -24,7 +24,7 @@ const UpdateTemplate = () => {
   const [file, setFile] = useState(null);
   const [images, setImages] = useState([]);
   const [readme, setReadMe] = useState("");
-  const [members, setMembers] = useState([]);
+  const [members, setMembers] = useState(null);
   const [techStack, setTechStack] = useState({
     frontend: [],
     backend: [],
@@ -37,6 +37,7 @@ const UpdateTemplate = () => {
   useEffect(() => {
     const getProjectState = async () => {
       await getSingleUserProject();
+      await getAllTeamMembers();
     };
     getProjectState();
   }, []);
@@ -55,8 +56,8 @@ const UpdateTemplate = () => {
         supervisor: project?.supervisor || "",
       });
       setThumbnailUrl(project?.thumbnail);
-      console.log("These Are tthe new Images Now: ",project.images)
       setImages(project?.images);
+      setMembers(teamMembers);
     }
   }, [project]);
 
