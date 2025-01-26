@@ -1,6 +1,5 @@
 import React from "react";
 
-
 import FypForm from "../fyp-form";
 import FypThumbnail from "../fyp-thumbnail";
 import { useProjectStore } from "@/store/projectStore";
@@ -14,9 +13,7 @@ const BasicDetailsTab = ({
   setErrors,
   fileError,
 }) => {
-  
-
-  const { deleteFile,uploadFile,project } = useProjectStore();
+  const { deleteFile, uploadFile, project } = useProjectStore();
 
   const handleChange = (field, value) => {
     // Update form state
@@ -26,17 +23,20 @@ const BasicDetailsTab = ({
     setErrors((prev) => ({ ...prev, [field]: "" }));
   };
 
-  const handleFileSelect =async (e) => {
+  const handleFileSelect = async (e) => {
     const file = e.target.files[0];
-    const fileUrl = await uploadFile(file, "thumbnail", project._id);
-    console.log(fileUrl);
-    if (fileUrl) {
-      setThumbnailUrl(fileUrl);
+
+    if (project?._id) {
+      const fileUrl = await uploadFile(file, "thumbnail", project?._id);
+      console.log(fileUrl);
+      if (fileUrl) {
+        setThumbnailUrl(fileUrl);
+      }
     }
   };
 
   const handleRemoveImage = async () => {
-    // await deleteFile(thumbnailUrl); 
+    await deleteFile(thumbnailUrl);
     setThumbnailUrl(null);
   };
 
