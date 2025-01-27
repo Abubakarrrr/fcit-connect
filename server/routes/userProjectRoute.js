@@ -11,6 +11,7 @@ import {
   updateTeamMember,
   getTeamMember,
   getAllTeamMembers,
+  uploadThumbnail,
 } from "../controllers/userProjectController.js";
 
 const router = express.Router();
@@ -25,5 +26,7 @@ router.post("/update-team-member/:id", verifyToken, updateTeamMember);
 router.post("/delete-team-member/:id", verifyToken, deleteTeamMember);
 router.get("/get-team-member/:id", verifyToken, getTeamMember);
 router.get("/get-all-team-members", verifyToken, getAllTeamMembers);
+
+router.post("/upload-thumbnail/:id", verifyToken, uploadThumbnail);
 
 export default router;

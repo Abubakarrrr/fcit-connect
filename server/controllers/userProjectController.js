@@ -337,3 +337,23 @@ export const getAllTeamMembers = async (req, res) => {
     res.status(400).json({ success: false, message: error.message });
   }
 };
+export const uploadThumbnail = async (req, res) => {
+  const projectId = req.params.id;
+  const { thumbnail } = req.body;
+  try {
+    const project = await Project.findOne({ _id: projectId });
+    if (!project) {
+      return res.status(404).json({ message: "Project not found" });
+    }
+    project.thumbnail = thumbnail;
+    await project.save();
+    return res.status(200).json({
+      success: true,
+      message: "thumbnail uploaded successfully",
+      thumbnail: project.thumbnail,
+    });
+  } catch (error) {
+    console.log("error in uploading thumbnail");
+    res.status(400).json({ success: false, message: error.message });
+  }
+};

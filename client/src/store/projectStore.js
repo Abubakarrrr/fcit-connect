@@ -1,6 +1,6 @@
 import { create } from "zustand";
 import axios from "axios";
-import { storage } from "@/utils/appwriteConfig";
+import { ID, storage } from "@/utils/appwriteConfig";
 
 const API_URL = "http://localhost:5000/api/project";
 axios.defaults.withCredentials = true;
@@ -382,7 +382,12 @@ export const useProjectStore = create((set) => ({
   uploadFile: async (file, name, projectId) => {
     set({ isLoading: true, storeError: null });
     try {
-      const newFileName = `${projectId}-${name}`;
+      let newFileName;
+      if (file.type == "application/pdf") {
+        newFileName = `${projectId}-${name}.pdf`;
+      } else {
+        newFileName = `${projectId}-${name}`;
+      }
       const arrayBuffer = await file.arrayBuffer();
       const newFile = new File([arrayBuffer], newFileName, {
         type: file.type,
@@ -392,6 +397,34 @@ export const useProjectStore = create((set) => ({
         newFileName,
         newFile
       );
+      const fileUrl = storage.getFileView(
+        "678faed20020cb101db1",
+        createdFile.$id
+      );
+      set({
+        message: "file uploaded successfully",
+        isLoading: false,
+      });
+      return fileUrl;
+    } catch (error) {
+      set({
+        isLoading: false,
+        storeError: error.response?.data?.message || "Error uploading file",
+      });
+      throw error;
+    }
+  },
+  uploadThumbnail: async (file, projectId) => {
+    set({ isLoading: true, storeError: null });
+    try {
+      const createdFile = await storage.createFile(
+        "678faed20020cb101db1",
+        ID.unique(),
+        file
+      );
+      await axios.post(`${API_URL}/upload-thumbnail/${projectId}`, {
+        thumbnail: createdFile.$id,
+      });
       const fileUrl = storage.getFileView(
         "678faed20020cb101db1",
         createdFile.$id
@@ -434,7 +467,12 @@ export const useProjectStore = create((set) => ({
     try {
       const { name, rollNo, email, role, github, linkedIn } = teamMember;
       const response = await axios.post(`${API_URL}/add-team-member`, {
-        name,rollNo,email,role,github,linkedIn
+        name,
+        rollNo,
+        email,
+        role,
+        github,
+        linkedIn,
       });
 
       if (response.data.teamMember) {
