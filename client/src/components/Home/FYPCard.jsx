@@ -7,19 +7,8 @@ import { useEffect } from "react";
 import axios from "axios";
 
 export default function FYPCard({ fyp }) {
-  const {
-    _id,
-    title,
-    description,
-    likes,
-    views,
-    images,
-    year,
-    
-  } = fyp;
-
-
-
+  
+  const { _id, title, year, description, likes, views, images } = fyp;
   return (
     <Card className="overflow-hidden">
       <div className="relative">

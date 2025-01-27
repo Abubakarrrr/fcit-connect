@@ -70,8 +70,7 @@ const BasicDetails = () => {
       thumbnail: thumbnailUrl,
     });
     if (validationResult.error) {
-      setfileError("Please upload a thumbnail image");
-      console.log(validationResult);
+      setfileError("Please upload a thumbnail image");Y
       return;
     } else {
       setfileError("");
@@ -96,7 +95,7 @@ const BasicDetails = () => {
     } catch (error) {
       console.log(error);
       toast({
-        title: error.message || "Failed to upload project",
+        title: error.response?.data?.message || "Failed to upload project",
         description: "",
       });
     }

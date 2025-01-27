@@ -46,6 +46,7 @@ export default function TechStackTab({techStack, setTechStack}) {
       }));
       setInputs((prev) => ({ ...prev, [category]: "" }));
     }
+    console.log(techStack)
   };
 
   const handleRemoveTech = (category, index) => {

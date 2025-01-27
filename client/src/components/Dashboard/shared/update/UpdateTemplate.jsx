@@ -14,9 +14,18 @@ import {
 import { Button } from "@/components/ui/button";
 import { PlusCircle } from "lucide-react";
 import { useProjectStore } from "@/store/projectStore";
+import { useParams } from "react-router-dom";
+import { toast } from "@/hooks/use-toast";
 
 const UpdateTemplate = () => {
-  const { getSingleUserProject, project, updateProject,getAllTeamMembers ,teamMembers} = useProjectStore();
+  const {
+    getSingleUserProject,
+    project,
+    updateProject,
+    getAllTeamMembers,
+    teamMembers,
+  } = useProjectStore();
+  const { id } = useParams();
   const [formState, setFormState] = useState(initialState);
   const [thumbnailUrl, setThumbnailUrl] = useState(null);
   const [errors, setErrors] = useState({});
@@ -36,11 +45,16 @@ const UpdateTemplate = () => {
 
   useEffect(() => {
     const getProjectState = async () => {
-      await getSingleUserProject();
-      await getAllTeamMembers();
+      try {
+        await getSingleUserProject(id);
+        await getAllTeamMembers();
+      } catch (error) {
+        console.log(error)
+        // toast : error.response?.data?.message
+      }
     };
     getProjectState();
-  }, []);
+  }, [getSingleUserProject, id, getAllTeamMembers]);
   useEffect(() => {
     if (project) {
       setFormState({
@@ -55,17 +69,16 @@ const UpdateTemplate = () => {
         category: project?.category || "",
         supervisor: project?.supervisor || "",
       });
-      setThumbnailUrl(project?.thumbnail);
-      setImages(project?.images);
-      setMembers(teamMembers);
-      console.log("members")
-      console.log(members)
+      project?.readme && setReadMe(project.readme);
+      project?.thumbnail && setThumbnailUrl(project.thumbnail);
+      project?.images?.length > 0 && setImages(project.images);
+      project?.documentation && setFile(project.documentation);
+      project?.teamMembers?.length > 0 && setMembers(teamMembers);
     }
-  }, [project,members,teamMembers]);
+  }, [project, teamMembers]);
 
   const handleUpdate = (e) => {
     e.preventDefault();
-
     const { error } = validationSchema.validate(formState, {
       abortEarly: false,
     });

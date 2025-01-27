@@ -6,11 +6,10 @@ import { cn } from "@/lib/utils";
 import { useProjectStore } from "@/store/projectStore";
 
 const ScreenShotsTab = ({ images, setImages }) => {
-  console.log(images);
-  const { deleteFile, uploadFile, project } = useProjectStore();
+  const { deleteFile, uploadFile, project, isLoading } = useProjectStore();
   const handleRemoveImage = async (index) => {
     try {
-      await deleteFile(images[index]);
+      await deleteFile(images[index], project?._id, "SCREENSHOT");
       setImages(images.filter((_, i) => i !== index));
     } catch (error) {
       console.log(error);
@@ -25,12 +24,8 @@ const ScreenShotsTab = ({ images, setImages }) => {
     }
     for (const file of files) {
       try {
-        const url = await uploadFile(
-          file,
-          `screenshot${images.length + 1}`,
-          project?._id
-        );
-        setImages((prevImages) => [...prevImages, url]);
+        const fileUrl = await uploadFile(file, project?._id, "SCREENSHOT");
+        setImages((prevImages) => [...prevImages, fileUrl]);
       } catch (error) {
         console.log(error);
       }
@@ -62,7 +57,8 @@ const ScreenShotsTab = ({ images, setImages }) => {
                     alt={`Uploaded ${index + 1}`}
                     className="w-full h-full object-cover"
                   />
-                  {index + 1 == images.length && (
+
+                  {!isLoading && (
                     <button
                       onClick={() => handleRemoveImage(index)}
                       className="absolute top-2 right-2 bg-red-500 text-white rounded-full p-1 hover:bg-red-600"

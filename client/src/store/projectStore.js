@@ -5,43 +5,9 @@ import { ID, storage } from "@/utils/appwriteConfig";
 const API_URL = "http://localhost:5000/api/project";
 axios.defaults.withCredentials = true;
 
-const checkImagesURL = async (images) => {
-  let finalImages = [];
-  for (const image of images) {
-    const cacheBusterUrl = `${image}&cacheBuster=${new Date().getTime()}`;
-    try {
-      const res = await axios.get(cacheBusterUrl);
-      finalImages.push(image);
-    } catch (error) {
-      if (axios.isAxiosError(error)) {
-        console.log(`Failed to load image: ${image}`);
-      } else {
-        console.error(error);
-      }
-    }
-  }
-  return finalImages;
-};
-
-const checkImageURLSingle = async (imageUrl) => {
-  const cacheBusterUrl = `${imageUrl}&cacheBuster=${new Date().getTime()}`;
-  try {
-    const res = await axios.get(cacheBusterUrl);
-    return imageUrl;
-  } catch (error) {
-    if (axios.isAxiosError(error)) {
-      console.log(`Failed to load image: ${imageUrl}`);
-    } else {
-      console.error(error);
-    }
-    return null;
-  }
-};
-
 export const useProjectStore = create((set) => ({
   project: null,
   allProjects: [],
-  teamMember: null,
   teamMembers: [],
   storeError: null,
   isLoading: false,
@@ -62,6 +28,16 @@ export const useProjectStore = create((set) => ({
       supervisor,
     } = projectData;
     try {
+      const thumbnail = await storage.createFile(
+        "678faed20020cb101db1",
+        ID.unique(),
+        projectData.thumbnail
+      );
+
+      const thumbnailUrl = storage.getFileView(
+        "678faed20020cb101db1",
+        thumbnail?.$id
+      );
       const response = await axios.post(`${API_URL}/create-project`, {
         title: templateName,
         description,
@@ -73,18 +49,9 @@ export const useProjectStore = create((set) => ({
         figmaLink,
         githubLink,
         deployLink: deployedLink,
+        thumbnail: thumbnailUrl,
       });
       if (response.data.projectData) {
-        const newFileName = `${response.data.projectData._id}-thumbnail`;
-        const arrayBuffer = await projectData.thumbnail.arrayBuffer();
-        const newFile = new File([arrayBuffer], newFileName, {
-          type: projectData.thumbnail.type,
-        });
-        await storage.createFile(
-          "678faed20020cb101db1",
-          `${response.data.projectData._id}-thumbnail`,
-          newFile
-        );
         set({
           message: response.data.message,
           isLoading: false,
@@ -100,7 +67,7 @@ export const useProjectStore = create((set) => ({
     }
   },
   updateProject: async (projectData, projectId) => {
-    console.log("Inside Store: ");
+    console.log("Updating Project");
     set({ isLoading: true, storeError: null });
     const {
       templateName,
@@ -122,94 +89,36 @@ export const useProjectStore = create((set) => ({
       testing,
     } = projectData;
     try {
+      const updateData = {
+        title: templateName,
+        description,
+        campus,
+        department,
+        year,
+        category,
+        supervisor,
+        figmaLink,
+        githubLink,
+        deployLink: deployedLink,
+        readme,
+        frontend,
+        backend,
+        database,
+        aiLibraries,
+        devops,
+        testing,
+      };
       const response = await axios.post(
         `${API_URL}/update-project/${projectId}`,
-        {
-          title: templateName,
-          description,
-          campus,
-          department,
-          year,
-          category,
-          supervisor,
-          figmaLink,
-          githubLink,
-          deployLink: deployedLink,
-          readme,
-          frontend,
-          backend,
-          database,
-          aiLibraries,
-          devops,
-          testing,
-        }
+        { updateData }
       );
       if (response.data.projectData) {
-        if (projectData.thumbnail) {
-          const newFileName = `${projectId}-thumbnail`;
-          const arrayBuffer = await projectData.thumbnail.arrayBuffer();
-          const newFile = new File([arrayBuffer], newFileName, {
-            type: projectData.thumbnail.type,
-          });
-          await storage.createFile(
-            "678faed20020cb101db1",
-            `${projectId}-thumbnail`,
-            newFile
-          );
-        }
-        if (projectData.screenshot1) {
-          const newFileName = `${projectId}-screenshot1`;
-          const arrayBuffer = await projectData.screenshot1.arrayBuffer();
-          const newFile = new File([arrayBuffer], newFileName, {
-            type: projectData.screenshot1.type,
-          });
-          await storage.createFile(
-            "678faed20020cb101db1",
-            `${projectId}-screenshot1`,
-            newFile
-          );
-        }
-        if (projectData.screenshot2) {
-          const newFileName = `${projectId}-screenshot2`;
-          const arrayBuffer = await projectData.screenshot2.arrayBuffer();
-          const newFile = new File([arrayBuffer], newFileName, {
-            type: projectData.screenshot2.type,
-          });
-          await storage.createFile(
-            "678faed20020cb101db1",
-            `${projectId}-screenshot2`,
-            newFile
-          );
-        }
-        if (projectData.screenshot3) {
-          const newFileName = `${projectId}-screenshot3`;
-          const arrayBuffer = await projectData.screenshot3.arrayBuffer();
-          const newFile = new File([arrayBuffer], newFileName, {
-            type: projectData.screenshot3.type,
-          });
-          await storage.createFile(
-            "678faed20020cb101db1",
-            `${projectId}-screenshot3`,
-            newFile
-          );
-        }
-        if (projectData.documentation) {
-          const newFileName = `${projectId}-documentation`;
-          const arrayBuffer = await projectData.documentation.arrayBuffer();
-          const newFile = new File([arrayBuffer], newFileName, {
-            type: projectData.documentation.type,
-          });
-          await storage.createFile(
-            "678faed20020cb101db1",
-            `${projectId}-documentation`,
-            newFile
-          );
-        }
         set({
+          project: response.data.projectData,
           message: response.data.message,
           isLoading: false,
         });
-        return response.data.projectData._id;
+        return response.data.projectData;
       }
     } catch (error) {
       set({
@@ -219,46 +128,17 @@ export const useProjectStore = create((set) => ({
       throw error;
     }
   },
-  getSingleUserProject: async () => {
+  getSingleUserProject: async (projectId) => {
     console.log("Getting Single Project");
     set({ isLoading: true, storeError: null });
     try {
-      const response = await axios.get(`${API_URL}/get-user-project`);
-
+      const response = await axios.get(
+        `${API_URL}/get-user-project/${projectId}`
+      );
       if (response.data.projectData) {
-        const projectId = response.data.projectData._id;
-        const thumbnailTemp = storage.getFileView(
-          "678faed20020cb101db1",
-          `${projectId}-thumbnail`
-        );
-        const documentationTemp = storage.getFileView(
-          "678faed20020cb101db1",
-          `${projectId}-documentation`
-        );
-        const screenshot1 = storage.getFileView(
-          "678faed20020cb101db1",
-          `${projectId}-screenshot1`
-        );
-        const screenshot2 = storage.getFileView(
-          "678faed20020cb101db1",
-          `${projectId}-screenshot2`
-        );
-        const screenshot3 = storage.getFileView(
-          "678faed20020cb101db1",
-          `${projectId}-screenshot3`
-        );
-        const images = Array.from([screenshot1, screenshot2, screenshot3]);
-        const finalImages = await checkImagesURL(images);
-        const documentation = await checkImageURLSingle(documentationTemp);
-        const thumbnail = await checkImageURLSingle(thumbnailTemp);
         set({
-          project: {
-            ...response?.data?.projectData,
-            images: finalImages,
-            thumbnail,
-            documentation,
-          },
-          message: response?.data?.message,
+          project: response.data.projectData,
+          message: response.data.message,
           isLoading: false,
         });
       }
@@ -276,40 +156,8 @@ export const useProjectStore = create((set) => ({
       const response = await axios.get(`${API_URL}/get-project/${projectId}`);
 
       if (response.data.projectData) {
-        const projectId = response.data.projectData._id;
-
-        const thumbnailTemp = storage.getFileView(
-          "678faed20020cb101db1",
-          `${projectId}-thumbnail`
-        );
-        const documentationTemp = storage.getFileView(
-          "678faed20020cb101db1",
-          `${projectId}-documentation`
-        );
-        const screenshot1 = storage.getFileView(
-          "678faed20020cb101db1",
-          `${projectId}-screenshot1`
-        );
-        const screenshot2 = storage.getFileView(
-          "678faed20020cb101db1",
-          `${projectId}-screenshot2`
-        );
-        const screenshot3 = storage.getFileView(
-          "678faed20020cb101db1",
-          `${projectId}-screenshot3`
-        );
-        const images = Array.from([screenshot1, screenshot2, screenshot3]);
-        const finalImages = await checkImagesURL(images);
-        const documentation = await checkImageURLSingle(documentationTemp);
-        const thumbnail = await checkImageURLSingle(thumbnailTemp);
-
         set({
-          project: {
-            ...response?.data?.projectData,
-            images: finalImages,
-            documentation,
-            thumbnail,
-          },
+          project: response.data.projectData,
           message: response?.data?.message,
           isLoading: false,
         });
@@ -327,50 +175,14 @@ export const useProjectStore = create((set) => ({
     try {
       const response = await axios.get(`${API_URL}/get-projects`);
 
-      let projectsRes = [];
       if (response.data.projects) {
-        response.data.projects.forEach(async (project) => {
-          const projectId = project._id;
-
-          const thumbnailTemp = storage.getFileView(
-            "678faed20020cb101db1",
-            `${projectId}-thumbnail`
-          );
-          const documentationTemp = storage.getFileView(
-            "678faed20020cb101db1",
-            `${projectId}-documentation`
-          );
-
-          const screenshot1 = storage.getFileView(
-            "678faed20020cb101db1",
-            `${projectId}-screenshot1`
-          );
-          const screenshot2 = storage.getFileView(
-            "678faed20020cb101db1",
-            `${projectId}-screenshot2`
-          );
-          const screenshot3 = storage.getFileView(
-            "678faed20020cb101db1",
-            `${projectId}-screenshot3`
-          );
-          const images = Array.from([screenshot1, screenshot2, screenshot3]);
-          const finalImages = await checkImagesURL(images);
-          const documentation = await checkImageURLSingle(documentationTemp);
-          const thumbnail = await checkImageURLSingle(thumbnailTemp);
-
-          projectsRes.push({
-            ...project,
-            images: finalImages,
-            documentation,
-            thumbnail,
-          });
+        set({
+          allProjects: response.data.projects,
+          message: response?.data?.message,
+          isLoading: false,
         });
+        return response.data.projects;
       }
-      set({
-        allProjects: projectsRes,
-        message: response?.data?.message,
-        isLoading: false,
-      });
     } catch (error) {
       set({
         isLoading: false,
@@ -379,60 +191,28 @@ export const useProjectStore = create((set) => ({
       throw error;
     }
   },
-  uploadFile: async (file, name, projectId) => {
+  uploadFile: async (file, projectId, type) => {
     set({ isLoading: true, storeError: null });
-    try {
-      let newFileName;
-      if (file.type == "application/pdf") {
-        newFileName = `${projectId}-${name}.pdf`;
-      } else {
-        newFileName = `${projectId}-${name}`;
-      }
-      const arrayBuffer = await file.arrayBuffer();
-      const newFile = new File([arrayBuffer], newFileName, {
-        type: file.type,
-      });
-      const createdFile = await storage.createFile(
-        "678faed20020cb101db1",
-        newFileName,
-        newFile
-      );
-      const fileUrl = storage.getFileView(
-        "678faed20020cb101db1",
-        createdFile.$id
-      );
-      set({
-        message: "file uploaded successfully",
-        isLoading: false,
-      });
-      return fileUrl;
-    } catch (error) {
-      set({
-        isLoading: false,
-        storeError: error.response?.data?.message || "Error uploading file",
-      });
-      throw error;
-    }
-  },
-  uploadThumbnail: async (file, projectId) => {
-    set({ isLoading: true, storeError: null });
+    console.log("file uploading");
     try {
       const createdFile = await storage.createFile(
         "678faed20020cb101db1",
         ID.unique(),
         file
       );
-      await axios.post(`${API_URL}/upload-thumbnail/${projectId}`, {
-        thumbnail: createdFile.$id,
-      });
       const fileUrl = storage.getFileView(
         "678faed20020cb101db1",
         createdFile.$id
       );
+      await axios.post(`${API_URL}/upload-file/${projectId}`, {
+        fileUrl,
+        type,
+      });
       set({
         message: "file uploaded successfully",
         isLoading: false,
       });
+      console.log("file uploaded");
       return fileUrl;
     } catch (error) {
       set({
@@ -442,12 +222,18 @@ export const useProjectStore = create((set) => ({
       throw error;
     }
   },
-  deleteFile: async (fileURL) => {
+  deleteFile: async (fileUrl, projectId, type) => {
     set({ isLoading: true, storeError: null });
+    console.log("file deleting");
     try {
       const regex = /\/files\/([^\/]+)\/view/;
-      const match = fileURL.match(regex);
+      const match = fileUrl.match(regex);
       await storage.deleteFile("678faed20020cb101db1", match[1]);
+      await axios.post(`${API_URL}/delete-file/${projectId}`, {
+        fileUrl,
+        type,
+      });
+      console.log("file deleted");
       set({
         message: "file deleted successfully",
         isLoading: false,
@@ -460,28 +246,23 @@ export const useProjectStore = create((set) => ({
       throw error;
     }
   },
-
-  addTeamMember: async (teamMember) => {
+  addTeamMember: async (teamMember, projectId) => {
     set({ isLoading: true, storeError: null });
-
+    console.log("Adding team member");
     try {
-      const { name, rollNo, email, role, github, linkedIn } = teamMember;
-      const response = await axios.post(`${API_URL}/add-team-member`, {
-        name,
-        rollNo,
-        email,
-        role,
-        github,
-        linkedIn,
+      const response = await axios.post(`${API_URL}/add-team-member/`, {
+        teamMember,
+        projectId,
       });
 
       if (response.data.teamMember) {
         set({
           message: response.data.message,
           isLoading: false,
-          teamMember: response.data.teamMember,
         });
-        return response.data.teamMember._id;
+        console.log("Added team member");
+        console.log(response.data.teamMember);
+        return response.data.teamMember;
       }
     } catch (error) {
       set({
@@ -501,14 +282,12 @@ export const useProjectStore = create((set) => ({
           updateData,
         }
       );
-
       if (response.data.teamMember) {
         set({
           message: response.data.message,
           isLoading: false,
-          teamMember: response.data.teamMember,
         });
-        return response.data.teamMember._id;
+        return response.data.teamMember;
       }
     } catch (error) {
       set({
@@ -526,12 +305,10 @@ export const useProjectStore = create((set) => ({
       const response = await axios.post(
         `${API_URL}/delete-team-member/${memberId}`
       );
-
       if (response.data.message) {
         set({
           message: response.data.message,
           isLoading: false,
-          teamMember: null,
         });
       }
     } catch (error) {
@@ -555,8 +332,8 @@ export const useProjectStore = create((set) => ({
         set({
           message: response.data.message,
           isLoading: false,
-          teamMember: response.data.teamMember,
         });
+        return response.data.teamMember;
       }
     } catch (error) {
       set({
@@ -569,7 +346,6 @@ export const useProjectStore = create((set) => ({
   },
   getAllTeamMembers: async () => {
     set({ isLoading: true, storeError: null });
-
     try {
       const response = await axios.get(`${API_URL}/get-all-team-members`);
 
@@ -579,6 +355,7 @@ export const useProjectStore = create((set) => ({
           isLoading: false,
           teamMembers: response.data.teamMembers,
         });
+        return response.data.teamMembers;
       }
     } catch (error) {
       set({

@@ -6,21 +6,23 @@ import { useProjectStore } from "@/store/projectStore";
 
 const FypDetails = () => {
   const { id } = useParams();
-
-  // const { project, getSingleProject } = useProjectStore();
-  // useEffect(() => {
-  //   const getP = async () => {
-  //     await getSingleProject(id);
-  //     console.log("project")
-  //     console.log(project)
-  //   };
-  //   getP();
-  // }, []);
+  const { project, getSingleProject } = useProjectStore();
+  useEffect(() => {
+    const getP = async () => {
+      await getSingleProject(id);
+      console.log("project")
+      console.log(project)
+    };
+    getP();
+  }, []);
+  if (!project) {
+    return <div>Loading...</div>;
+  }
 
   return (
     <div>
       <Layout className="py-10 bg-[#F3F8FF]">
-        {/* {project && <FypShowcase fyp={project} />} */}
+        {project && <FypShowcase fyp={project} />}
       </Layout>
     </div>
   );

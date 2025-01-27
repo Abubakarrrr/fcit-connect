@@ -11,13 +11,14 @@ import {
   updateTeamMember,
   getTeamMember,
   getAllTeamMembers,
-  uploadThumbnail,
+  uploadFile,
+  deleteFile,
 } from "../controllers/userProjectController.js";
 
 const router = express.Router();
 router.post("/create-project", verifyToken, createInitialProject);
 router.post("/update-project/:id", verifyToken, updateProject);
-router.get("/get-user-project", verifyToken, getSingleUserProject);
+router.get("/get-user-project/:id", verifyToken, getSingleUserProject);
 router.get("/get-project/:id", getSingleProject);
 router.get("/get-projects", getAllProjects);
 
@@ -27,6 +28,7 @@ router.post("/delete-team-member/:id", verifyToken, deleteTeamMember);
 router.get("/get-team-member/:id", verifyToken, getTeamMember);
 router.get("/get-all-team-members", verifyToken, getAllTeamMembers);
 
-router.post("/upload-thumbnail/:id", verifyToken, uploadThumbnail);
+router.post("/upload-file/:id", verifyToken, uploadFile);
+router.post("/delete-file/:id", verifyToken, deleteFile);
 
 export default router;

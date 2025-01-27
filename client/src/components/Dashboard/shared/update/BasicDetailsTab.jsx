@@ -7,7 +7,7 @@ import { useProjectStore } from "@/store/projectStore";
 const BasicDetailsTab = ({
   formState,
   setFormState,
-  thumbnailUrl="",
+  thumbnailUrl = "",
   setThumbnailUrl,
   errors,
   setErrors,
@@ -23,7 +23,7 @@ const BasicDetailsTab = ({
   const handleFileSelect = async (e) => {
     const file = e.target.files[0];
     if (project?._id) {
-      const fileUrl = await uploadFile(file, "thumbnail", project?._id);
+      const fileUrl = await uploadFile(file, project?._id, "THUMBNAIL");
       if (fileUrl) {
         setThumbnailUrl(fileUrl);
       }
@@ -31,7 +31,7 @@ const BasicDetailsTab = ({
   };
 
   const handleRemoveImage = async () => {
-    await deleteFile(thumbnailUrl);
+    await deleteFile(thumbnailUrl, project?._id, "THUMBNAIL");
     setThumbnailUrl(null);
   };
   return (
