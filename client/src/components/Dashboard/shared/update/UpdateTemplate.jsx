@@ -15,9 +15,9 @@ import { Button } from "@/components/ui/button";
 import { PlusCircle } from "lucide-react";
 import { useProjectStore } from "@/store/projectStore";
 import { useParams } from "react-router-dom";
-import { toast } from "@/hooks/use-toast";
-
+import { useToast } from "@/hooks/use-toast";
 const UpdateTemplate = () => {
+  const { toast } = useToast();
   const {
     getSingleUserProject,
     project,
@@ -50,7 +50,10 @@ const UpdateTemplate = () => {
         await getAllTeamMembers();
       } catch (error) {
         console.log(error)
-        // toast : error.response?.data?.message
+        toast({
+          title: error.response?.data?.message || "Error Finding Project",
+          description: "",
+        });
       }
     };
     getProjectState();

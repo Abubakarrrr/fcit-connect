@@ -6,7 +6,7 @@ const TeamMemberSchema = new mongoose.Schema({
   email: { type: String, required: true},
   role: { type: String },
   github: { type: String },
-  linkedIn: { type: String },
+  linkedin: { type: String },
   project: { type: mongoose.Schema.Types.ObjectId, ref: "Project" },
   teamLeader: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
 });

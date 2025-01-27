@@ -3,18 +3,44 @@ import { Button } from "@/components/ui/button";
 import { ExternalLink, PlusCircle, X } from "lucide-react";
 import { FilePlus } from "lucide-react";
 import { useProjectStore } from "@/store/projectStore";
+import { useToast } from "@/hooks/use-toast";
+
 const DocumentationTab = ({ file, setFile }) => {
+  const { useToast } = useToast();
   const { deleteFile, uploadFile, project } = useProjectStore();
   const fileInputRef = useRef(null);
 
   const handleFileSelect = async (e) => {
     const selectedFile = e.target.files[0];
-    const url = await uploadFile(selectedFile, project?._id, "DOCUMENTATION");
-    setFile(url);
+    try {
+      const url = await uploadFile(selectedFile, project?._id, "DOCUMENTATION");
+      setFile(url);
+      toast({
+        title: message || "File uploaded successfully",
+        description: "",
+      });
+    } catch (error) {
+      toast({
+        title: message || "Failed to upload file",
+        description: "",
+      });
+    }
+
   };
 
   const handleRemoveFile = async () => {
-    await deleteFile(file, project?._id, "DOCUMENTATION");
+    try {
+      await deleteFile(file, project?._id, "DOCUMENTATION");
+      toast({
+        title: message || "File deleted successfully",
+        description: "",
+      });
+    } catch (error) {
+      toast({
+        title: message || "Error while deleting file",
+        description: "",
+      });
+    }
     setFile(null);
   };
 
@@ -22,6 +48,7 @@ const DocumentationTab = ({ file, setFile }) => {
     fileInputRef.current.click();
   };
 
+  const { isLoading } = useProjectStore();
   return (
     <div>
       <div className="py-6 px-4 rounded-lg border shadow-sm">
@@ -40,9 +67,10 @@ const DocumentationTab = ({ file, setFile }) => {
               <Button
                 className="flex items-center mt-4"
                 onClick={handleButtonClick}
+                disabled={isLoading}
               >
                 <FilePlus size={16} className="mr-2" />
-                Choose File
+                {isLoading ? "Uploading..." : "Upload"}
               </Button>
 
               <input
@@ -57,7 +85,11 @@ const DocumentationTab = ({ file, setFile }) => {
           ) : (
             <div className="flex flex-col items-center py-4">
               <div className="flex  ml-auto mb-2">
-                <button onClick={handleRemoveFile} className="text-red-500">
+                <button
+                  onClick={handleRemoveFile}
+                  className="text-red-500"
+                  disabled={isLoading}
+                >
                   <X size={16} />
                 </button>
               </div>

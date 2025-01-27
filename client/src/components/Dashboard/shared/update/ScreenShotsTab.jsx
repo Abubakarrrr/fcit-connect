@@ -1,11 +1,10 @@
 import React from "react";
-import { useState } from "react";
-import { PlusCircle, X } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { cn } from "@/lib/utils";
+import { X } from "lucide-react";
 import { useProjectStore } from "@/store/projectStore";
+import { useToast } from "@/hooks/use-toast";
 
 const ScreenShotsTab = ({ images, setImages }) => {
+  const { toast } = useToast();
   const { deleteFile, uploadFile, project, isLoading } = useProjectStore();
   const handleRemoveImage = async (index) => {
     try {
@@ -13,6 +12,10 @@ const ScreenShotsTab = ({ images, setImages }) => {
       setImages(images.filter((_, i) => i !== index));
     } catch (error) {
       console.log(error);
+      toast({
+        title: error?.response?.data.message || "error while deleting image",
+        description: "",
+      });
     }
   };
 
@@ -28,6 +31,10 @@ const ScreenShotsTab = ({ images, setImages }) => {
         setImages((prevImages) => [...prevImages, fileUrl]);
       } catch (error) {
         console.log(error);
+        toast({
+          title: error?.response?.data.message || "error while uploading image",
+          description: "",
+        });
       }
     }
   };
@@ -61,6 +68,7 @@ const ScreenShotsTab = ({ images, setImages }) => {
                   {!isLoading && (
                     <button
                       onClick={() => handleRemoveImage(index)}
+                      disbaled={isLoading}
                       className="absolute top-2 right-2 bg-red-500 text-white rounded-full p-1 hover:bg-red-600"
                       aria-label={`Remove image ${index + 1}`}
                     >
@@ -82,9 +90,11 @@ const ScreenShotsTab = ({ images, setImages }) => {
           <div className="flex flex-col items-center justify-center py-2">
             <label
               htmlFor="image-upload"
-              className="cursor-pointer text-[14px] px-4 py-2 bg-black text-white rounded-lg"
+              className={`cursor-pointer text-[14px] px-4 py-2 bg-black text-white rounded-lg ${
+                isLoading ? "pointer-events-none opacity-50" : ""
+              }`}
             >
-              Choose File(s)
+              {isLoading ? "Uploading..." : "Choose File(s)"}
             </label>
             <p className="text-[12px] mt-1 text-gray-500">
               {" "}

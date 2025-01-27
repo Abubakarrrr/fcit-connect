@@ -235,27 +235,26 @@ export const addTeamMember = async (req, res) => {
 };
 export const updateTeamMember = async (req, res) => {
   const teamMemberId = req.params.id;
+  const {updateData} = req.body;
+  console.log(updateData);
   try {
     const existingTeamMember = await TeamMember.findById(teamMemberId);
     if (!existingTeamMember) {
       return res.status(404).json({ message: "Team member not found" });
     }
-    const updatedFields = {};
-    for (const key in updateData) {
-      if (updateData[key] !== existingTeamMember[key]) {
-        updatedFields[key] = updateData[key];
-      }
-    }
-    if (Object.keys(updatedFields).length > 0) {
-      await TeamMember.findByIdAndUpdate(teamMemberId, updatedFields, {
-        new: true,
-      });
-    }
-    const updatedTeamMember = await TeamMember.findById(teamMemberId);
+    const updateTeamMember = await TeamMember.findById(teamMemberId);
+    updateTeamMember.name = updateData.name || existingTeamMember.name;
+    updateTeamMember.rollNo = updateData.rollNo || existingTeamMember.rollNo;
+    updateTeamMember.email = updateData.email || existingTeamMember.email;
+    updateTeamMember.role = updateData.role || existingTeamMember.role;
+    updateTeamMember.github = updateData.github || existingTeamMember.github;
+    updateTeamMember.linkedin =updateData.linkedin || existingTeamMember.linkedin;
+    await updateTeamMember.save();
+
     return res.status(200).json({
       success: true,
       message: "Team Member Updated Successfully",
-      teamMember: updatedTeamMember,
+      teamMember: updateTeamMember,
     });
   } catch (error) {
     console.log("error updating team member");
@@ -279,11 +278,13 @@ export const deleteTeamMember = async (req, res) => {
       return res.status(404).json({ message: "Project not found" });
     }
 
-    user.teamMembers = user.teamMembers.filter((mId) => mId !== teamMemberId);
-
-    project.teamMembers = project.teamMembers.filter(
-      (mId) => mId !== teamMemberId
+    user.teamMembers = user.teamMembers.filter(
+      (mId) => mId.toString() !== teamMemberId.toString()
     );
+    project.teamMembers = project.teamMembers.filter(
+      (mId) => mId.toString() !== teamMemberId.toString()
+    );
+    
 
     await user.save();
     await project.save();

@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { PlusCircle, Pencil, Trash2 } from "lucide-react";
+import { Pencil, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -10,15 +10,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
+
 import {
   Table,
   TableBody,
@@ -28,10 +20,16 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { useProjectStore } from "@/store/projectStore";
-
+import { useToast } from "@/hooks/use-toast";
 export default function TeamMemberTab({ members, setMembers }) {
-  const { project, addTeamMember, updateTeamMember, deleteTeamMember } =
-    useProjectStore();
+  const { toast } = useToast();
+  const {
+    project,
+    addTeamMember,
+    updateTeamMember,
+    deleteTeamMember,
+    isLoading,
+  } = useProjectStore();
   const [currentMember, setCurrentMember] = useState({
     name: "",
     rollNo: "",
@@ -47,29 +45,38 @@ export default function TeamMemberTab({ members, setMembers }) {
     const { name, value } = e.target;
     setCurrentMember({ ...currentMember, [name]: value });
   };
-
+  
   const handleSubmit = async (e) => {
     e.preventDefault();
-    let newTeamMember;
-    if (isEditing) {
+    try {
+      let newTeamMember;
       newTeamMember = await addTeamMember(currentMember, project?._id);
-    } else {
-      newTeamMember = await updateTeamMember(currentMember, currentMember._id);
-    }
-    if (newTeamMember) {
-      setMembers((prev) => [...prev, newTeamMember]);
-      setCurrentMember({
-        name: "",
-        rollNo: "",
-        email: "",
-        role: "",
-        github: "",
-        linkedin: "",
+      if (newTeamMember) {
+        setMembers((prev) => {
+          return [...prev, newTeamMember];
+        });
+        setCurrentMember({
+          name: "",
+          rollNo: "",
+          email: "",
+          role: "",
+          github: "",
+          linkedin: "",
+        });
+        toast({
+          title: "Member added successfully",
+          description: "",
+        });
+      }
+    } catch (error) {
+      toast({
+        title: error?.response?.data.message || "Error while adding member",
+        description: "",
       });
     }
   };
 
-  const handleEdit = (member) => {
+  const handleEdit = async(member) => {
     setIsEditing(true);
     setCurrentMember(member);
     setMembers((prevMembers) =>
@@ -77,8 +84,54 @@ export default function TeamMemberTab({ members, setMembers }) {
     );
   };
 
-  const handleDelete = async (id) => {
-    await deleteTeamMember(id);
+  const handleUpdate = async (e) => {
+    e.preventDefault();
+    try {
+      let newTeamMember;
+      newTeamMember = await updateTeamMember(currentMember, currentMember._id);
+      if (newTeamMember) {
+        setMembers((prev) => {
+          return [...prev, newTeamMember];
+        });
+        setCurrentMember({
+          name: "",
+          rollNo: "",
+          email: "",
+          role: "",
+          github: "",
+          linkedin: "",
+        });
+        toast({
+          title: "Member updated successfully",
+          description: "",
+        });
+      }
+      setIsEditing(false);
+    } catch (error) {
+      console.log(error)
+      toast({
+        title: error?.response?.data.message || "Error while updating member",
+        description: "",
+      });
+    }
+  };
+
+  const handleDelete = async (member) => {
+    try {
+      await deleteTeamMember(member._id);
+      setMembers((prevMembers) =>
+        prevMembers.filter((m) => m._id !== member._id)
+      );
+      toast({
+        title: "Member deleted successfully",
+        description: "",
+      });
+    } catch (error) {
+      toast({
+        title: error?.response?.data?.message || "Error while deleting member",
+        description: "",
+      });
+    }
   };
   return (
     <div className="container mx-auto p-4">
@@ -154,8 +207,12 @@ export default function TeamMemberTab({ members, setMembers }) {
           </form>
         </CardContent>
         <CardFooter>
-          <Button type="submit" onClick={handleSubmit}>
-            {isEditing ? "Update" : "Add"} Team Member
+          <Button type="submit"  onClick={isEditing ? handleUpdate : handleSubmit}disabled={isLoading}>
+            {isLoading
+              ? "Uploading..."
+              : isEditing
+              ? "Update Team Member"
+              : "Add Team Member"}
           </Button>
         </CardFooter>
       </Card>
@@ -178,7 +235,7 @@ export default function TeamMemberTab({ members, setMembers }) {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {members.length > 0 &&
+              {members?.length > 0 &&
                 members?.map((member) => (
                   <TableRow key={member._id}>
                     <TableCell>{member.name}</TableCell>

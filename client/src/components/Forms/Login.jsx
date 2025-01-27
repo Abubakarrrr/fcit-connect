@@ -51,7 +51,7 @@ export default function Login() {
     } catch (error) {
       console.log(error);
       toast({
-        title: error.message || "Login attempt failed",
+        title: error.response?.data?.message || "Login attempt failed",
         description: "",
       });
     }

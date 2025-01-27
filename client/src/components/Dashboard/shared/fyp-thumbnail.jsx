@@ -2,6 +2,7 @@ import React from "react";
 import { Button } from "@/components/ui/button";
 import { XCircle } from "lucide-react";
 import ErrorMessage from "@/components/shared/ErrorMessage";
+import { useProjectStore } from "@/store/projectStore";
 
 export default function FypThumbnail({
   imageUrl="",
@@ -9,10 +10,11 @@ export default function FypThumbnail({
   onRemoveImage,
   fileError,
 }) {
+  const {isLoading} = useProjectStore();
   return (
     <div className="p-4 border rounded-lg relative">
       <h2 className="text-lg text-center font-semibold">FYP Thumbnail</h2>
-      <p className="text-[12px] text-red-500 text-center">
+      <p className="text-[12px] text-gray-500 text-center">
         The Image must be 1920 x 1440
       </p>
 
@@ -30,8 +32,10 @@ export default function FypThumbnail({
               onClick={onRemoveImage}
               className="absolute top-2 right-2 bg-white rounded-full shadow p-1 text-red-600 hover:text-red-800 transition"
               title="Remove Image"
+              disabled={isLoading}
             >
-              <XCircle size={20} />
+              <XCircle size={20}
+               />
             </button>
           </div>
         ) : (
@@ -49,8 +53,9 @@ export default function FypThumbnail({
             className=""
             type="button"
             onClick={() => document.getElementById("thumbnail").click()}
+            disabled={isLoading}
           >
-            Choose File
+             {isLoading ? "Uploading..." : "Upload Image"}
           </Button>
           <input
             id="thumbnail"

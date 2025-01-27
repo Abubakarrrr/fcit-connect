@@ -3,6 +3,8 @@ import React from "react";
 import FypForm from "../fyp-form";
 import FypThumbnail from "../fyp-thumbnail";
 import { useProjectStore } from "@/store/projectStore";
+import { Toast } from "@radix-ui/react-toast";
+import { useToast } from "@/hooks/use-toast";
 
 const BasicDetailsTab = ({
   formState,
@@ -14,25 +16,43 @@ const BasicDetailsTab = ({
   fileError,
 }) => {
   const { deleteFile, uploadFile, project } = useProjectStore();
-
+  const { toast } = useToast();
   const handleChange = (field, value) => {
     setFormState((prev) => ({ ...prev, [field]: value }));
     setErrors((prev) => ({ ...prev, [field]: "" }));
   };
 
   const handleFileSelect = async (e) => {
-    const file = e.target.files[0];
-    if (project?._id) {
-      const fileUrl = await uploadFile(file, project?._id, "THUMBNAIL");
-      if (fileUrl) {
-        setThumbnailUrl(fileUrl);
+    try {
+      const file = e.target.files[0];
+      if (project?._id) {
+        const fileUrl = await uploadFile(file, project?._id, "THUMBNAIL");
+        if (fileUrl) {
+          setThumbnailUrl(fileUrl);
+        }
       }
+    } catch (error) {
+      console.log(error)
+      toast({
+        title: error.response?.data?.message || "Error while uploading image",
+        description: "",
+      });
     }
+   
   };
 
   const handleRemoveImage = async () => {
-    await deleteFile(thumbnailUrl, project?._id, "THUMBNAIL");
-    setThumbnailUrl(null);
+    try {
+      await deleteFile(thumbnailUrl, project?._id, "THUMBNAIL");
+      setThumbnailUrl(null);
+    } catch (error) {
+      console.log(error)
+      toast({
+        title: error.response?.data?.message || "Error while removing image",
+        description: "",
+      });
+    }
+   
   };
   return (
     <div className="py-6 px-4 rounded-lg border shadow-sm">

@@ -82,7 +82,7 @@ const BasicDetails = () => {
       });
       if (projectId) {
         toast({
-          title: message,
+          title: message || "Project created successfully",
           description: "",
         });
         navigate(`${saveTemplateLink}/${projectId}`);

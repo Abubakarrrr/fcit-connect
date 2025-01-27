@@ -250,7 +250,7 @@ export const useProjectStore = create((set) => ({
     set({ isLoading: true, storeError: null });
     console.log("Adding team member");
     try {
-      const response = await axios.post(`${API_URL}/add-team-member/`, {
+      const response = await axios.post(`${API_URL}/add-team-member`, {
         teamMember,
         projectId,
       });
@@ -261,7 +261,6 @@ export const useProjectStore = create((set) => ({
           isLoading: false,
         });
         console.log("Added team member");
-        console.log(response.data.teamMember);
         return response.data.teamMember;
       }
     } catch (error) {
@@ -277,10 +276,8 @@ export const useProjectStore = create((set) => ({
 
     try {
       const response = await axios.post(
-        `${API_URL}/update-team-member/:${memberId}`,
-        {
-          updateData,
-        }
+        `${API_URL}/update-team-member/${memberId}`,
+          {updateData},
       );
       if (response.data.teamMember) {
         set({
@@ -299,7 +296,7 @@ export const useProjectStore = create((set) => ({
     }
   },
   deleteTeamMember: async (memberId) => {
-    set({ isLoading: true, storeError: null });
+    set({ isLoading: false, storeError: null });
 
     try {
       const response = await axios.post(
