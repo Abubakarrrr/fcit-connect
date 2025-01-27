@@ -30,13 +30,8 @@ import {
 import { useProjectStore } from "@/store/projectStore";
 
 export default function TeamMemberTab({ members, setMembers }) {
-  const {
-    project,
-    addTeamMember,
-    updateTeamMember,
-    deleteTeamMember,
-    getAllTeamMembers,
-  } = useProjectStore();
+  const { project, addTeamMember, updateTeamMember, deleteTeamMember } =
+    useProjectStore();
   const [currentMember, setCurrentMember] = useState({
     name: "",
     rollNo: "",
@@ -46,7 +41,7 @@ export default function TeamMemberTab({ members, setMembers }) {
     linkedin: "",
   });
   const [isEditing, setIsEditing] = useState(false);
-  const [deleteId, setDeleteId] = useState(null);
+  // const [deleteId, setDeleteId] = useState(null);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -55,16 +50,34 @@ export default function TeamMemberTab({ members, setMembers }) {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const id = await addTeamMember(currentMember);
+    let newTeamMember;
+    if (isEditing) {
+      newTeamMember = await addTeamMember(currentMember, project?._id);
+    } else {
+      newTeamMember = await updateTeamMember(currentMember, currentMember._id);
+    }
+    if (newTeamMember) {
+      setMembers((prev) => [...prev, newTeamMember]);
+      setCurrentMember({
+        name: "",
+        rollNo: "",
+        email: "",
+        role: "",
+        github: "",
+        linkedin: "",
+      });
+    }
   };
 
   const handleEdit = (member) => {
-    setCurrentMember(member);
     setIsEditing(true);
+    setCurrentMember(member);
+    setMembers((prevMembers) =>
+      prevMembers.filter((m) => m._id !== member._id)
+    );
   };
 
   const handleDelete = async (id) => {
-    console.log(id);
     await deleteTeamMember(id);
   };
   return (
@@ -165,8 +178,8 @@ export default function TeamMemberTab({ members, setMembers }) {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {members &&
-                members.map((member) => (
+              {members.length > 0 &&
+                members?.map((member) => (
                   <TableRow key={member._id}>
                     <TableCell>{member.name}</TableCell>
                     <TableCell>{member.rollNo}</TableCell>
@@ -201,18 +214,17 @@ export default function TeamMemberTab({ members, setMembers }) {
                         <Button
                           variant="outline"
                           size="icon"
-                          onClick={() => handleEdit(member,_id)}
+                          onClick={() => handleEdit(member)}
                         >
                           <Pencil className="h-4 w-4" />
                         </Button>
-                            <Button
-                              variant="outline"
-                              size="icon"
-                              onClick={() => handleDelete(member._id)}
-                            >
-                              <Trash2 className="h-4 w-4" />
-                            </Button>
-                          
+                        <Button
+                          variant="outline"
+                          size="icon"
+                          onClick={() => handleDelete(member)}
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
                       </div>
                     </TableCell>
                   </TableRow>

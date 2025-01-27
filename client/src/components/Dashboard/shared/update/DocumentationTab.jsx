@@ -9,12 +9,12 @@ const DocumentationTab = ({ file, setFile }) => {
 
   const handleFileSelect = async (e) => {
     const selectedFile = e.target.files[0];
-    const url = await uploadFile(selectedFile, "doc", project?._id);
+    const url = await uploadFile(selectedFile, project?._id, "DOCUMENTATION");
     setFile(url);
   };
 
-  const handleRemoveFile = async() => {
-    await deleteFile(file)
+  const handleRemoveFile = async () => {
+    await deleteFile(file, project?._id, "DOCUMENTATION");
     setFile(null);
   };
 
