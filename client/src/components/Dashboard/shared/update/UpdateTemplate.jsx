@@ -58,8 +58,8 @@ const UpdateTemplate = () => {
       setThumbnailUrl(project?.thumbnail);
       setImages(project?.images);
       setMembers(teamMembers);
-      console.log("members")
-      console.log(members)
+      setFile(project?.documentation)
+      console.log(file)
     }
   }, [project,members,teamMembers]);
 

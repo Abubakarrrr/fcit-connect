@@ -233,7 +233,7 @@ export const useProjectStore = create((set) => ({
         );
         const documentationTemp = storage.getFileView(
           "678faed20020cb101db1",
-          `${projectId}-documentation`
+          `${projectId}-doc.pdf`
         );
         const screenshot1 = storage.getFileView(
           "678faed20020cb101db1",
@@ -284,7 +284,7 @@ export const useProjectStore = create((set) => ({
         );
         const documentationTemp = storage.getFileView(
           "678faed20020cb101db1",
-          `${projectId}-documentation`
+          `${projectId}-doc.pdf`
         );
         const screenshot1 = storage.getFileView(
           "678faed20020cb101db1",
@@ -329,7 +329,7 @@ export const useProjectStore = create((set) => ({
 
       let projectsRes = [];
       if (response.data.projects) {
-        response.data.projects.forEach(async (project) => {
+       for (const project of response.data.projects) {
           const projectId = project._id;
 
           const thumbnailTemp = storage.getFileView(
@@ -338,7 +338,7 @@ export const useProjectStore = create((set) => ({
           );
           const documentationTemp = storage.getFileView(
             "678faed20020cb101db1",
-            `${projectId}-documentation`
+            `${projectId}-doc.pdf`
           );
 
           const screenshot1 = storage.getFileView(
@@ -364,7 +364,7 @@ export const useProjectStore = create((set) => ({
             documentation,
             thumbnail,
           });
-        });
+        };
       }
       set({
         allProjects: projectsRes,
@@ -383,7 +383,13 @@ export const useProjectStore = create((set) => ({
   uploadFile: async (file, name, projectId) => {
     set({ isLoading: true, storeError: null });
     try {
-      const newFileName = `${projectId}-${name}`;
+      let newFileName;
+      if (file.type == "application/pdf") {
+        newFileName = `${projectId}-${name}.pdf`;
+      } else {
+        newFileName = `${projectId}-${name}`;
+      }
+      // const newFileName = `${projectId}-${name}`;
       const arrayBuffer = await file.arrayBuffer();
       const newFile = new File([arrayBuffer], newFileName, {
         type: file.type,

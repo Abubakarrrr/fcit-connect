@@ -50,9 +50,11 @@ export default function FypShowcase({ fyp }) {
               {/* Icons */}
               <div className="flex items-center gap-3">
                 {figmaLink && (
-                  <div className="w-12 h-12 bg-slate-50 rounded-xl border flex items-center justify-center cursor-pointer">
-                    <img src={figmaLink} className="w-8 h-8"></img>
-                  </div>
+                  <a href={figmaLink} target="_blank" rel="noopener noreferrer">
+                    <div className="w-12 h-12 bg-slate-50 rounded-xl border flex items-center justify-center cursor-pointer">
+                      <img src="/figma.png" className="w-8 h-8"></img>
+                    </div>
+                  </a>
                 )}
                 {githubLink && (
                   <a

@@ -1,19 +1,20 @@
 import React, { useState, useRef } from "react";
 import { Button } from "@/components/ui/button";
-import { PlusCircle, X } from "lucide-react";
+import { ExternalLink, PlusCircle, X } from "lucide-react";
 import { FilePlus } from "lucide-react";
 import { useProjectStore } from "@/store/projectStore";
 const DocumentationTab = ({ file, setFile }) => {
   const { deleteFile, uploadFile, project } = useProjectStore();
   const fileInputRef = useRef(null);
 
-  const handleFileSelect = async(e) => {
+  const handleFileSelect = async (e) => {
     const selectedFile = e.target.files[0];
-    const url = await uploadFile(selectedFile,"documentation",project?._id);
-    console.log(url);
+    const url = await uploadFile(selectedFile, "doc", project?._id);
+    setFile(url);
   };
 
-  const handleRemoveFile = () => {
+  const handleRemoveFile = async() => {
+    await deleteFile(file)
     setFile(null);
   };
 
@@ -51,27 +52,26 @@ const DocumentationTab = ({ file, setFile }) => {
                 className="hidden"
                 onChange={handleFileSelect}
               />
+              <p className="text-[12px] mt-1 text-gray-500">Less than (1 MB)</p>
             </div>
           ) : (
             <div className="flex flex-col items-center py-4">
-              <div className="flex justify-between items-center w-full mb-2">
-                <p className="text-sm text-gray-600">
-                  {file.name} ({(file.size / 1024).toFixed(1)} KB)
-                </p>
+              <div className="flex  ml-auto mb-2">
                 <button onClick={handleRemoveFile} className="text-red-500">
                   <X size={16} />
                 </button>
               </div>
-              <p className="text-sm text-gray-500">Preview (PDF):</p>
-              <embed
-                src={URL.createObjectURL(file)}
-                type="application/pdf"
-                className="w-full h-60 mt-2 border rounded-md"
-              />
+              {/* <p className="text-sm text-gray-500">Preview (PDF):</p> */}
+              {file && (
+                <a href={file} target="_blank" rel="noopener noreferrer">
+                  <Button variant="outline" size="lg" className="gap-2">
+                    Preview
+                    <ExternalLink className="w-4 h-4" />
+                  </Button>
+                </a>
+              )}
             </div>
           )}
-
-          <p className="text-[12px] mt-1 text-gray-500">Less than (1 MB)</p>
         </div>
       </div>
       {/* <div className="flex justify-end mt-6">
