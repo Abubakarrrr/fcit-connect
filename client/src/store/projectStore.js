@@ -388,7 +388,6 @@ export const useProjectStore = create((set) => ({
     set({ isLoading: true, storeError: null });
     try {
       const response = await axios.get(`${API_URL}/get-all-team-members`);
-
       if (response.data.teamMembers) {
         set({
           message: response.data.message,
