@@ -9,19 +9,26 @@ import { useState } from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import EmailInput from "../ui/Email-Input";
 import PasswordInput from "../ui/Password-Input";
+import { useAuthStore } from "@/store/authStore";
 
 function AvatarDemo() {
+  const { user } = useAuthStore();
   return (
     <Avatar className="h-16 w-16">
-      <AvatarImage src="https://github.com/shadcn.png" alt="@shadcn" />
-      <AvatarFallback>CN</AvatarFallback>
+      <AvatarImage src={user?.profilePicture} alt="@shadcn" />
+      <AvatarFallback>
+        {" "}
+        {user?.name
+          .split(" ")
+          .map((n) => n[0])
+          .join("")}
+      </AvatarFallback>
     </Avatar>
   );
 }
 
-
-
 export default function UserProfile() {
+  const { user } = useAuthStore();
   const [passwords, setPasswords] = useState({
     oldPassword: "",
     newPassword: "",
@@ -44,7 +51,7 @@ export default function UserProfile() {
                 {/* Card */}
                 <Card>
                   <CardHeader className="text-center flex flex-col items-center">
-                  <AvatarDemo />
+                    <AvatarDemo />
                     <h2 className="text-3xl font-semibold leading-none tracking-tight capitalize p4-5">
                       Profile
                     </h2>
@@ -53,8 +60,8 @@ export default function UserProfile() {
                     <div className="mt-5">
                       {/* Grid */}
                       <div className="flex flex-col gap-4">
-                        <Input placeholder="Name" disabled/>
-                        <EmailInput disabled placeholder="Email" />
+                        <Input placeholder="Name"  value={user?.name} disabled/>
+                        <EmailInput disabled placeholder="Email"  value={user?.email}/>
                         <PasswordInput
                           id="oldPassword"
                           name="oldPassword"

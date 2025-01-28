@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import {
   Table,
   TableBody,
@@ -8,6 +8,8 @@ import {
 } from "@/components/ui/table";
 import FypRow from "../../admin/fyp/FypRow";
 import { useLocation } from "react-router-dom";
+import { useProjectStore } from "@/store/projectStore";
+import { useAuthStore } from "@/store/authStore";
 
 const tableHeaders = [
   {
@@ -42,9 +44,18 @@ const fypProjectData = [
 ];
 
 const ListedFyp = () => {
+  const { user } = useAuthStore();
+  const { getSingleUserProject, project } = useProjectStore();
+  useEffect(() => {
+    const getP = async () => {
+      await getSingleUserProject(user?.project);
+      console.log(project);
+    };
+    getP();
+  }, []);
   return (
     <main className="flex-1 gap-4 p-4 sm:px-6 sm:py-0 md:gap-8">
-      {fypProjectData.length === 0 ? (
+      {!project ? (
         <div className="flex items-center justify-center h-64">
           <h2 className="text-2xl font-semibold ">No FYPs yet</h2>
         </div>
@@ -59,11 +70,7 @@ const ListedFyp = () => {
               ))}
             </TableRow>
           </TableHeader>
-          <TableBody>
-            {fypProjectData.map((fyp, index) => (
-              <FypRow key={index} data={fyp} />
-            ))}
-          </TableBody>
+          <TableBody className="">{project && <FypRow project={project} />}</TableBody>
         </Table>
       )}
     </main>
