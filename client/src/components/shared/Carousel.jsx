@@ -10,13 +10,13 @@ import {
 
 export default function ImagesCarousel({ images }) {
   return (
-    <Carousel className="w-full max-w-xs">
+    <Carousel className="w-full ">
       <CarouselContent>
         {images.map((image, index) => (
           <CarouselItem key={index}>
             <div className="p-1">
               <Card>
-                <CardContent className="flex aspect-square items-center justify-center p-6">
+                <CardContent className="flex aspect-square items-center justify-center p-3">
                   <img
                     src={image}
                     alt={`Slide ${index + 1}`}
