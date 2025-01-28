@@ -1,6 +1,8 @@
 import { Link } from "react-router-dom";
 import { ChevronRightIcon } from "lucide-react";
 import Marquee from "../ui/marquee";
+import { useProjectStore } from "@/store/projectStore";
+import { useEffect } from "react";
 // import { BackgroundLines } from "../ui/background-lines";
 const allShowcases = [
   {
@@ -44,17 +46,16 @@ const allShowcases = [
 
 export function ShowcaseCard({
   title,
-  image,
-  href,
-  affiliation,
+  thumbnail,
+  description,
+  _id
 }) {
   return (
-    <Link
-      to={href}
-      className="flex flex-col gap-2 group relative overflow-hidden cursor-pointer"
+    <Link to={`/fyps/${_id}`}
+      className="flex flex-col gap-2  group relative overflow-hidden cursor-pointer"
     >
       <img
-        src={image}
+        src={thumbnail}
         alt={title}
         width={500}
         height={300}
@@ -62,17 +63,33 @@ export function ShowcaseCard({
       />
 
       <div className="flex flex-col">
-        <div className="group inline-flex cursor-pointer items-center justify-start gap-1 duration-200 hover:text-neutral-700 dark:hover:text-neutral-200 text-xl font-semibold text-neutral-700 dark:text-neutral-300">
+        <div className="group inline-flex cursor-pointer items-center justify-start gap-1 duration-200 hover:text-neutral-700 dark:hover:text-neutral-200 text-xl font-semibold text-neutral-700 dark:text-neutral-300 hover:underline underline-offset-4">
           {title}
           <ChevronRightIcon className="size-4 translate-x-0 opacity-0 transition-all duration-300 ease-out group-hover:translate-x-1 group-hover:opacity-100" />
         </div>
-        <p className="text-neutral-400 text-sm">{affiliation}</p>
+        <p className="text-neutral-400 text-sm">{description}</p>
       </div>
     </Link>
   );
 }
 
 export default function Showcase() {
+  const { allProjects, getAllProjects } = useProjectStore();
+  useEffect(() => {
+    const getProjects = async () => {
+      try {
+        await getAllProjects();
+        console.log(allProjects)
+      } catch (error) {
+        console.log(error);
+        toast({
+          title: error.response?.data?.message || "Error Fetching Projects",
+          description: "",
+        });
+      }
+    }
+    getProjects();
+  }, []);
   return (
     <section id="showcase" className="py-14 ">
       <div>
@@ -85,8 +102,8 @@ export default function Showcase() {
       </div>
       <div className="relative flex flex-col">
         <Marquee className=" [--duration:40s]">
-          {allShowcases.map((showcase, idx) => (
-            <ShowcaseCard key={idx} {...showcase} to={showcase.href} />
+          {allProjects.map((project, idx) => (
+            <ShowcaseCard key={idx} {...project}  />
           ))}
         </Marquee>
         <div className="pointer-events-none absolute inset-y-0 left-0 h-full w-1/12 bg-gradient-to-r from-background"></div>
