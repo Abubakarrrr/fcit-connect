@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { Route, Routes } from "react-router-dom";
+import { Route, Routes, useLocation } from "react-router-dom";
 import { Toaster } from "./components/ui/toaster";
 import "./App.css";
 import { ThemeProvider } from "@/components/theme-provider";
@@ -45,6 +45,7 @@ import { useToast } from "./hooks/use-toast";
 import AdminProtectedRoute from "./utils/AdminProtectedRoute";
 
 function App() {
+  const location = useLocation();
   const isAdminRoute = location.pathname.startsWith("/admin");
   const isUserRoute = location.pathname.startsWith("/user");
   const { isCheckingAuth, checkAuth } = useAuthStore();
