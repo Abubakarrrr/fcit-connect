@@ -268,7 +268,7 @@ export const checkAuth = async (req, res) => {
     if (!userFromDB) {
       return res
         .status(400)
-        .json({ success: false, message: "User is unathorized" });
+        .json({ success: false, message: "User Authentication Failed" });
     }
 
     res.status(200).json({

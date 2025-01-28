@@ -60,7 +60,7 @@ export default function SignUp() {
     } catch (error) {
       console.log(error);
       toast({
-        title: error.message || "Signup attempt failed",
+        title: error.response?.data?.message || "Signup attempt failed",
         description: "",
       });
     }

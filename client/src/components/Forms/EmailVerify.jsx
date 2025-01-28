@@ -39,7 +39,7 @@ export default function EmailVerify() {
     } catch (error) {
       console.log(error);
       toast({
-        title: error.message || "Email verification failed",
+        title: error.response?.data?.message || "Email verification failed",
         description: "",
       });
     }

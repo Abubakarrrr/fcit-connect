@@ -24,6 +24,7 @@ const UpdateTemplate = () => {
     updateProject,
     getAllTeamMembers,
     teamMembers,
+    isLoading,
   } = useProjectStore();
   const { id } = useParams();
   const [formState, setFormState] = useState(initialState);
@@ -33,7 +34,7 @@ const UpdateTemplate = () => {
   const [file, setFile] = useState(null);
   const [images, setImages] = useState([]);
   const [readme, setReadMe] = useState("");
-  const [members, setMembers] = useState(null);
+  const [members, setMembers] = useState([]);
   const [techStack, setTechStack] = useState({
     frontend: [],
     backend: [],
@@ -49,7 +50,7 @@ const UpdateTemplate = () => {
         await getSingleUserProject(id);
         await getAllTeamMembers();
       } catch (error) {
-        console.log(error)
+        console.log(error);
         toast({
           title: error.response?.data?.message || "Error Finding Project",
           description: "",
@@ -77,10 +78,18 @@ const UpdateTemplate = () => {
       project?.images?.length > 0 && setImages(project.images);
       project?.documentation && setFile(project.documentation);
       project?.teamMembers?.length > 0 && setMembers(teamMembers);
+      setTechStack({
+        frontend: project?.frontend || [],
+        backend: project?.backend || [],
+        database: project?.database || [],
+        aiLibraries: project?.aiLibraries || [],
+        devops: project?.devops || [],
+        testing: project?.testing || [],
+      });
     }
   }, [project, teamMembers]);
 
-  const handleUpdate = (e) => {
+  const handleUpdate = async (e) => {
     e.preventDefault();
     const { error } = validationSchema.validate(formState, {
       abortEarly: false,
@@ -105,16 +114,26 @@ const UpdateTemplate = () => {
     } else {
       setThumbnailError("");
     }
-    // await updateProject({...formState,readme:JSON.stringify(readme),...techStack})
-    console.log(
-      formState,
-      thumbnailUrl,
-      file,
-      images,
-      JSON.stringify(readme),
-      techStack,
-      members
-    );
+    try {
+      await updateProject(
+        {
+          ...formState,
+          ...techStack,
+          readme,
+        },
+        project?._id
+      );
+      toast({
+        title: "Project Updated Successfully",
+        description: "",
+      });
+    } catch (error) {
+      console.log(error);
+      toast({
+        title: error.response?.data?.message || "Error Updating Project",
+        description: "",
+      });
+    }
   };
 
   if (!project) {
@@ -129,6 +148,7 @@ const UpdateTemplate = () => {
           variant=""
           className="aspect-square max-sm:p-0"
           onClick={handleUpdate}
+          disabled={isLoading}
         >
           <PlusCircle
             className=" sm:-ms-1 sm:me-2"
@@ -136,7 +156,9 @@ const UpdateTemplate = () => {
             strokeWidth={2}
             aria-hidden="true"
           />
-          <span className="max-sm:sr-only">Update FYP</span>
+          <span className="max-sm:sr-only">
+            {isLoading ? "Updating..." : "Update FYP"}
+          </span>
         </Button>
       </div>
 

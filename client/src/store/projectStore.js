@@ -89,28 +89,29 @@ export const useProjectStore = create((set) => ({
       testing,
     } = projectData;
     try {
-      const updateData = {
-        title: templateName,
-        description,
-        campus,
-        department,
-        year,
-        category,
-        supervisor,
-        figmaLink,
-        githubLink,
-        deployLink: deployedLink,
-        readme,
-        frontend,
-        backend,
-        database,
-        aiLibraries,
-        devops,
-        testing,
-      };
       const response = await axios.post(
         `${API_URL}/update-project/${projectId}`,
-        { updateData }
+        {
+          updateData: {
+            title: templateName,
+            description,
+            campus,
+            department,
+            year,
+            category,
+            supervisor,
+            figmaLink,
+            githubLink,
+            deployLink: deployedLink,
+            readme,
+            frontend,
+            backend,
+            database,
+            aiLibraries,
+            devops,
+            testing,
+          },
+        }
       );
       if (response.data.projectData) {
         set({
@@ -119,6 +120,46 @@ export const useProjectStore = create((set) => ({
           isLoading: false,
         });
         return response.data.projectData;
+      }
+    } catch (error) {
+      set({
+        isLoading: false,
+        storeError: error.response?.data?.message || "Error Updating Project",
+      });
+      throw error;
+    }
+  },
+  deleteProject: async (projectId) => {
+    console.log("Deleting Project");
+    set({ isLoading: true, storeError: null });
+    try {
+      const response = await axios.post(
+        `${API_URL}/delete-project/${projectId}`
+      );
+      if (response.data.deletedProject) {
+        const deletedProject = response.data.deletedProject;
+        const regex = /\/files\/([^\/]+)\/view/;
+        console.log("DELETED");
+        console.log(deletedProject);
+        if (deletedProject.thumbnail) {
+          const match = deletedProject.thumbnail.match(regex);
+          await storage.deleteFile("678faed20020cb101db1", match[1]);
+        }
+        if (deletedProject.documentation) {
+          const match = deletedProject.documentation.match(regex);
+          await storage.deleteFile("678faed20020cb101db1", match[1]);
+        }
+        if (deletedProject.images.length > 0) {
+          for (const imageUrl of deletedProject.images) {
+            const match = imageUrl.match(regex);
+            await storage.deleteFile("678faed20020cb101db1", match[1]);
+          }
+        }
+        set({
+          message: response.data.message,
+          isLoading: false,
+        });
+        return response.data.deletedProject;
       }
     } catch (error) {
       set({
@@ -277,7 +318,7 @@ export const useProjectStore = create((set) => ({
     try {
       const response = await axios.post(
         `${API_URL}/update-team-member/${memberId}`,
-          {updateData},
+        { updateData }
       );
       if (response.data.teamMember) {
         set({
@@ -296,9 +337,9 @@ export const useProjectStore = create((set) => ({
     }
   },
   deleteTeamMember: async (memberId) => {
-    set({ isLoading: false, storeError: null });
-
+    set({ storeError: null });
     try {
+      console.log("Deleting Member");
       const response = await axios.post(
         `${API_URL}/delete-team-member/${memberId}`
       );
@@ -307,10 +348,10 @@ export const useProjectStore = create((set) => ({
           message: response.data.message,
           isLoading: false,
         });
+        console.log("Member Deleted");
       }
     } catch (error) {
       set({
-        isLoading: false,
         storeError:
           error.response?.data?.message || "Error Deleting Team Member",
       });

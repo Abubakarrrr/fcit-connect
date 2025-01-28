@@ -72,7 +72,6 @@ export const updateProject = async (req, res) => {
   try {
     const { updateData } = req.body;
     const projectId = req.params.id;
-
     if (
       !updateData.title ||
       !updateData.description ||
@@ -81,15 +80,18 @@ export const updateProject = async (req, res) => {
       !updateData.year ||
       !updateData.category ||
       !updateData.supervisor ||
-      !updateData.githubLink ||
-      !updateData.thumbnail
+      !updateData.githubLink
     ) {
-      return res.status(400).json({ error: "Missing required fields" });
+      return res
+        .status(400)
+        .json({ status: false, message: "Missing required fields" });
     }
 
     const existingProject = await Project.findById(projectId);
     if (!existingProject) {
-      return res.status(404).json({ message: "Project not found" });
+      return res
+        .status(404)
+        .json({ status: false, message: "Project not found" });
     }
 
     const updatedFields = {};
@@ -100,7 +102,8 @@ export const updateProject = async (req, res) => {
         key === "backend" ||
         key === "aiLibraries" ||
         key === "devops" ||
-        key === "testing"
+        key === "testing" ||
+        key === "database"
       ) {
         if (
           JSON.stringify(updateData[key]) !==
@@ -112,16 +115,15 @@ export const updateProject = async (req, res) => {
         updatedFields[key] = updateData[key];
       }
     }
-
     if (Object.keys(updatedFields).length > 0) {
       updatedFields.updated_at = Date.now();
       await Project.findByIdAndUpdate(projectId, updatedFields, { new: true });
     }
     const updatedProject = await Project.findById(projectId);
-    res.status(200).json({
+    return res.status(200).json({
       success: true,
       message: "Project updated successfully",
-      projectData: updatedProject,
+      projectData: "updatedProject",
     });
   } catch (error) {
     console.log("error in project update");
@@ -150,6 +152,36 @@ export const getSingleUserProject = async (req, res) => {
     });
   } catch (error) {
     console.log("error in finding single project");
+    res.status(400).json({ success: false, message: error.message });
+  }
+};
+export const deleteProject = async (req, res) => {
+  try {
+    const userId = req.userId;
+    const projectId = req.params.id;
+
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(403).json({ error: "Forbidden: No user found" });
+    }
+    const project = await Project.findOne({ user: user._id });
+    if (!project || project._id != projectId) {
+      return res.status(403).json({ error: "No project found for the user" });
+    }
+    for (const memberId of project.teamMembers) {
+      await TeamMember.findByIdAndDelete(memberId);
+    }
+    user.teamMembers = undefined;
+    user.project = undefined;
+    await user.save();
+    const deletedProject = await Project.findByIdAndDelete(project._id);
+    return res.status(200).json({
+      success: true,
+      message: "Project deleted successfully",
+      deletedProject,
+    });
+  } catch (error) {
+    console.log("error deleting project");
     res.status(400).json({ success: false, message: error.message });
   }
 };
@@ -235,26 +267,27 @@ export const addTeamMember = async (req, res) => {
 };
 export const updateTeamMember = async (req, res) => {
   const teamMemberId = req.params.id;
-  const {updateData} = req.body;
-  console.log(updateData);
+  const { updateData } = req.body;
   try {
-    const existingTeamMember = await TeamMember.findById(teamMemberId);
-    if (!existingTeamMember) {
+    if (!teamMemberId || !updateData) {
+      return res
+        .status(400)
+        .json({ success: false, message: "Invalid input data" });
+    }
+    const updatedTeamMember = await TeamMember.findOneAndUpdate(
+      {
+        _id: teamMemberId,
+      },
+      { ...updateData },
+      { new: true }
+    );
+    if (!updatedTeamMember) {
       return res.status(404).json({ message: "Team member not found" });
     }
-    const updateTeamMember = await TeamMember.findById(teamMemberId);
-    updateTeamMember.name = updateData.name || existingTeamMember.name;
-    updateTeamMember.rollNo = updateData.rollNo || existingTeamMember.rollNo;
-    updateTeamMember.email = updateData.email || existingTeamMember.email;
-    updateTeamMember.role = updateData.role || existingTeamMember.role;
-    updateTeamMember.github = updateData.github || existingTeamMember.github;
-    updateTeamMember.linkedin =updateData.linkedin || existingTeamMember.linkedin;
-    await updateTeamMember.save();
-
     return res.status(200).json({
       success: true,
       message: "Team Member Updated Successfully",
-      teamMember: updateTeamMember,
+      teamMember: updatedTeamMember,
     });
   } catch (error) {
     console.log("error updating team member");
@@ -284,7 +317,6 @@ export const deleteTeamMember = async (req, res) => {
     project.teamMembers = project.teamMembers.filter(
       (mId) => mId.toString() !== teamMemberId.toString()
     );
-    
 
     await user.save();
     await project.save();

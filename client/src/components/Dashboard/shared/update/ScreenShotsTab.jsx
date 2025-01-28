@@ -68,7 +68,7 @@ const ScreenShotsTab = ({ images, setImages }) => {
                   {!isLoading && (
                     <button
                       onClick={() => handleRemoveImage(index)}
-                      disbaled={isLoading}
+                      disabled={isLoading}
                       className="absolute top-2 right-2 bg-red-500 text-white rounded-full p-1 hover:bg-red-600"
                       aria-label={`Remove image ${index + 1}`}
                     >

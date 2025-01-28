@@ -37,7 +37,7 @@ const LoginWithGoogle = () => {
     } catch (error) {
       console.log(error);
       toast({
-        title: error.message || "Failed to login with Google.",
+        title: error.response?.data?.message || "Failed to login with Google.",
         description: "",
       });
     }
