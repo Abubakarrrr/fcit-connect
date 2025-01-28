@@ -1,4 +1,5 @@
-import React from "react";
+import { Minus, Plus } from "lucide-react";
+import React, { useState } from "react";
 
 const FAQ = () => {
   const faqs = [
@@ -17,7 +18,6 @@ const FAQ = () => {
       answer:
         "Users need to provide the project title, description, batch, supervisor name, documentation, university card for verification, email, contact details, team members, tech stack, domain, and a README file.",
     },
-  
     {
       question: "Can visitors filter and search for projects?",
       answer:
@@ -28,7 +28,6 @@ const FAQ = () => {
       answer:
         "The predictive analysis tool allows users to submit project ideas for AI analysis, providing a report on uniqueness, similarities, and differences with existing projects in the repository using RAG techniques and vector embeddings.",
     },
-  
     {
       question: "Is this e-repository accessible on mobile devices?",
       answer:
@@ -46,6 +45,12 @@ const FAQ = () => {
     },
   ];
 
+  const [openIndex, setOpenIndex] = useState(null);
+
+  const toggleFAQ = (index) => {
+    setOpenIndex((prevIndex) => (prevIndex === index ? null : index));
+  };
+
   return (
     <div className="bg-gray-50 py-24 px-4 sm:px-6 lg:px-8">
       <div className="max-w-4xl mx-auto text-center">
@@ -62,20 +67,27 @@ const FAQ = () => {
 
       <div className="mt-10 max-w-3xl mx-auto">
         {faqs.map((faq, index) => (
-          <details
+          <div
             key={index}
             className="mb-4 group border border-gray-200 rounded-lg shadow-sm bg-white"
           >
-            <summary className="flex justify-between items-center p-4 cursor-pointer font-medium text-gray-900">
-              {faq.question}
-              <span className="text-gray-500 group-open:rotate-180 transition-transform">
-                ▼
-              </span>
-            </summary>
-            <div className="p-4 text-gray-700 border-t border-gray-200">
-              {faq.answer}
+            <div
+              className="flex justify-between items-center p-4 cursor-pointer font-medium text-gray-900"
+              onClick={() => toggleFAQ(index)}
+            >
+              <p>{faq.question}</p>
+              {openIndex === index ? (
+                <Minus className="w-5 h-5" />
+              ) : (
+                <Plus className="w-5 h-5" />
+              )}
             </div>
-          </details>
+            {openIndex === index && (
+              <div className="p-4 text-gray-700 border-t border-gray-200">
+                {faq.answer}
+              </div>
+            )}
+          </div>
         ))}
       </div>
     </div>
