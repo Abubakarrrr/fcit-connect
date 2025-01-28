@@ -9,7 +9,7 @@ import {
 } from "@/components/ui/navigation-menu";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { ModeToggle } from "@/components/mode-toggle";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import Avatar from "./AvatarDropdown";
 import { DialogTitle } from "../ui/dialog";
 import { VisuallyHidden } from "@radix-ui/react-visually-hidden";
@@ -19,6 +19,7 @@ export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
   const toggleSidebar = () => setIsOpen(!isOpen);
   const { isAthenticated } = useAuthStore();
+ 
 
   return (
     <nav className="border-b font-primary">
@@ -77,11 +78,15 @@ function Logo() {
 }
 
 function DesktopNav() {
+  const location = useLocation(); 
+  const isActive = (path) => location.pathname === path
   return (
     <NavigationMenu>
       <NavigationMenuList>
         <NavigationMenuItem>
-          <Link to="/" className={navigationMenuTriggerStyle()}>
+          <Link to="/" className={`${navigationMenuTriggerStyle()} ${
+              isActive("/") ? "bg-gray-100" : ""
+            }`}>
             Home
           </Link>
         </NavigationMenuItem>

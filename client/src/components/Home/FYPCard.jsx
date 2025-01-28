@@ -7,8 +7,12 @@ import { useEffect } from "react";
 import axios from "axios";
 
 export default function FYPCard({ fyp }) {
-  
-  const { _id, title, year, description, likes, views, images } = fyp;
+  const { _id, title, year, description, likes, views, images, thumbnail } =
+    fyp;
+  const imagesArray = [thumbnail];
+  for (const image of images) {
+    imagesArray.push(image);
+  }
   return (
     <Card className="overflow-hidden">
       <div className="relative">
@@ -17,7 +21,7 @@ export default function FYPCard({ fyp }) {
           alt={projectName}
           className="w-full aspect-video object-cover"
         /> */}
-        <ImagesCarousel images={images} />
+        <ImagesCarousel images={imagesArray} />
 
         <button
           className="absolute top-3 right-3 p-2 rounded-full bg-white/20 backdrop-blur-sm hover:bg-white/30 transition-colors"

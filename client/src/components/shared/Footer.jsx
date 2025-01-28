@@ -55,6 +55,9 @@ export default function Footer() {
             <div className="space-y-4">
               <h3 className="text-lg font-semibold">Product</h3>
               <nav className="flex flex-col space-y-2">
+              <Link to="/" className="text-muted-foreground hover:text-foreground">
+                  Home
+                </Link>
                 <Link to="/fyps" className="text-muted-foreground hover:text-foreground">
                   FYPs
                 </Link>

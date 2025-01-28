@@ -3,6 +3,7 @@ import { useParams } from "react-router-dom";
 import FypShowcase from "./FypShowcase";
 import Layout from "@/components/shared/Layout";
 import { useProjectStore } from "@/store/projectStore";
+import SkeletonCard from "@/components/shared/SkeletonCard";
 
 const FypDetails = () => {
   const { id } = useParams();
@@ -16,7 +17,7 @@ const FypDetails = () => {
     getP();
   }, []);
   if (!project) {
-    return <div>Loading...</div>;
+    return <SkeletonCard/>;
   }
 
   return (

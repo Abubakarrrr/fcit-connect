@@ -23,6 +23,7 @@ import RelatedFyps from "./RelatedFyps";
 import Documentation from "./DocumentationTab";
 import TeamMember from "./TeamMembersTab";
 import TechStack from "./TechStackTab";
+import { useAuthStore } from "@/store/authStore";
 
 export default function FypShowcase({ fyp }) {
   const {
@@ -32,9 +33,17 @@ export default function FypShowcase({ fyp }) {
     githubLink,
     deployLink,
     images,
+    thumbnail,
     likes,
     views,
+    documentation,
+    readme,
   } = fyp;
+  const imagesArray = [thumbnail];
+  for (const image of images) {
+    imagesArray.push(image);
+  }
+  const { user } = useAuthStore();
   return (
     <div>
       <div className="">
@@ -70,10 +79,13 @@ export default function FypShowcase({ fyp }) {
             </div>
 
             <div className="flex max-sm:flex-col gap-4">
-              <Button className="gap-2" size="lg">
-                Get Access - $40 USD
-                <ArrowRight className="w-4 h-4" />
-              </Button>
+              <a href={githubLink} target="_blank" rel="noopener noreferrer">
+                <Button className="gap-2" size="lg" to={githubLink}>
+                  Get Access - $0 USD
+                  <ArrowRight className="w-4 h-4" />
+                </Button>
+              </a>
+
               {deployLink && (
                 <a href={deployLink} target="_blank" rel="noopener noreferrer">
                   <Button variant="outline" size="lg" className="gap-2">
@@ -87,7 +99,7 @@ export default function FypShowcase({ fyp }) {
             <div className="grid grid-cols-4 gap-8 md:p-8 p-4 border rounded-lg shadow-sm">
               <div>
                 <User className="w-4 h-4" />
-                <div className="font-semibold">Abubakar</div>
+                <div className="font-semibold">{user?.name.split(" ")[0]}</div>
                 <div className="text-sm text-gray-500">Creator</div>
               </div>
               <div>
@@ -121,7 +133,7 @@ export default function FypShowcase({ fyp }) {
                 //   ]}
               >
                 <CarouselContent>
-                  {images.map((image, index) => (
+                  {imagesArray.map((image, index) => (
                     <CarouselItem key={index}>
                       <img
                         src={image}
@@ -131,8 +143,8 @@ export default function FypShowcase({ fyp }) {
                     </CarouselItem>
                   ))}
                 </CarouselContent>
-                <CarouselPrevious className="absolute left-4 bg-white hover:bg-white/20 border-0" />
-                <CarouselNext className="absolute right-4 bg-white hover:bg-white/20 border-0" />
+                <CarouselPrevious className="z-10 absolute left-4 bg-white hover:bg-white/20 border-0" />
+                <CarouselNext className="z-10 absolute right-4 bg-white hover:bg-white/20 border-0" />
               </Carousel>
             </div>
           </div>
@@ -142,24 +154,30 @@ export default function FypShowcase({ fyp }) {
       <div className="py-12 max-w-4xl mx-auto">
         <Tabs defaultValue="readme" className="w-full">
           <TabsList className="grid w-full grid-cols-2 md:grid-cols-4 gap-2 mb-20 rounded">
-            <TabsTrigger value="readme" className="rounded-md ">
-              <div className="flex items-center gap-2">
-                <Package className="w-6 h-6 mr-2" />
-                <span>Readme</span>
-              </div>
-            </TabsTrigger>
+            {readme && (
+              <TabsTrigger value="readme" className="rounded-md ">
+                <div className="flex items-center gap-2">
+                  <Package className="w-6 h-6 mr-2" />
+                  <span>Readme</span>
+                </div>
+              </TabsTrigger>
+            )}
+
             <TabsTrigger value="techstack" className="rounded-md ">
               <div className="flex items-center gap-2">
                 <Layers className="w-6 h-6" />
                 <span>Tech Stack</span>
               </div>
             </TabsTrigger>
-            <TabsTrigger value="documentation" className="rounded-md ">
-              <div className="flex items-center gap-2">
-                <BookOpen className="w-6 h-6" />
-                <span>Documentation</span>
-              </div>
-            </TabsTrigger>
+            {documentation && (
+              <TabsTrigger value="documentation" className="rounded-md ">
+                <div className="flex items-center gap-2">
+                  <BookOpen className="w-6 h-6" />
+                  <span>Documentation</span>
+                </div>
+              </TabsTrigger>
+            )}
+
             <TabsTrigger value="team" className="rounded-md ">
               <div className="flex items-center gap-2">
                 <User className="w-6 h-6" />
@@ -171,7 +189,7 @@ export default function FypShowcase({ fyp }) {
             value="readme"
             className="bg-white border rounded-md p-6 shadow-sm"
           >
-            Readme
+            <div dangerouslySetInnerHTML={{ __html: readme }} />
           </TabsContent>
           <TabsContent
             value="techstack"
@@ -183,7 +201,7 @@ export default function FypShowcase({ fyp }) {
             value="documentation"
             className="bg-white border rounded-md p-6 shadow-sm"
           >
-            <Documentation />
+            <Documentation title={title} documentation={documentation} />
           </TabsContent>
           <TabsContent
             value="team"

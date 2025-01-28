@@ -1,6 +1,7 @@
 import FYPsListing from "@/components/Home/FYPsListing";
 import Layout from "@/components/shared/Layout";
 import SearchWithKeywords from "@/components/shared/SearchComponent";
+import SkeletonCard from "@/components/shared/SkeletonCard";
 import { useToast } from "@/hooks/use-toast";
 import { useProjectStore } from "@/store/projectStore";
 import { useScroll } from "framer-motion";
@@ -14,7 +15,7 @@ const PublicFYPs = () => {
     const getProjects = async () => {
       try {
         await getAllProjects();
-        
+        console.log(allProjects)
       } catch (error) {
         console.log(error);
         toast({
@@ -26,7 +27,7 @@ const PublicFYPs = () => {
     }
     getProjects();
   }, []);
-  if (allProjects.length == 0) return <div>Loading...</div>
+  if (allProjects.length == 0) return <SkeletonCard/>
   return (
     <Layout>
       <SearchWithKeywords />
