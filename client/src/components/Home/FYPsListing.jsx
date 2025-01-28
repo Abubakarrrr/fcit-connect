@@ -10,7 +10,7 @@ const FYPsListing = ({allProjects}) => {
   const [selectedYear, setSelectedYear] = useState(null);
   const [selectedCategory, setSelectedCategory] = useState(null);
   const [selectedSupervisor, setSelectedSupervisor] = useState(null);
-
+console.log(allProjects)
   return (
     <div className="py-8">
       <div className="flex justify-end gap-4 pb-8">

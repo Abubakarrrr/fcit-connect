@@ -9,9 +9,11 @@ export const useProjectStore = create((set) => ({
   project: null,
   allProjects: [],
   teamMembers: [],
-  storeError: null,
-  isLoading: false,
   message: null,
+  categories: [],
+  supervisors: [],
+  isLoading: false,
+  storeError: null,
 
   createIntialProject: async (projectData) => {
     set({ isLoading: true, storeError: null });
@@ -400,6 +402,50 @@ export const useProjectStore = create((set) => ({
         isLoading: false,
         storeError:
           error.response?.data?.message || "Error Finding Team Members",
+      });
+      throw error;
+    }
+  },
+  getAllCategories: async () => {
+    set({ isLoading: true, storeError: null });
+    try {
+      const response = await axios.get(`${API_URL}/get-all-categories`);
+
+      if (response.data.categories) {
+        set({
+          message: response.data.message,
+          isLoading: false,
+          categories: response.data.categories,
+        });
+        return response.data.categories;
+      }
+    } catch (error) {
+      set({
+        isLoading: false,
+        storeError:
+          error.response?.data?.message || "Error Fetching Supervisors",
+      });
+      throw error;
+    }
+  },
+  getAllSupervisors: async () => {
+    set({ isLoading: true, storeError: null });
+    try {
+      const response = await axios.get(`${API_URL}/get-all-supervisors`);
+
+      if (response.data.supervisors) {
+        set({
+          message: response.data.message,
+          isLoading: false,
+          supervisors: response.data.supervisors,
+        });
+        return response.data.supervisors;
+      }
+    } catch (error) {
+      set({
+        isLoading: false,
+        storeError:
+          error.response?.data?.message || "Error Fetching Categories",
       });
       throw error;
     }

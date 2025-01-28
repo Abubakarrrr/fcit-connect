@@ -14,6 +14,8 @@ import {
   getAllTeamMembers,
   uploadFile,
   deleteFile,
+  getAllCategories,
+  getAllSupervisors,
 } from "../controllers/userProjectController.js";
 
 const router = express.Router();
@@ -32,5 +34,8 @@ router.get("/get-all-team-members", verifyToken, getAllTeamMembers);
 
 router.post("/upload-file/:id", verifyToken, uploadFile);
 router.post("/delete-file/:id", verifyToken, deleteFile);
+
+router.get("/get-all-categories", getAllCategories);
+router.get("/get-all-supervisors", getAllSupervisors);
 
 export default router;

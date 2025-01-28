@@ -1,4 +1,4 @@
-import { Project, User, TeamMember } from "../models/index.js";
+import { Project, User, TeamMember, Category } from "../models/index.js";
 
 export const createInitialProject = async (req, res) => {
   try {
@@ -434,6 +434,34 @@ export const deleteFile = async (req, res) => {
     });
   } catch (error) {
     console.log("error in deleting file");
+    res.status(400).json({ success: false, message: error.message });
+  }
+};
+export const getAllCategories = async (req, res) => {
+  try {
+    const categories = await Category.find();
+    const categoryNames = categories.map((category) => category.name);
+    return res.status(200).json({
+      success: true,
+      message: "Categories Found Successfully",
+      categories: categoryNames,
+    });
+  } catch (error) {
+    console.log("error finding team members");
+    res.status(400).json({ success: false, message: error.message });
+  }
+};
+export const getAllSupervisors = async (req, res) => {
+  try {
+    const supervisors = await User.find({ role: "supervisor" }).select("name");
+
+    return res.status(200).json({
+      success: true,
+      message: "Supervisors Found Successfully",
+      supervisors,
+    });
+  } catch (error) {
+    console.log("error finding team members");
     res.status(400).json({ success: false, message: error.message });
   }
 };
