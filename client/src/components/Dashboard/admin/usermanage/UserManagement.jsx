@@ -83,7 +83,7 @@ const UserManagementPage = () => {
               onChange={handleInputChange}
             >
               <option value="Student">Student</option>
-              {/* <option value="Supervisor">Supervisor</option> */}
+              <option value="Supervisor">Supervisor</option>
               <option value="Admin">Admin</option>
             </select>
             <Button onClick={handleSubmit} className="sm:col-span-3 w-full">

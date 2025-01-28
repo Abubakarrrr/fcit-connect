@@ -6,6 +6,7 @@ import { toast } from "@/hooks/use-toast";
 import { FcGoogle } from "react-icons/fc";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { Button } from "../ui/button";
 
 const LoginWithGoogle = () => {
   const { loginWithGoogle, error, isLoading } = useAuthStore();
@@ -44,15 +45,17 @@ const LoginWithGoogle = () => {
   };
 
   return (
-    <div className="flex justify-center items-center py-10 flex-col gap-10 w-full min-h-screen">
-      <FcGoogle className="h-36 w-36" />
-      <button
+    <div className="flex justify-center items-center flex-col w-full h-[400px]">
+      <div className="flex flex-col gap-4 justify-center items-center">
+      <FcGoogle className="h-28 w-32" />
+      <Button
         onClick={handleLoginWithGooggle}
-        className="py-4 px-2 rounded-xl bg-[#FFC107] font-bold"
+        className=" bg-[#FFC107] hover:bg-[#FFCA28] py-6 px-6 text-white text-lg"
         disabled={isLoading || isrequesting}
       >
         Login with Google
-      </button>
+      </Button>
+      </div>
     </div>
   );
 };

@@ -12,11 +12,15 @@ import { RxCross1 } from "react-icons/rx";
 import { Link, useLocation } from "react-router-dom";
 
 const FypRow = ({ project }) => {
+  if(!project){
+    return <div>No fyp</div>
+  }
   const { thumbnail, title, status, updated_at,_id } = project;
   const location = useLocation();
   const isAdminRoute = location.pathname.startsWith("/admin");
   const dateObject = new Date(updated_at);
   const formattedDate = dateObject.toISOString().split("T")[0];
+  
   return (
     <tr className="">
       {/* Image Cell */}

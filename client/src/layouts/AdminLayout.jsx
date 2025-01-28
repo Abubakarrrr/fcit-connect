@@ -75,13 +75,6 @@ export default function AdminLayout() {
               </Link>
             
               <Link
-                to="/admin/supervisors"
-                className="flex items-center gap-3 rounded-lg px-3 py-2 text-muted-foreground transition-all hover:text-primary"
-              >
-                <Users className="h-4 w-4" />
-                Supervisors
-              </Link>
-              <Link
                 to="/admin/categories"
                 className="flex items-center gap-3 rounded-lg px-3 py-2 text-muted-foreground transition-all hover:text-primary"
               >
@@ -147,13 +140,7 @@ export default function AdminLayout() {
                   </Badge>
                 </Link>
               
-                <Link
-                  to="/admin/supervisors"
-                  className="mx-[-0.65rem] flex items-center gap-4 rounded-xl px-3 py-2 text-muted-foreground hover:text-foreground"
-                >
-                  <Users className="h-5 w-5" />
-                  Supervisors
-                </Link>
+             
                 <Link
                   to="/admin/categories"
                   className="mx-[-0.65rem] flex items-center gap-4 rounded-xl px-3 py-2 text-muted-foreground hover:text-foreground"

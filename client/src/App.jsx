@@ -186,14 +186,14 @@ function App() {
                 </AdminProtectedRoute>
               }
             />
-            <Route
+            {/* <Route
               path="supervisors"
               element={
                 <AdminProtectedRoute>
                   <SupervisorPage />
                 </AdminProtectedRoute>
               }
-            />
+            /> */}
             <Route
               path="categories"
               element={
