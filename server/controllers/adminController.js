@@ -144,7 +144,7 @@ export const createCategory = async (req, res) => {
     if (categoryFromDB) {
       return res.status(400).json({
         success: false,
-        message: "Category already registered",
+        message: "Category already added",
       });
     }
 
@@ -167,28 +167,25 @@ export const createCategory = async (req, res) => {
   }
 };
 export const updateCategory = async (req, res) => {
+  const { name } = req.body;
   try {
     const categoryFromDB = await Category.findByIdAndUpdate(
       req.params.id,
-      req.body,
+      { name },
       {
         new: true,
       }
     );
-
     if (!categoryFromDB) {
       return res.status(400).json({
         success: false,
         message: "Category not found",
       });
     }
-
     res.status(200).json({
       success: true,
       message: "User updated successfully",
-      category: {
-        ...categoryFromDB._doc,
-      },
+      category: categoryFromDB,
     });
   } catch (error) {
     console.log("error in updating category");
@@ -207,9 +204,6 @@ export const deleteCategory = async (req, res) => {
     res.status(200).json({
       success: true,
       message: "Category deleted successfully",
-      category: {
-        ...category._doc,
-      },
     });
   } catch (error) {
     console.log("error in deleting category");
@@ -218,42 +212,39 @@ export const deleteCategory = async (req, res) => {
 };
 export const getCategory = async (req, res) => {
   try {
-    const user = await User.findById(req.params.id);
-    if (!user) {
+    const category = await Category.findById(req.params.id);
+    if (!category) {
       return res.status(404).json({
         success: false,
-        message: "User not found",
+        message: "Category not found",
       });
     }
     res.status(200).json({
       success: true,
-      message: "User found successfully",
-      user: {
-        ...user._doc,
-        password: undefined,
-      },
+      message: "Category found successfully",
+      category,
     });
   } catch (error) {
-    console.log("error in finding user");
+    console.log("error in finding category");
     res.status(400).json({ success: false, message: error.message });
   }
 };
 export const getAllCategories = async (req, res) => {
   try {
-    const users = await User.find();
-    if (!users) {
+    const categories = await Category.find();
+    if (!categories) {
       return res.status(404).json({
         success: false,
-        message: "User not found",
+        message: "Categories not found",
       });
     }
     res.status(200).json({
       success: true,
-      message: "User found successfully",
-      users,
+      message: "Categories found successfully",
+      categories,
     });
   } catch (error) {
-    console.log("error in finding users");
+    console.log("error in finding categories");
     res.status(400).json({ success: false, message: error.message });
   }
 };
