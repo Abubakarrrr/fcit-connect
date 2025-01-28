@@ -6,6 +6,7 @@ import {
   getAllProjects,
   getSingleProject,
   getSingleUserProject,
+  deleteProject,
   addTeamMember,
   deleteTeamMember,
   updateTeamMember,
@@ -18,6 +19,7 @@ import {
 const router = express.Router();
 router.post("/create-project", verifyToken, createInitialProject);
 router.post("/update-project/:id", verifyToken, updateProject);
+router.post("/delete-project/:id", verifyToken, deleteProject);
 router.get("/get-user-project/:id", verifyToken, getSingleUserProject);
 router.get("/get-project/:id", getSingleProject);
 router.get("/get-projects", getAllProjects);

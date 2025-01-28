@@ -6,8 +6,8 @@ import { useProjectStore } from "@/store/projectStore";
 import { useToast } from "@/hooks/use-toast";
 
 const DocumentationTab = ({ file, setFile }) => {
-  const { useToast } = useToast();
-  const { deleteFile, uploadFile, project } = useProjectStore();
+  const { toast } = useToast();
+  const { deleteFile, uploadFile, project, message } = useProjectStore();
   const fileInputRef = useRef(null);
 
   const handleFileSelect = async (e) => {
@@ -25,7 +25,6 @@ const DocumentationTab = ({ file, setFile }) => {
         description: "",
       });
     }
-
   };
 
   const handleRemoveFile = async () => {

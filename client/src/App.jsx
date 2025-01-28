@@ -41,19 +41,32 @@ import { AddFyp, Start, UpdateTemplate } from "./components/Dashboard/shared";
 import ProtectedRoute from "./utils/ProtectedRoute";
 import RedirectAuthenticatedUser from "./utils/RedirectAuthenticatedUser";
 import ListedFyp from "./components/Dashboard/user/listedfyp/ListedFyp";
+import { useToast } from "./hooks/use-toast";
+import AdminProtectedRoute from "./utils/AdminProtectedRoute";
 
 function App() {
+  const isAdminRoute = location.pathname.startsWith("/admin");
+  const isUserRoute = location.pathname.startsWith("/user");
   const { isCheckingAuth, checkAuth } = useAuthStore();
-
+  const { toast } = useToast();
   useEffect(() => {
-    checkAuth();
-  }, [checkAuth]);
+    const checkAuthentication = async () => {
+      try {
+        await checkAuth();
+      } catch (error) {
+        console.log(error);
+        toast({
+          title: error.response?.data?.message || "User Authentication Failed",
+          description: "",
+        });
+      }
+    };
+    checkAuthentication();
+  }, []);
 
   if (isCheckingAuth) {
     return <LoadingSpinner />;
   }
-  const isAdminRoute = location.pathname.startsWith("/admin");
-  const isUserRoute = location.pathname.startsWith("/user");
 
   return (
     <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
@@ -63,52 +76,45 @@ function App() {
         {!isAdminRoute && !isUserRoute && <Navbar />}
         <Routes>
           {/* Public Routes  */}
-          <Route
-            path="/"
-            element={
-              // <ProtectedRoute>
-              <Home />
-              //  </ProtectedRoute>
-            }
-          />
+          <Route path="/" element={<Home />} />
           <Route
             path="/signup"
             element={
-              // <RedirectAuthenticatedUser>
-              <SignUp />
-              // </RedirectAuthenticatedUser>
+              <RedirectAuthenticatedUser>
+                <SignUp />
+              </RedirectAuthenticatedUser>
             }
           />
           <Route
             path="/login"
             element={
-              // <RedirectAuthenticatedUser>
-              <Login />
-              // </RedirectAuthenticatedUser>
+              <RedirectAuthenticatedUser>
+                <Login />
+              </RedirectAuthenticatedUser>
             }
           />
           <Route
             path="/verify-email"
             element={
-              // <RedirectAuthenticatedUser>
-              <EmailVerify />
-              // </RedirectAuthenticatedUser>
+              <RedirectAuthenticatedUser>
+                <EmailVerify />
+              </RedirectAuthenticatedUser>
             }
           />
           <Route
             path="/forgot-password"
             element={
-              // <RedirectAuthenticatedUser>
-              <ForgotPassowrd />
-              // </RedirectAuthenticatedUser>
+              <RedirectAuthenticatedUser>
+                <ForgotPassowrd />
+              </RedirectAuthenticatedUser>
             }
           />
           <Route
             path="/reset-password/:token"
             element={
-              // <RedirectAuthenticatedUser>
-              <ResetPassword />
-              // </RedirectAuthenticatedUser>
+              <RedirectAuthenticatedUser>
+                <ResetPassword />
+              </RedirectAuthenticatedUser>
             }
           />
           <Route
@@ -131,22 +137,121 @@ function App() {
           {/* <Route path="/fyps/new" element={<AddFyp/>} />   */}
 
           {/* Admin Routes  */}
-          <Route path="/admin" element={<AdminLayout />}>
-            <Route path="dashboard" element={<Start />} />
-            <Route path="fyps/new" element={<AddFyp />} />
-            <Route path="fyps/update/:id" element={<UpdateTemplate />} />
-            <Route path="users" element={<UserManagementPage />} />
-            <Route path="fyps" element={<AdminFypsListing />} />
-            <Route path="supervisors" element={<SupervisorPage />} />
-            <Route path="categories" element={<CategoryPage />} />
-            <Route path="analytics" element={<h1>analytics</h1>} />
+          <Route
+            path="/admin"
+            element={
+              <AdminProtectedRoute>
+                <AdminLayout />
+              </AdminProtectedRoute>
+            }
+          >
+            <Route
+              path="dashboard"
+              element={
+                <AdminProtectedRoute>
+                  <Start />
+                </AdminProtectedRoute>
+              }
+            />
+            <Route
+              path="fyps/new"
+              element={
+                <AdminProtectedRoute>
+                  <AddFyp />
+                </AdminProtectedRoute>
+              }
+            />
+            <Route
+              path="fyps/update/:id"
+              element={
+                <AdminProtectedRoute>
+                  <UpdateTemplate />
+                </AdminProtectedRoute>
+              }
+            />
+            <Route
+              path="users"
+              element={
+                <AdminProtectedRoute>
+                  <UserManagementPage />
+                </AdminProtectedRoute>
+              }
+            />
+            <Route
+              path="fyps"
+              element={
+                <AdminProtectedRoute>
+                  <AdminFypsListing />
+                </AdminProtectedRoute>
+              }
+            />
+            <Route
+              path="supervisors"
+              element={
+                <AdminProtectedRoute>
+                  <SupervisorPage />
+                </AdminProtectedRoute>
+              }
+            />
+            <Route
+              path="categories"
+              element={
+                <AdminProtectedRoute>
+                  <CategoryPage />
+                </AdminProtectedRoute>
+              }
+            />
+            <Route
+              path="analytics"
+              element={
+                <AdminProtectedRoute>
+                  <h1>analytics</h1>
+                </AdminProtectedRoute>
+              }
+            />
           </Route>
+
           {/* User Dashboard Routes  */}
-          <Route path="/user" element={<UserLayout />}>
-            <Route path="dashboard" element={<Start />} />
-            <Route path="fyps/new" element={<AddFyp />} />
-            <Route path="fyps/update/:id" element={<UpdateTemplate />} />
-            <Route path="listedfyp" element={<ListedFyp />} />
+          <Route
+            path="/user"
+            element={
+              <ProtectedRoute>
+                <UserLayout />
+              </ProtectedRoute>
+            }
+          >
+            <Route
+              path="dashboard"
+              element={
+                <ProtectedRoute>
+                  <Start />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="fyps/new"
+              element={
+                <ProtectedRoute>
+                  <AddFyp />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="fyps/update/:id"
+              element={
+                <ProtectedRoute>
+                  <UpdateTemplate />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="listedfyp"
+              element={
+                <ProtectedRoute>
+                  <ListedFyp />
+                </ProtectedRoute>
+              }
+            />
           </Route>
 
           <Route path="*" element={<PageNotFound />} />

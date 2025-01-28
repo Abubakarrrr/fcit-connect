@@ -43,7 +43,7 @@ export default function ForgotPassword() {
     } catch (error) {
       console.log(error);
       toast({
-        title: error.message || "Failed attempt please try again",
+        title: error.response?.data?.message || "Failed attempt please try again",
         description: "",
       });
     }

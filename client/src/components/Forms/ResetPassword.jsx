@@ -59,7 +59,7 @@ export default function ResetPassword() {
     } catch (error) {
       console.error(error);
       toast({
-        title: error.message || "Error resetting password",
+        title: error.response?.data?.message || "Error resetting password",
         description: "",
       });
     }
