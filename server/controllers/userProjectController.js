@@ -123,7 +123,7 @@ export const updateProject = async (req, res) => {
     return res.status(200).json({
       success: true,
       message: "Project updated successfully",
-      projectData: "updatedProject",
+      projectData: updatedProject,
     });
   } catch (error) {
     console.log("error in project update");
@@ -139,7 +139,9 @@ export const getSingleUserProject = async (req, res) => {
     if (!user) {
       return res.status(403).json({ error: "Forbidden: No user found" });
     }
-    const project = await Project.findOne({ user: user._id });
+    const project = await Project.findOne({ user: user._id })
+      .populate("teamMembers")
+      .populate("user", "name")
     if (!project || project._id != projectId) {
       return res.status(403).json({ error: "No project found for the user" });
     }
@@ -188,7 +190,9 @@ export const deleteProject = async (req, res) => {
 export const getSingleProject = async (req, res) => {
   try {
     const id = req.params.id;
-    const project = await Project.findById(id);
+    const project = await Project.findById(id)
+      .populate("teamMembers")
+      .populate("user", "name");
     if (!project) {
       return res.status(403).json({ error: "No project found" });
     }
@@ -454,11 +458,12 @@ export const getAllCategories = async (req, res) => {
 export const getAllSupervisors = async (req, res) => {
   try {
     const supervisors = await User.find({ role: "supervisor" }).select("name");
+    const supervisorNames = supervisors.map((supervisor) => supervisor.name);
 
     return res.status(200).json({
       success: true,
       message: "Supervisors Found Successfully",
-      supervisors,
+      supervisorNames,
     });
   } catch (error) {
     console.log("error finding team members");

@@ -16,16 +16,18 @@ import { PlusCircle } from "lucide-react";
 import { useProjectStore } from "@/store/projectStore";
 import { useParams } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
+import { LoadingSpinner } from "@/components/shared";
 const UpdateTemplate = () => {
   const { toast } = useToast();
   const {
     getSingleUserProject,
     project,
     updateProject,
-    getAllTeamMembers,
     teamMembers,
     isLoading,
   } = useProjectStore();
+  const [isLoadingLc, setIsLoadingLc] = useState(false);
+
   const { id } = useParams();
   const [formState, setFormState] = useState(initialState);
   const [thumbnailUrl, setThumbnailUrl] = useState(null);
@@ -48,7 +50,6 @@ const UpdateTemplate = () => {
     const getProjectState = async () => {
       try {
         await getSingleUserProject(id);
-        await getAllTeamMembers();
       } catch (error) {
         console.log(error);
         toast({
@@ -58,7 +59,7 @@ const UpdateTemplate = () => {
       }
     };
     getProjectState();
-  }, [getSingleUserProject, id, getAllTeamMembers]);
+  }, [getSingleUserProject, id]);
   useEffect(() => {
     if (project) {
       setFormState({
@@ -77,7 +78,7 @@ const UpdateTemplate = () => {
       project?.thumbnail && setThumbnailUrl(project.thumbnail);
       project?.images?.length > 0 && setImages(project.images);
       project?.documentation && setFile(project.documentation);
-      project?.teamMembers?.length > 0 && setMembers(teamMembers);
+      project?.teamMembers?.length > 0 && setMembers(project.teamMembers);
       setTechStack({
         frontend: project?.frontend || [],
         backend: project?.backend || [],
@@ -115,6 +116,7 @@ const UpdateTemplate = () => {
       setThumbnailError("");
     }
     try {
+      setIsLoadingLc(true);
       await updateProject(
         {
           ...formState,
@@ -123,11 +125,13 @@ const UpdateTemplate = () => {
         },
         project?._id
       );
+      setIsLoadingLc(false);
       toast({
         title: "Project Updated Successfully",
         description: "",
       });
     } catch (error) {
+      setIsLoadingLc(false);
       console.log(error);
       toast({
         title: error.response?.data?.message || "Error Updating Project",
@@ -137,7 +141,7 @@ const UpdateTemplate = () => {
   };
 
   if (!project) {
-    return <div>Loading project...</div>;
+    return <LoadingSpinner />;
   }
 
   return (
@@ -148,7 +152,7 @@ const UpdateTemplate = () => {
           variant=""
           className="aspect-square max-sm:p-0"
           onClick={handleUpdate}
-          disabled={isLoading}
+          disabled={isLoading || isLoadingLc}
         >
           <PlusCircle
             className=" sm:-ms-1 sm:me-2"
@@ -157,7 +161,7 @@ const UpdateTemplate = () => {
             aria-hidden="true"
           />
           <span className="max-sm:sr-only">
-            {isLoading ? "Updating..." : "Update FYP"}
+            {isLoadingLc ? "Updating..." : "Update FYP"}
           </span>
         </Button>
       </div>

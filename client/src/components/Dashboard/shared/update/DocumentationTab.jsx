@@ -7,21 +7,26 @@ import { useToast } from "@/hooks/use-toast";
 
 const DocumentationTab = ({ file, setFile }) => {
   const { toast } = useToast();
-  const { deleteFile, uploadFile, project, message } = useProjectStore();
+  const { deleteFile, uploadFile, project } = useProjectStore();
   const fileInputRef = useRef(null);
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleFileSelect = async (e) => {
     const selectedFile = e.target.files[0];
     try {
+      setIsLoading(true);
       const url = await uploadFile(selectedFile, project?._id, "DOCUMENTATION");
       setFile(url);
+      setIsLoading(false);
       toast({
-        title: message || "File uploaded successfully",
+        title: "File uploaded successfully",
         description: "",
       });
     } catch (error) {
+      setIsLoading(false);
+      console.log(error);
       toast({
-        title: message || "Failed to upload file",
+        title: "Failed to upload file",
         description: "",
       });
     }
@@ -29,14 +34,18 @@ const DocumentationTab = ({ file, setFile }) => {
 
   const handleRemoveFile = async () => {
     try {
+      setIsLoading(true);
       await deleteFile(file, project?._id, "DOCUMENTATION");
+      setIsLoading(false);
       toast({
-        title: message || "File deleted successfully",
+        title: "File deleted successfully",
         description: "",
       });
     } catch (error) {
+      setIsLoading(false);
+      console.log(error);
       toast({
-        title: message || "Error while deleting file",
+        title: "Error while deleting file",
         description: "",
       });
     }
@@ -47,7 +56,6 @@ const DocumentationTab = ({ file, setFile }) => {
     fileInputRef.current.click();
   };
 
-  const { isLoading } = useProjectStore();
   return (
     <div>
       <div className="py-6 px-4 rounded-lg border shadow-sm">
@@ -55,6 +63,7 @@ const DocumentationTab = ({ file, setFile }) => {
           <h1 className="text-lg font-semibold">
             Upload the FYP Documentation
           </h1>
+          {isLoading && <p className="text-gray-500 text-[12px]">Loading...</p>}
           {!file && (
             <p className="text-red-500 text-[12px]">
               Please upload in PDF format
@@ -84,13 +93,15 @@ const DocumentationTab = ({ file, setFile }) => {
           ) : (
             <div className="flex flex-col items-center py-4">
               <div className="flex  ml-auto mb-2">
-                <button
-                  onClick={handleRemoveFile}
-                  className="text-red-500"
-                  disabled={isLoading}
-                >
-                  <X size={16} />
-                </button>
+                {!isLoading && (
+                  <button
+                    onClick={handleRemoveFile}
+                    className="text-red-500"
+                    disabled={isLoading}
+                  >
+                    <X size={16} />
+                  </button>
+                )}
               </div>
               {/* <p className="text-sm text-gray-500">Preview (PDF):</p> */}
               {file && (

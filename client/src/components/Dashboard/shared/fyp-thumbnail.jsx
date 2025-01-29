@@ -2,20 +2,19 @@ import React from "react";
 import { Button } from "@/components/ui/button";
 import { XCircle } from "lucide-react";
 import ErrorMessage from "@/components/shared/ErrorMessage";
-import { useProjectStore } from "@/store/projectStore";
 
 export default function FypThumbnail({
-  imageUrl="",
+  imageUrl = "",
   onFileSelect,
   onRemoveImage,
   fileError,
+  isLoading,
 }) {
-  const {isLoading} = useProjectStore();
   return (
     <div className="p-4 border rounded-lg relative">
       <h2 className="text-lg text-center font-semibold">FYP Thumbnail</h2>
       <p className="text-[12px] text-gray-500 text-center">
-        The Image must be 1920 x 1440
+        {isLoading ? "Loading..." : "The Image must be 1920 x 1440"}
       </p>
 
       <div className="aspect-[3/2] bg-gray-100 rounded-lg overflow-hidden my-4 relative">
@@ -27,16 +26,16 @@ export default function FypThumbnail({
               className="w-full h-full object-cover"
             />
             {/* Remove Button */}
-            <button
-              type="button"
-              onClick={onRemoveImage}
-              className="absolute top-2 right-2 bg-white rounded-full shadow p-1 text-red-600 hover:text-red-800 transition"
-              title="Remove Image"
-              disabled={isLoading}
-            >
-              <XCircle size={20}
-               />
-            </button>
+            {!isLoading && (
+              <button
+                type="button"
+                onClick={onRemoveImage}
+                className="absolute top-2 right-2 bg-white rounded-full shadow p-1 text-red-600 hover:text-red-800 transition"
+                title="Remove Image"
+              >
+                <XCircle size={20} />
+              </button>
+            )}
           </div>
         ) : (
           <div className="w-full h-full flex items-center justify-center text-gray-400">
@@ -55,7 +54,7 @@ export default function FypThumbnail({
             onClick={() => document.getElementById("thumbnail").click()}
             disabled={isLoading}
           >
-             {isLoading ? "Uploading..." : "Upload Image"}
+            {isLoading ? "Uploading..." : "Upload Image"}
           </Button>
           <input
             id="thumbnail"

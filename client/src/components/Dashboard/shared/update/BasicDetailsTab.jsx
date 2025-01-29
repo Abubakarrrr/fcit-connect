@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 
 import FypForm from "../fyp-form";
 import FypThumbnail from "../fyp-thumbnail";
@@ -16,6 +16,7 @@ const BasicDetailsTab = ({
   fileError,
 }) => {
   const { deleteFile, uploadFile, project } = useProjectStore();
+  const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
   const handleChange = (field, value) => {
     setFormState((prev) => ({ ...prev, [field]: value }));
@@ -24,35 +25,39 @@ const BasicDetailsTab = ({
 
   const handleFileSelect = async (e) => {
     try {
+      setIsLoading(true);
       const file = e.target.files[0];
       if (project?._id) {
         const fileUrl = await uploadFile(file, project?._id, "THUMBNAIL");
         if (fileUrl) {
           setThumbnailUrl(fileUrl);
         }
+        setIsLoading(false);
       }
     } catch (error) {
-      console.log(error)
+      setIsLoading(false);
+      console.log(error);
       toast({
         title: error.response?.data?.message || "Error while uploading image",
         description: "",
       });
     }
-   
   };
 
   const handleRemoveImage = async () => {
     try {
+      setIsLoading(true);
       await deleteFile(thumbnailUrl, project?._id, "THUMBNAIL");
       setThumbnailUrl(null);
+      setIsLoading(false);
     } catch (error) {
-      console.log(error)
+      setIsLoading(false);
+      console.log(error);
       toast({
         title: error.response?.data?.message || "Error while removing image",
         description: "",
       });
     }
-   
   };
   return (
     <div className="py-6 px-4 rounded-lg border shadow-sm">
@@ -67,6 +72,7 @@ const BasicDetailsTab = ({
           </div>
           <div className="col-span-1">
             <FypThumbnail
+              isLoading={isLoading}
               fileError={fileError}
               imageUrl={thumbnailUrl}
               onFileSelect={handleFileSelect}
