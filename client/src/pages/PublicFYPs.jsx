@@ -15,7 +15,6 @@ const PublicFYPs = () => {
     const getProjects = async () => {
       try {
         await getAllProjects();
-        console.log(allProjects)
       } catch (error) {
         console.log(error);
         toast({

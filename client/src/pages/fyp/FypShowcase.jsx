@@ -23,7 +23,6 @@ import RelatedFyps from "./RelatedFyps";
 import Documentation from "./DocumentationTab";
 import TeamMember from "./TeamMembersTab";
 import TechStack from "./TechStackTab";
-import { useAuthStore } from "@/store/authStore";
 
 export default function FypShowcase({ fyp }) {
   const {
@@ -38,12 +37,19 @@ export default function FypShowcase({ fyp }) {
     views,
     documentation,
     readme,
+    teamMembers,
+    frontend,
+    backend,
+    database,
+    devops,
+    testing,
+    aiLibraries,
   } = fyp;
   const imagesArray = [thumbnail];
   for (const image of images) {
     imagesArray.push(image);
   }
-  const { user } = useAuthStore();
+
   return (
     <div>
       <div className="">
@@ -99,7 +105,9 @@ export default function FypShowcase({ fyp }) {
             <div className="grid grid-cols-4 gap-8 md:p-8 p-4 border rounded-lg shadow-sm">
               <div>
                 <User className="w-4 h-4" />
-                <div className="font-semibold">{user?.name.split(" ")[0]}</div>
+                <div className="font-semibold">
+                  {fyp?.user?.name.split(" ")[0]}
+                </div>
                 <div className="text-sm text-gray-500">Creator</div>
               </div>
               <div>
@@ -163,12 +171,20 @@ export default function FypShowcase({ fyp }) {
               </TabsTrigger>
             )}
 
-            <TabsTrigger value="techstack" className="rounded-md ">
-              <div className="flex items-center gap-2">
-                <Layers className="w-6 h-6" />
-                <span>Tech Stack</span>
-              </div>
-            </TabsTrigger>
+            {(frontend ||
+              backend ||
+              database ||
+              aiLibraries ||
+              devops ||
+              testing) && (
+                <TabsTrigger value="techstack" className="rounded-md ">
+                  <div className="flex items-center gap-2">
+                    <Layers className="w-6 h-6" />
+                    <span>Tech Stack</span>
+                  </div>
+                </TabsTrigger>
+              )}
+
             {documentation && (
               <TabsTrigger value="documentation" className="rounded-md ">
                 <div className="flex items-center gap-2">
@@ -178,12 +194,14 @@ export default function FypShowcase({ fyp }) {
               </TabsTrigger>
             )}
 
-            <TabsTrigger value="team" className="rounded-md ">
-              <div className="flex items-center gap-2">
-                <User className="w-6 h-6" />
-                <span>Team members</span>
-              </div>
-            </TabsTrigger>
+            {teamMembers && (
+              <TabsTrigger value="team" className="rounded-md ">
+                <div className="flex items-center gap-2">
+                  <User className="w-6 h-6" />
+                  <span>Team members</span>
+                </div>
+              </TabsTrigger>
+            )}
           </TabsList>
           <TabsContent
             value="readme"
@@ -195,7 +213,14 @@ export default function FypShowcase({ fyp }) {
             value="techstack"
             className="bg-white border rounded-md p-6 shadow-sm"
           >
-            <TechStack />
+            <TechStack
+              frontend={frontend}
+              backend={backend}
+              database={database}
+              aiLibraries={aiLibraries}
+              devops={devops}
+              testing={testing}
+            />
           </TabsContent>
           <TabsContent
             value="documentation"
@@ -207,7 +232,7 @@ export default function FypShowcase({ fyp }) {
             value="team"
             className="bg-white border rounded-md p-6 shadow-sm"
           >
-            <TeamMember />
+            <TeamMember teamMembers={teamMembers} />
           </TabsContent>
         </Tabs>
       </div>

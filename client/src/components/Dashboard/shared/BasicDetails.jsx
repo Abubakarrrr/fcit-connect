@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import FypForm from "./fyp-form";
 import FypThumbnail from "./fyp-thumbnail";
 import {
@@ -14,12 +14,16 @@ import { useAuthStore } from "@/store/authStore";
 import { useToast } from "@/hooks/use-toast";
 
 const BasicDetails = () => {
+  const {user }=useAuthStore();
+  const [redirectUser,setRedirectUser] = useState(false)
+  useEffect(() => {
+      user?.project ? setRedirectUser(true) : setRedirectUser(false)
+  },[])
   const { toast } = useToast();
   const location = useLocation();
   const navigate = useNavigate();
   const { createIntialProject, isLoading, storeError, message } =
     useProjectStore();
-  const { user } = useAuthStore();
   const [formState, setFormState] = useState(initialState);
   const [errors, setErrors] = useState({});
   const [fileError, setfileError] = useState("");
@@ -100,7 +104,9 @@ const BasicDetails = () => {
       });
     }
   };
-
+  if(redirectUser){
+    navigate("/user/listedfyp");
+  }
   return (
     <div className="py-6 px-4 rounded-lg border shadow-sm">
       <form>

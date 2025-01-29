@@ -60,8 +60,13 @@ export default function TechStackTab({techStack, setTechStack}) {
       ...prev,
       [category]: !prev[category],
     }));
+    techStack[category].forEach((tech) => {
+      setTechStack((prev) => ({
+        ...prev,
+        [category]: prev[category].filter((t) => t !== tech),
+      }));
+    });
   };
-  // console.log(techStack);
 
   return (
     <div className="container mx-auto p-4 space-y-8">
