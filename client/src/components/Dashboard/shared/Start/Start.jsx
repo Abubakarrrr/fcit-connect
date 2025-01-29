@@ -12,7 +12,7 @@ const Start = () => {
    useEffect(() => {
     user?.role === "admin" ? setIsAdmin(true) : setIsAdmin(false);
    })
-  console.log(isAdmin)
+  console.log(user?.project)
   return (
     <div className="flex flex-col mx-auto justify-center gap-2">
       {isAdmin && (
@@ -38,7 +38,7 @@ const Start = () => {
           </Link>
         </div>
       )}
-      {isAdmin && !user?.project && (
+      {!isAdmin && user?.project === undefined && (
         <div className="flex flex-col  items-center gap-2">
           <h3 className="text-2xl font-bold tracking-tight">
             User Dashboard - Submit FYP

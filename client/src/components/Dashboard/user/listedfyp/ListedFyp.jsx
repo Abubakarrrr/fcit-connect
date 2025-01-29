@@ -7,7 +7,6 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import FypRow from "../../admin/fyp/FypRow";
-import { useLocation } from "react-router-dom";
 import { useProjectStore } from "@/store/projectStore";
 import { useAuthStore } from "@/store/authStore";
 
@@ -22,26 +21,7 @@ const tableHeaders = [
   { content: <span className="sr-only">Actions</span> },
 ];
 
-const fypProjectData = [
-  //  Example FYP data. Leave this array empty to test the "No FYPs yet" functionality.
-  {
-    id: 1,
-    name: "Smart Waste Management System",
-    description:
-      "An IoT-based solution for efficient waste collection and management using smart bins and sensors.",
-    images: [
-      "https://example.com/images/waste-management1.jpg",
-      "https://example.com/images/waste-management2.jpg",
-      "https://example.com/images/waste-management3.jpg",
-    ],
-    batch: "2023",
-    likes: 120,
-    views: 450,
-    status: "approved",
-    link: "/fyps/2023/smart-waste-management-system/1",
-    uploadedAt: "2023-07-12 10:42 AM",
-  },
-];
+
 
 const ListedFyp = () => {
   const { user } = useAuthStore();

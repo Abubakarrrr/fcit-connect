@@ -1,32 +1,63 @@
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { useToast } from "@/hooks/use-toast";
+import { useProjectStore } from "@/store/projectStore";
 import { MoreHorizontal, Pencil, Trash, Check } from "lucide-react";
+import { useState } from "react";
 import { RxCross1 } from "react-icons/rx";
 import { Link, useLocation } from "react-router-dom";
 
 const FypRow = ({ project }) => {
-  if(!project){
-    return <div>No fyp</div>
+  if (!project) {
+    return <div>No fyp</div>;
   }
-  const { thumbnail, title, status, updated_at,_id } = project;
+  const {toast}=useToast();
+  const [openDialog, setOpenDialog] = useState(false);
+  const [openDropdown, setOpenDropdown] = useState(false);
+  const {deleteProject}=useProjectStore();
+  const { thumbnail, title, status, updated_at, _id } = project;
   const location = useLocation();
   const isAdminRoute = location.pathname.startsWith("/admin");
   const dateObject = new Date(updated_at);
   const formattedDate = dateObject.toISOString().split("T")[0];
-  
+
+  const handleDelete = async (id) => {
+    try {
+      await deleteProject(id);
+      toast({
+        title: "Fyp deleted successfully",
+        description: "",
+      });
+    } catch (error) {
+      console.error("Error deleting fyp:", error);
+      toast({
+        title: "Error deleting fyp",
+        description: "",
+      });
+    }
+  };
+
   return (
-    <tr className="">
+    <tr>
       {/* Image Cell */}
       <td className="hidden sm:table-cell p-2">
         <img
-          alt={`image`}
+          alt="image"
           className="aspect-square rounded-md object-cover"
           height="48"
           src={thumbnail || "/placeholder.svg"}
@@ -36,9 +67,7 @@ const FypRow = ({ project }) => {
 
       {/* Name Cell */}
       <td className="font-medium hover:underline underline-offset-2">
-      <Link to={`/user/fyps/update/${_id}`}>
-            {title}
-      </Link>
+        <Link to={`/user/fyps/update/${_id}`}>{title}</Link>
       </td>
 
       {/* Status Cell */}
@@ -51,7 +80,7 @@ const FypRow = ({ project }) => {
 
       {/* Actions Cell */}
       <td>
-        <DropdownMenu>
+        <DropdownMenu open={openDropdown} onOpenChange={setOpenDropdown}>
           <DropdownMenuTrigger asChild>
             <Button aria-haspopup="true" size="icon" variant="ghost">
               <MoreHorizontal className="h-4 w-4" />
@@ -60,23 +89,33 @@ const FypRow = ({ project }) => {
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
             <DropdownMenuLabel>Actions</DropdownMenuLabel>
-            <DropdownMenuItem>
-              <Link to={`/user/fyps/update/${_id}`}>
-              <div className="flex items-center gap-2">
+
+            {/* Edit Option */}
+            <DropdownMenuItem asChild>
+              <Link
+                to={`/user/fyps/update/${_id}`}
+                className="flex items-center gap-2"
+              >
                 <Pencil className="h-4 w-4 text-gray-400" />
                 <span>Edit</span>
-              </div>
               </Link>
-              
             </DropdownMenuItem>
-            <DropdownMenuItem>
+
+            <DropdownMenuItem
+              onClick={() => {
+                setOpenDropdown(false);
+                setTimeout(() => setOpenDialog(true), 100);
+              }}
+            >
               <div className="flex items-center gap-2">
                 <Trash className="h-4 w-4 text-red-500" />
                 <span>Delete</span>
               </div>
             </DropdownMenuItem>
+
+            {/* Admin Actions */}
             {isAdminRoute && (
-              <div>
+              <>
                 <DropdownMenuItem>
                   <div className="flex items-center gap-2">
                     <Check className="h-4 w-4 text-green-400" />
@@ -89,10 +128,37 @@ const FypRow = ({ project }) => {
                     <span>Reject</span>
                   </div>
                 </DropdownMenuItem>
-              </div>
+              </>
             )}
           </DropdownMenuContent>
         </DropdownMenu>
+
+        <Dialog open={openDialog} onOpenChange={setOpenDialog}>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>
+                Are you sure you want to delete the project?
+              </DialogTitle>
+              <DialogDescription>
+                This action cannot be undone.
+              </DialogDescription>
+            </DialogHeader>
+            <DialogFooter>
+              <Button variant="outline" onClick={() => setOpenDialog(false)}>
+                Cancel
+              </Button>
+              <Button
+                variant="destructive"
+                onClick={() => {
+                  handleDelete(_id);
+                  setOpenDialog(false);
+                }}
+              >
+                Delete
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
       </td>
     </tr>
   );

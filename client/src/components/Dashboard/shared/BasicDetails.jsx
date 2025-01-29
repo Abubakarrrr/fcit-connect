@@ -104,7 +104,7 @@ const BasicDetails = () => {
       });
     }
   };
-  if(redirectUser){
+  if(redirectUser && !isAdminRoute){
     navigate("/user/listedfyp");
   }
   return (
