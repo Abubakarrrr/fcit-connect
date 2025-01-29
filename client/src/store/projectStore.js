@@ -121,6 +121,7 @@ export const useProjectStore = create((set) => ({
           message: response.data.message,
           isLoading: false,
         });
+        console.log("Updated Project");
         return response.data.projectData;
       }
     } catch (error) {
@@ -432,13 +433,14 @@ export const useProjectStore = create((set) => ({
     try {
       const response = await axios.get(`${API_URL}/get-all-supervisors`);
 
-      if (response.data.supervisors) {
+      if (response.data.supervisorNames) {
         set({
           message: response.data.message,
           isLoading: false,
-          supervisors: response.data.supervisors,
+          supervisors: response.data.supervisorNames,
         });
-        return response.data.supervisors;
+
+        return response.data.supervisorNames;
       }
     } catch (error) {
       set({

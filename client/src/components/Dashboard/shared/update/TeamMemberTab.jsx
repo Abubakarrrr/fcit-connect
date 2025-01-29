@@ -21,15 +21,11 @@ import {
 } from "@/components/ui/table";
 import { useProjectStore } from "@/store/projectStore";
 import { useToast } from "@/hooks/use-toast";
+
 export default function TeamMemberTab({ members, setMembers }) {
   const { toast } = useToast();
-  const {
-    project,
-    addTeamMember,
-    updateTeamMember,
-    deleteTeamMember,
-    isLoading,
-  } = useProjectStore();
+  const { project, addTeamMember, updateTeamMember, deleteTeamMember } =
+    useProjectStore();
   const [currentMember, setCurrentMember] = useState({
     name: "",
     rollNo: "",
@@ -38,6 +34,8 @@ export default function TeamMemberTab({ members, setMembers }) {
     github: "",
     linkedin: "",
   });
+  const [isLoading, setIsLoading] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   // const [deleteId, setDeleteId] = useState(null);
 
@@ -45,12 +43,12 @@ export default function TeamMemberTab({ members, setMembers }) {
     const { name, value } = e.target;
     setCurrentMember({ ...currentMember, [name]: value });
   };
-  
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      let newTeamMember;
-      newTeamMember = await addTeamMember(currentMember, project?._id);
+      setIsLoading(true);
+      const newTeamMember = await addTeamMember(currentMember, project?._id);
       if (newTeamMember) {
         setMembers((prev) => {
           return [...prev, newTeamMember];
@@ -63,12 +61,15 @@ export default function TeamMemberTab({ members, setMembers }) {
           github: "",
           linkedin: "",
         });
+        setIsLoading(false);
         toast({
           title: "Member added successfully",
           description: "",
         });
       }
     } catch (error) {
+      setIsLoading(false);
+      console.log(error);
       toast({
         title: error?.response?.data.message || "Error while adding member",
         description: "",
@@ -76,7 +77,7 @@ export default function TeamMemberTab({ members, setMembers }) {
     }
   };
 
-  const handleEdit = async(member) => {
+  const handleEdit = async (member) => {
     setIsEditing(true);
     setCurrentMember(member);
     setMembers((prevMembers) =>
@@ -87,8 +88,11 @@ export default function TeamMemberTab({ members, setMembers }) {
   const handleUpdate = async (e) => {
     e.preventDefault();
     try {
-      let newTeamMember;
-      newTeamMember = await updateTeamMember(currentMember, currentMember._id);
+      setIsLoading(true);
+      const newTeamMember = await updateTeamMember(
+        currentMember,
+        currentMember._id
+      );
       if (newTeamMember) {
         setMembers((prev) => {
           return [...prev, newTeamMember];
@@ -101,6 +105,7 @@ export default function TeamMemberTab({ members, setMembers }) {
           github: "",
           linkedin: "",
         });
+        setIsLoading(false);
         toast({
           title: "Member updated successfully",
           description: "",
@@ -108,7 +113,8 @@ export default function TeamMemberTab({ members, setMembers }) {
       }
       setIsEditing(false);
     } catch (error) {
-      console.log(error)
+      setIsLoading(false);
+      console.log(error);
       toast({
         title: error?.response?.data.message || "Error while updating member",
         description: "",
@@ -118,15 +124,18 @@ export default function TeamMemberTab({ members, setMembers }) {
 
   const handleDelete = async (member) => {
     try {
+      setIsDeleting(true);
       await deleteTeamMember(member._id);
       setMembers((prevMembers) =>
         prevMembers.filter((m) => m._id !== member._id)
       );
+      setIsDeleting(false);
       toast({
         title: "Member deleted successfully",
         description: "",
       });
     } catch (error) {
+      setIsDeleting(false);
       toast({
         title: error?.response?.data?.message || "Error while deleting member",
         description: "",
@@ -207,7 +216,11 @@ export default function TeamMemberTab({ members, setMembers }) {
           </form>
         </CardContent>
         <CardFooter>
-          <Button type="submit"  onClick={isEditing ? handleUpdate : handleSubmit}disabled={isLoading}>
+          <Button
+            type="submit"
+            onClick={isEditing ? handleUpdate : handleSubmit}
+            disabled={isLoading || isDeleting}
+          >
             {isLoading
               ? "Uploading..."
               : isEditing
@@ -269,6 +282,7 @@ export default function TeamMemberTab({ members, setMembers }) {
                     <TableCell>
                       <div className="flex space-x-2">
                         <Button
+                          disabled={isDeleting || isLoading}
                           variant="outline"
                           size="icon"
                           onClick={() => handleEdit(member)}
@@ -278,6 +292,7 @@ export default function TeamMemberTab({ members, setMembers }) {
                         <Button
                           variant="outline"
                           size="icon"
+                          disabled={isDeleting || isLoading}
                           onClick={() => handleDelete(member)}
                         >
                           <Trash2 className="h-4 w-4" />

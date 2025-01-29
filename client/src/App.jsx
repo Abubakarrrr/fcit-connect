@@ -41,7 +41,6 @@ import { AddFyp, Start, UpdateTemplate } from "./components/Dashboard/shared";
 import ProtectedRoute from "./utils/ProtectedRoute";
 import RedirectAuthenticatedUser from "./utils/RedirectAuthenticatedUser";
 import ListedFyp from "./components/Dashboard/user/listedfyp/ListedFyp";
-import { useToast } from "./hooks/use-toast";
 import AdminProtectedRoute from "./utils/AdminProtectedRoute";
 
 function App() {
@@ -49,17 +48,13 @@ function App() {
   const isAdminRoute = location.pathname.startsWith("/admin");
   const isUserRoute = location.pathname.startsWith("/user");
   const { isCheckingAuth, checkAuth } = useAuthStore();
-  const { toast } = useToast();
+
   useEffect(() => {
     const checkAuthentication = async () => {
       try {
         await checkAuth();
       } catch (error) {
-        console.log(error);
-        toast({
-          title: error.response?.data?.message || "User Authentication Failed",
-          description: "",
-        });
+        // console.log(error);
       }
     };
     checkAuthentication();

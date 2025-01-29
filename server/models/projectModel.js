@@ -5,7 +5,7 @@ const ProjectSchema = new mongoose.Schema({
   description: { type: String, required: true },
   campus: { type: String, required: true },
   department: { type: String, required: true },
-  year: { type: Number, required: true },
+  year: { type: String, required: true },
   category: { type: String, required: true },
   supervisor: { type: String, required: true },
   githubLink: { type: String, default: null, required: true },

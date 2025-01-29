@@ -1,16 +1,21 @@
-import React from "react";
+import React, { useState } from "react";
 import { X } from "lucide-react";
 import { useProjectStore } from "@/store/projectStore";
 import { useToast } from "@/hooks/use-toast";
 
 const ScreenShotsTab = ({ images, setImages }) => {
   const { toast } = useToast();
-  const { deleteFile, uploadFile, project, isLoading } = useProjectStore();
+  const { deleteFile, uploadFile, project } = useProjectStore();
+  const [isLoading, setIsLoading] = useState(false);
+
   const handleRemoveImage = async (index) => {
     try {
+      setIsLoading(true);
       await deleteFile(images[index], project?._id, "SCREENSHOT");
       setImages(images.filter((_, i) => i !== index));
+      setIsLoading(false);
     } catch (error) {
+      setIsLoading(false);
       console.log(error);
       toast({
         title: error?.response?.data.message || "error while deleting image",
@@ -25,22 +30,26 @@ const ScreenShotsTab = ({ images, setImages }) => {
       alert("You can upload a maximum of 3 images.");
       return;
     }
-    for (const file of files) {
-      try {
+    try {
+      setIsLoading(true);
+      for (const file of files) {
         const fileUrl = await uploadFile(file, project?._id, "SCREENSHOT");
         setImages((prevImages) => [...prevImages, fileUrl]);
-      } catch (error) {
-        console.log(error);
-        toast({
-          title: error?.response?.data.message || "error while uploading image",
-          description: "",
-        });
       }
+      setIsLoading(false);
+    } catch (error) {
+      setIsLoading(false);
+      console.log(error);
+      toast({
+        title: error?.response?.data.message || "error while uploading image",
+        description: "",
+      });
     }
   };
   return (
     <div className="py-6 px-4 rounded-lg border shadow-sm">
       <h1 className="text-lg font-semibold">Screenshots</h1>
+      {isLoading && <p className="text-gray-500 text-[12px]">Loading...</p>}
       <div>
         <div className="space-y-4">
           <input
@@ -94,7 +103,7 @@ const ScreenShotsTab = ({ images, setImages }) => {
                 isLoading ? "pointer-events-none opacity-50" : ""
               }`}
             >
-              {isLoading ? "Uploading..." : "Choose File(s)"}
+              Choose File(s)
             </label>
             <p className="text-[12px] mt-1 text-gray-500">
               {" "}
