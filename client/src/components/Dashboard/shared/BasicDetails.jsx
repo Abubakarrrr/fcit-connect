@@ -14,11 +14,11 @@ import { useAuthStore } from "@/store/authStore";
 import { useToast } from "@/hooks/use-toast";
 
 const BasicDetails = () => {
-  const {user }=useAuthStore();
-  const [redirectUser,setRedirectUser] = useState(false)
+  const { user } = useAuthStore();
+  const [redirectUser, setRedirectUser] = useState(false);
   useEffect(() => {
-      user?.project ? setRedirectUser(true) : setRedirectUser(false)
-  },[])
+    user?.project ? setRedirectUser(true) : setRedirectUser(false);
+  }, []);
   const { toast } = useToast();
   const location = useLocation();
   const navigate = useNavigate();
@@ -56,7 +56,6 @@ const BasicDetails = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
     const { error } = validationSchema.validate(formState, {
       abortEarly: false,
     });
@@ -74,7 +73,7 @@ const BasicDetails = () => {
       thumbnail: thumbnailUrl,
     });
     if (validationResult.error) {
-      setfileError("Please upload a thumbnail image");Y
+      setfileError("Please upload a thumbnail image");
       return;
     } else {
       setfileError("");
@@ -85,8 +84,14 @@ const BasicDetails = () => {
         thumbnail: File,
       });
       if (projectId) {
+        useAuthStore.setState((state) => ({
+          user: {
+            ...state.user,
+            project: projectId,
+          },
+        }));
         toast({
-          title: message || "Project created successfully",
+          title:"Project created successfully",
           description: "",
         });
         navigate(`${saveTemplateLink}/${projectId}`);
@@ -104,7 +109,7 @@ const BasicDetails = () => {
       });
     }
   };
-  if(redirectUser && !isAdminRoute){
+  if (redirectUser && !isAdminRoute) {
     navigate("/user/listedfyp");
   }
   return (

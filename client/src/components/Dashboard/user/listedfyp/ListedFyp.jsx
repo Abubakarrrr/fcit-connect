@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Table,
   TableBody,
@@ -9,6 +9,7 @@ import {
 import FypRow from "../../admin/fyp/FypRow";
 import { useProjectStore } from "@/store/projectStore";
 import { useAuthStore } from "@/store/authStore";
+import { LoadingSpinner } from "@/components/shared";
 
 const tableHeaders = [
   {
@@ -21,18 +22,28 @@ const tableHeaders = [
   { content: <span className="sr-only">Actions</span> },
 ];
 
-
-
 const ListedFyp = () => {
   const { user } = useAuthStore();
   const { getSingleUserProject, project } = useProjectStore();
+  const [isLoading, setIsLoading] = useState(false);
   useEffect(() => {
     const getP = async () => {
-      await getSingleUserProject(user?.project);
-      console.log(project);
+      setIsLoading(true);
+      try {
+        await getSingleUserProject(user?.project);
+        setIsLoading(false);
+      } catch (error) {
+        setIsLoading(false);
+        // console.log(error);
+      }
     };
+
     getP();
-  }, []);
+  }, [getSingleUserProject, user?.project]);
+
+  if (isLoading) {
+    return <LoadingSpinner />;
+  }
   return (
     <main className="flex-1 gap-4 p-4 sm:px-6 sm:py-0 md:gap-8">
       {!project ? (
@@ -50,7 +61,9 @@ const ListedFyp = () => {
               ))}
             </TableRow>
           </TableHeader>
-          <TableBody className="">{project && <FypRow project={project} />}</TableBody>
+          <TableBody className="">
+            {project && <FypRow project={project} />}
+          </TableBody>
         </Table>
       )}
     </main>

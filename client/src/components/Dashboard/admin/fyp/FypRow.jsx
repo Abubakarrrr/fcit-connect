@@ -16,6 +16,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { useToast } from "@/hooks/use-toast";
+import { useAuthStore } from "@/store/authStore";
 import { useProjectStore } from "@/store/projectStore";
 import { MoreHorizontal, Pencil, Trash, Check } from "lucide-react";
 import { useState } from "react";
@@ -23,35 +24,44 @@ import { RxCross1 } from "react-icons/rx";
 import { Link, useLocation } from "react-router-dom";
 
 const FypRow = ({ project }) => {
-  if (!project) {
-    return <div>No fyp</div>;
-  }
-  const {toast}=useToast();
+  const { toast } = useToast();
   const [openDialog, setOpenDialog] = useState(false);
   const [openDropdown, setOpenDropdown] = useState(false);
-  const {deleteProject}=useProjectStore();
+  const { deleteProject } = useProjectStore();
   const { thumbnail, title, status, updated_at, _id } = project;
   const location = useLocation();
   const isAdminRoute = location.pathname.startsWith("/admin");
   const dateObject = new Date(updated_at);
   const formattedDate = dateObject.toISOString().split("T")[0];
+  const [isDeleting, setIsDeleting] = useState(false);
 
   const handleDelete = async (id) => {
     try {
+      setIsDeleting(true);
       await deleteProject(id);
+      useAuthStore.setState((state) => ({
+        user: {
+          ...state.user,
+          project: null,
+        },
+      }));
+      setIsDeleting(false);
       toast({
         title: "Fyp deleted successfully",
         description: "",
       });
     } catch (error) {
-      console.error("Error deleting fyp:", error);
+      setIsDeleting(false);
+      console.error("Error deleting FYP:", error);
       toast({
-        title: "Error deleting fyp",
+        title: "Error deleting FYP",
         description: "",
       });
     }
   };
-
+  if (!project) {
+    return <div>No FYP Found</div>;
+  }
   return (
     <tr>
       {/* Image Cell */}
@@ -80,58 +90,62 @@ const FypRow = ({ project }) => {
 
       {/* Actions Cell */}
       <td>
-        <DropdownMenu open={openDropdown} onOpenChange={setOpenDropdown}>
-          <DropdownMenuTrigger asChild>
-            <Button aria-haspopup="true" size="icon" variant="ghost">
-              <MoreHorizontal className="h-4 w-4" />
-              <span className="sr-only">Toggle menu</span>
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            <DropdownMenuLabel>Actions</DropdownMenuLabel>
+        {isDeleting ? (
+          <p className="text-gray-500">deleting...</p>
+        ) : (
+          <DropdownMenu open={openDropdown} onOpenChange={setOpenDropdown}>
+            <DropdownMenuTrigger asChild>
+              <Button aria-haspopup="true" size="icon" variant="ghost">
+                <MoreHorizontal className="h-4 w-4" />
+                <span className="sr-only">Toggle menu</span>
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuLabel>Actions</DropdownMenuLabel>
 
-            {/* Edit Option */}
-            <DropdownMenuItem asChild>
-              <Link
-                to={`/user/fyps/update/${_id}`}
-                className="flex items-center gap-2"
+              {/* Edit Option */}
+              <DropdownMenuItem asChild>
+                <Link
+                  to={`/user/fyps/update/${_id}`}
+                  className="flex items-center gap-2"
+                >
+                  <Pencil className="h-4 w-4 text-gray-400" />
+                  <span>Edit</span>
+                </Link>
+              </DropdownMenuItem>
+
+              <DropdownMenuItem
+                onClick={() => {
+                  setOpenDropdown(false);
+                  setTimeout(() => setOpenDialog(true), 100);
+                }}
               >
-                <Pencil className="h-4 w-4 text-gray-400" />
-                <span>Edit</span>
-              </Link>
-            </DropdownMenuItem>
+                <div className="flex items-center gap-2">
+                  <Trash className="h-4 w-4 text-red-500" />
+                  <span>Delete</span>
+                </div>
+              </DropdownMenuItem>
 
-            <DropdownMenuItem
-              onClick={() => {
-                setOpenDropdown(false);
-                setTimeout(() => setOpenDialog(true), 100);
-              }}
-            >
-              <div className="flex items-center gap-2">
-                <Trash className="h-4 w-4 text-red-500" />
-                <span>Delete</span>
-              </div>
-            </DropdownMenuItem>
-
-            {/* Admin Actions */}
-            {isAdminRoute && (
-              <>
-                <DropdownMenuItem>
-                  <div className="flex items-center gap-2">
-                    <Check className="h-4 w-4 text-green-400" />
-                    <span>Approve</span>
-                  </div>
-                </DropdownMenuItem>
-                <DropdownMenuItem>
-                  <div className="flex items-center gap-2">
-                    <RxCross1 className="h-4 w-4 text-red-400" />
-                    <span>Reject</span>
-                  </div>
-                </DropdownMenuItem>
-              </>
-            )}
-          </DropdownMenuContent>
-        </DropdownMenu>
+              {/* Admin Actions */}
+              {isAdminRoute && (
+                <>
+                  <DropdownMenuItem>
+                    <div className="flex items-center gap-2">
+                      <Check className="h-4 w-4 text-green-400" />
+                      <span>Approve</span>
+                    </div>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem>
+                    <div className="flex items-center gap-2">
+                      <RxCross1 className="h-4 w-4 text-red-400" />
+                      <span>Reject</span>
+                    </div>
+                  </DropdownMenuItem>
+                </>
+              )}
+            </DropdownMenuContent>
+          </DropdownMenu>
+        )}
 
         <Dialog open={openDialog} onOpenChange={setOpenDialog}>
           <DialogContent>
@@ -148,6 +162,7 @@ const FypRow = ({ project }) => {
                 Cancel
               </Button>
               <Button
+                disabled={isDeleting}
                 variant="destructive"
                 onClick={() => {
                   handleDelete(_id);
