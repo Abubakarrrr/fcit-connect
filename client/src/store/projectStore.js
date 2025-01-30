@@ -143,7 +143,6 @@ export const useProjectStore = create((set) => ({
         const deletedProject = response.data.deletedProject;
         const regex = /\/files\/([^\/]+)\/view/;
         console.log("DELETED");
-        console.log(deletedProject);
         if (deletedProject.thumbnail) {
           const match = deletedProject.thumbnail.match(regex);
           await storage.deleteFile("678faed20020cb101db1", match[1]);
@@ -159,6 +158,7 @@ export const useProjectStore = create((set) => ({
           }
         }
         set({
+          project: null,
           message: response.data.message,
           isLoading: false,
         });
@@ -446,7 +446,7 @@ export const useProjectStore = create((set) => ({
       set({
         isLoading: false,
         storeError:
-          error.response?.data?.message || "Error Fetching Categories",
+          error.response?.data?.message || "Error Fetching Supervisors",
       });
       throw error;
     }
