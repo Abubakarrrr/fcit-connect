@@ -26,11 +26,11 @@ router.get("/get-user-project/:id", verifyToken, getSingleUserProject);
 router.get("/get-project/:id", getSingleProject);
 router.get("/get-projects", getAllProjects);
 
-router.post("/add-team-member", verifyToken, addTeamMember);
-router.post("/update-team-member/:id", verifyToken, updateTeamMember);
-router.post("/delete-team-member/:id", verifyToken, deleteTeamMember);
-router.get("/get-team-member/:id", verifyToken, getTeamMember);
-router.get("/get-all-team-members", verifyToken, getAllTeamMembers);
+router.post("/add-team-member/:projectId", verifyToken, addTeamMember);
+router.post("/update-team-member/:memberId", verifyToken, updateTeamMember);
+router.post("/delete-team-member/:memberId", verifyToken, deleteTeamMember);
+router.get("/get-team-member/:memberId", verifyToken, getTeamMember);
+router.get("/get-all-team-members/:projectId", verifyToken, getAllTeamMembers);
 
 router.post("/upload-file/:id", verifyToken, uploadFile);
 router.post("/delete-file/:id", verifyToken, deleteFile);

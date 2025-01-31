@@ -12,7 +12,6 @@ import {
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { fypProjectsData } from "@/components/shared/fypProjectsData";
 import FypTable from "./FypTable";
-import { Input } from "@/components/ui/input";
 import { Link } from "react-router-dom";
 
 const tableHeaders = [
@@ -27,9 +26,9 @@ const tableHeaders = [
 ];
 
 const Fyps = () => {
-  const approved = fypProjectsData.filter((fyp) => fyp.status === "approved");
-  const pending = fypProjectsData.filter((fyp) => fyp.status === "pending");
-  const rejected = fypProjectsData.filter((fyp) => fyp.status === "rejected");
+  const approved = fypProjectsData.filter((fyp) => fyp.status === "Approved");
+  const pending = fypProjectsData.filter((fyp) => fyp.status === "Pending");
+  const rejected = fypProjectsData.filter((fyp) => fyp.status === "Rejected");
   return (
     <main className="flex-1 gap-4 p-4 sm:px-6 sm:py-0 md:gap-8">
       {/* <div className="w-max ml-auto flex-1 my-3 md:grow-0">

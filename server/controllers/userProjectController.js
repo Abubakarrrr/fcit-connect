@@ -33,7 +33,7 @@ export const createInitialProject = async (req, res) => {
 
     const user = await User.findById(userId);
     if (!user) {
-      return res.status(403).json({ error: "Unothorized: No user found" });
+      return res.status(403).json({ error: "Unauthorized: No user found" });
     }
     if (user.project) {
       return res.status(403).json({ error: "User has already a project" });
@@ -72,6 +72,7 @@ export const updateProject = async (req, res) => {
   try {
     const { updateData } = req.body;
     const projectId = req.params.id;
+    const userId = req.userId;
     if (
       !updateData.title ||
       !updateData.description ||
@@ -86,12 +87,22 @@ export const updateProject = async (req, res) => {
         .status(400)
         .json({ status: false, message: "Missing required fields" });
     }
-
+    const user = await User.findById(userId);
+    if (!user) {
+      return res
+        .status(403)
+        .json({ status: false, message: "Unauthorized: No user found" });
+    }
     const existingProject = await Project.findById(projectId);
     if (!existingProject) {
       return res
         .status(404)
         .json({ status: false, message: "Project not found" });
+    }
+    if (existingProject._id != user._id) {
+      return res
+        .status(404)
+        .json({ status: false, message: "Unauthorized project update action" });
     }
 
     const updatedFields = {};
@@ -137,13 +148,17 @@ export const getSingleUserProject = async (req, res) => {
 
     const user = await User.findById(userId);
     if (!user) {
-      return res.status(403).json({ error: "Forbidden: No user found" });
+      return res
+        .status(403)
+        .json({ status: false, message: "Forbidden: No user found" });
     }
     const project = await Project.findOne({ user: user._id })
       .populate("teamMembers")
-      .populate("user", "name")
+      .populate("user", "name");
     if (!project || project._id != projectId) {
-      return res.status(403).json({ error: "No project found for the user" });
+      return res
+        .status(403)
+        .json({ status: false, message: "No project found for the user" });
     }
     return res.status(200).json({
       success: true,
@@ -164,16 +179,19 @@ export const deleteProject = async (req, res) => {
 
     const user = await User.findById(userId);
     if (!user) {
-      return res.status(403).json({ error: "Forbidden: No user found" });
+      return res
+        .status(403)
+        .json({ status: false, message: "Forbidden: No user found" });
     }
     const project = await Project.findOne({ user: user._id });
     if (!project || project._id != projectId) {
-      return res.status(403).json({ error: "No project found for the user" });
+      return res
+        .status(403)
+        .json({ status: false, message: "No project found for the user" });
     }
     for (const memberId of project.teamMembers) {
       await TeamMember.findByIdAndDelete(memberId);
     }
-    user.teamMembers = undefined;
     user.project = undefined;
     await user.save();
     const deletedProject = await Project.findByIdAndDelete(project._id);
@@ -194,7 +212,9 @@ export const getSingleProject = async (req, res) => {
       .populate("teamMembers")
       .populate("user", "name");
     if (!project) {
-      return res.status(403).json({ error: "No project found" });
+      return res
+        .status(403)
+        .json({ status: false, message: "No project found" });
     }
 
     return res.status(200).json({
@@ -213,7 +233,9 @@ export const getAllProjects = async (req, res) => {
   try {
     const projects = await Project.find();
     if (!projects) {
-      return res.status(403).json({ error: "No project found" });
+      return res
+        .status(403)
+        .json({ status: false, message: "No project found" });
     }
 
     return res.status(200).json({
@@ -222,30 +244,37 @@ export const getAllProjects = async (req, res) => {
       projects,
     });
   } catch (error) {
-    console.log("error in finding single project");
+    console.log("error in finding projects");
     res.status(400).json({ success: false, message: error.message });
   }
 };
 export const addTeamMember = async (req, res) => {
   const userId = req.userId;
-  const { teamMember, projectId } = req.body;
+  const { teamMember } = req.body;
+  const { projectId } = req.params;
   try {
     if (!teamMember.name || !teamMember.rollNo || !teamMember.email) {
-      return res.status(404).json({ message: "Missing required fields" });
+      return res
+        .status(404)
+        .json({ status: false, message: "Missing required fields" });
     }
     const user = await User.findById(userId);
     if (!user) {
-      return res.status(404).json({ message: "User not found" });
+      return res.status(404).json({ status: false, message: "User not found" });
     }
     const project = await Project.findById(projectId);
     if (!project) {
-      return res.status(404).json({ message: "Project not found" });
+      return res
+        .status(404)
+        .json({ status: false, message: "Project not found" });
     }
     const existingTeamMember = await TeamMember.findOne({
       rollNo: teamMember.rollNo,
     });
     if (existingTeamMember) {
-      return res.status(400).json({ message: "Team member already exists" });
+      return res
+        .status(400)
+        .json({ status: false, message: "Team member already exists" });
     }
     const newTeamMember = new TeamMember({
       ...teamMember,
@@ -254,9 +283,7 @@ export const addTeamMember = async (req, res) => {
     });
     await newTeamMember.save();
 
-    user.teamMembers.push(newTeamMember._id);
     project.teamMembers.push(newTeamMember._id);
-    await user.save();
     await project.save();
 
     return res.status(200).json({
@@ -270,23 +297,30 @@ export const addTeamMember = async (req, res) => {
   }
 };
 export const updateTeamMember = async (req, res) => {
-  const teamMemberId = req.params.id;
+  const { memberId } = req.params;
   const { updateData } = req.body;
+  const userId = req.userId;
   try {
-    if (!teamMemberId || !updateData) {
+    if (!memberId || !updateData) {
       return res
         .status(400)
         .json({ success: false, message: "Invalid input data" });
     }
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ status: false, message: "User not found" });
+    }
     const updatedTeamMember = await TeamMember.findOneAndUpdate(
       {
-        _id: teamMemberId,
+        _id: memberId,
       },
       { ...updateData },
       { new: true }
     );
     if (!updatedTeamMember) {
-      return res.status(404).json({ message: "Team member not found" });
+      return res
+        .status(404)
+        .json({ status: false, message: "Team member not found" });
     }
     return res.status(200).json({
       success: true,
@@ -300,32 +334,29 @@ export const updateTeamMember = async (req, res) => {
 };
 export const deleteTeamMember = async (req, res) => {
   const userId = req.userId;
-  const teamMemberId = req.params.id;
+  const { memberId } = req.params;
   try {
     const user = await User.findById(userId);
     if (!user) {
-      return res.status(404).json({ message: "User not found" });
+      return res.status(404).json({ status: false, message: "User not found" });
     }
-    const teamMember = await TeamMember.findById(teamMemberId);
+    const teamMember = await TeamMember.findById(memberId);
     if (!teamMember) {
-      return res.status(404).json({ message: "Team member not found" });
+      return res
+        .status(404)
+        .json({ status: false, message: "Team member not found" });
     }
     const project = await Project.findById(teamMember.project);
     if (!project) {
-      return res.status(404).json({ message: "Project not found" });
+      return res
+        .status(404)
+        .json({ status: false, message: "Project not found" });
     }
-
-    user.teamMembers = user.teamMembers.filter(
-      (mId) => mId.toString() !== teamMemberId.toString()
-    );
     project.teamMembers = project.teamMembers.filter(
-      (mId) => mId.toString() !== teamMemberId.toString()
+      (mId) => mId.toString() !== memberId.toString()
     );
-
-    await user.save();
     await project.save();
-
-    await TeamMember.findByIdAndDelete(teamMemberId);
+    await TeamMember.findByIdAndDelete(memberId);
 
     return res.status(200).json({
       success: true,
@@ -337,11 +368,19 @@ export const deleteTeamMember = async (req, res) => {
   }
 };
 export const getTeamMember = async (req, res) => {
-  const teamMemberId = req.params.id;
+  const { memberId } = req.params;
+  const userId = req.userId;
+
   try {
-    const teamMember = await TeamMember.findById(teamMemberId);
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ status: false, message: "User not found" });
+    }
+    const teamMember = await TeamMember.findById(memberId);
     if (!teamMember) {
-      return res.status(404).json({ message: "Team member not found" });
+      return res
+        .status(404)
+        .json({ status: false, message: "Team member not found" });
     }
 
     return res.status(200).json({
@@ -356,8 +395,15 @@ export const getTeamMember = async (req, res) => {
 };
 export const getAllTeamMembers = async (req, res) => {
   const userId = req.userId;
+  const { projectId } = req.params;
+
   try {
-    const teamMembers = await TeamMember.find({ teamLeader: userId });
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ status: false, message: "User not found" });
+    }
+
+    const teamMembers = await TeamMember.find({ project: projectId });
 
     return res.status(200).json({
       success: true,
@@ -372,10 +418,13 @@ export const getAllTeamMembers = async (req, res) => {
 export const uploadFile = async (req, res) => {
   const projectId = req.params.id;
   const { fileUrl, type } = req.body;
+
   try {
     const project = await Project.findOne({ _id: projectId });
     if (!project) {
-      return res.status(404).json({ message: "Project not found" });
+      return res
+        .status(404)
+        .json({ status: false, message: "Project not found" });
     }
     if (type === "THUMBNAIL") {
       project.thumbnail = fileUrl;
@@ -388,7 +437,9 @@ export const uploadFile = async (req, res) => {
         throw new Error("Can't upload more than 3 screenshots");
       }
     } else {
-      return res.status(404).json({ message: "File type not found" });
+      return res
+        .status(404)
+        .json({ status: false, message: "File type not found" });
     }
     await project.save();
     return res.status(200).json({
@@ -407,7 +458,9 @@ export const deleteFile = async (req, res) => {
   try {
     const project = await Project.findOne({ _id: projectId });
     if (!project) {
-      return res.status(404).json({ message: "Project not found" });
+      return res
+        .status(404)
+        .json({ status: false, message: "Project not found" });
     }
     if (type === "THUMBNAIL") {
       if (project.thumbnail == fileUrl) {
@@ -428,7 +481,9 @@ export const deleteFile = async (req, res) => {
         throw new Error("Can't delete screenshots");
       }
     } else {
-      return res.status(404).json({ message: "File type not found" });
+      return res
+        .status(404)
+        .json({ status: false, message: "File type not found" });
     }
 
     await project.save();
