@@ -17,12 +17,17 @@ import { useProjectStore } from "@/store/projectStore";
 import { useParams } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
 import { LoadingSpinner } from "@/components/shared";
+import { useAuthStore } from "@/store/authStore";
 const UpdateTemplate = () => {
   const { toast } = useToast();
+  const { user } = useAuthStore();
+
   const {
     getSingleUserProject,
+    sudo_getSingleProject,
     project,
     updateProject,
+    sudo_updateProject,
     teamMembers,
     isLoading,
   } = useProjectStore();
@@ -47,19 +52,34 @@ const UpdateTemplate = () => {
   });
 
   useEffect(() => {
-    const getProjectState = async () => {
-      try {
-        await getSingleUserProject(id);
-      } catch (error) {
-        console.log(error);
-        toast({
-          title: error.response?.data?.message || "Error Finding Project",
-          description: "",
-        });
-      }
-    };
-    getProjectState();
-  }, [getSingleUserProject, id]);
+    if (user?.role == "admin") {
+      const sudo_getProjectState = async () => {
+        try {
+          await sudo_getSingleProject(id);
+        } catch (error) {
+          console.log(error);
+          toast({
+            title: error.response?.data?.message || "Error Finding Project",
+            description: "",
+          });
+        }
+      };
+      sudo_getProjectState();
+    } else if (user?.role == "user") {
+      const getProjectState = async () => {
+        try {
+          await getSingleUserProject(id);
+        } catch (error) {
+          console.log(error);
+          toast({
+            title: error.response?.data?.message || "Error Finding Project",
+            description: "",
+          });
+        }
+      };
+      getProjectState();
+    }
+  }, [getSingleUserProject, id, sudo_getSingleProject]);
   useEffect(() => {
     if (project) {
       setFormState({
@@ -117,14 +137,25 @@ const UpdateTemplate = () => {
     }
     try {
       setIsLoadingLc(true);
-      await updateProject(
-        {
-          ...formState,
-          ...techStack,
-          readme,
-        },
-        project?._id
-      );
+      if (user?.role == "admin") {
+        await sudo_updateProject(
+          {
+            ...formState,
+            ...techStack,
+            readme,
+          },
+          project?._id
+        );
+      } else if (user.role == "user") {
+        await updateProject(
+          {
+            ...formState,
+            ...techStack,
+            readme,
+          },
+          project?._id
+        );
+      }
       setIsLoadingLc(false);
       toast({
         title: "Project Updated Successfully",

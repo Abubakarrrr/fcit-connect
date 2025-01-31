@@ -22,8 +22,12 @@ const BasicDetails = () => {
   const { toast } = useToast();
   const location = useLocation();
   const navigate = useNavigate();
-  const { createIntialProject, isLoading, storeError, message } =
-    useProjectStore();
+  const {
+    createIntialProject,
+    isLoading,
+    storeError,
+    sudo_createIntialProject,
+  } = useProjectStore();
   const [formState, setFormState] = useState(initialState);
   const [errors, setErrors] = useState({});
   const [fileError, setfileError] = useState("");
@@ -53,7 +57,7 @@ const BasicDetails = () => {
     setFile(null);
     setThumbnailUrl(null);
   };
-
+  console.log(user.role);
   const handleSubmit = async (e) => {
     e.preventDefault();
     const { error } = validationSchema.validate(formState, {
@@ -79,27 +83,52 @@ const BasicDetails = () => {
       setfileError("");
     }
     try {
-      const projectId = await createIntialProject({
-        ...formState,
-        thumbnail: File,
-      });
-      if (projectId) {
-        useAuthStore.setState((state) => ({
-          user: {
-            ...state.user,
-            project: projectId,
-          },
-        }));
-        toast({
-          title:"Project created successfully",
-          description: "",
+      if (user?.role == "admin") {
+        const projectId = await sudo_createIntialProject({
+          ...formState,
+          thumbnail: File,
         });
-        navigate(`${saveTemplateLink}/${projectId}`);
-      } else {
-        toast({
-          title: storeError,
-          description: "",
+        if (projectId) {
+          useAuthStore.setState((state) => ({
+            user: {
+              ...state.user,
+              adminProjects: [...state.user.adminProjects, projectId],
+            },
+          }));
+          toast({
+            title: "Project created successfully",
+            description: "",
+          });
+          navigate(`${saveTemplateLink}/${projectId}`);
+        } else {
+          toast({
+            title: storeError,
+            description: "",
+          });
+        }
+      } else if (user?.role == "user") {
+        const projectId = await createIntialProject({
+          ...formState,
+          thumbnail: File,
         });
+        if (projectId) {
+          useAuthStore.setState((state) => ({
+            user: {
+              ...state.user,
+              project: projectId,
+            },
+          }));
+          toast({
+            title: "Project created successfully",
+            description: "",
+          });
+          navigate(`${saveTemplateLink}/${projectId}`);
+        } else {
+          toast({
+            title: storeError,
+            description: "",
+          });
+        }
       }
     } catch (error) {
       console.log(error);

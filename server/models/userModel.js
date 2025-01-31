@@ -28,12 +28,6 @@ const UserSchema = new mongoose.Schema({
       ref: "Project",
     },
   ],
-  teamMembers: [
-    {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "TeamMember",
-    },
-  ],
 });
 const User = mongoose.model("User", UserSchema);
 export { User };
