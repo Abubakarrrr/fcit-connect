@@ -1,17 +1,30 @@
 import React from "react";
-import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from "@/components/ui/card";
-import { Table, TableBody, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import {
+  Card,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+  CardContent,
+  CardFooter,
+} from "@/components/ui/card";
+import {
+  Table,
+  TableBody,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 import { TabsContent } from "@/components/ui/tabs";
-import FypRow from "./FypRow";
+import FypAdminRow from "./FypAdminRow";
 
-
-const FypTable = ({ 
-  value, 
-  cardTitle, 
-  cardDescription, 
-  tableHeaders, 
-  fypProjectsArray 
+const FypTable = ({
+  value,
+  cardTitle,
+  cardDescription,
+  tableHeaders,
+  projects,
 }) => {
+  console.log(projects)
   return (
     <TabsContent value={value}>
       <Card x-chunk="dashboard-06-chunk-0">
@@ -24,24 +37,25 @@ const FypTable = ({
             <TableHeader>
               <TableRow>
                 {tableHeaders.map((header, index) => (
-                  <TableHead 
-                    key={index} 
-                    className={header.className || ""}>
+                  <TableHead key={index} className={header.className || ""}>
                     {header.content}
                   </TableHead>
                 ))}
               </TableRow>
             </TableHeader>
             <TableBody>
-              {fypProjectsArray.map((fyp, index) => (
-                <FypRow key={index} data={fyp} />
-              ))}
+              {projects &&
+                projects?.length > 0 &&
+                projects?.map((project, index) => (
+                  <FypAdminRow key={index} project={project} />
+                ))}
             </TableBody>
           </Table>
         </CardContent>
         <CardFooter>
           <div className="text-xs text-muted-foreground">
-            Showing <strong>1-{fypProjectsArray.length}</strong> of <strong>{fypProjectsArray.length}</strong> FYPs
+            Showing <strong>1-{projects?.length}</strong> of{" "}
+            <strong>{projects?.length}</strong> FYPs
           </div>
         </CardFooter>
       </Card>

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { File, ListFilter, PlusCircle, Search } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -13,6 +13,7 @@ import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { fypProjectsData } from "@/components/shared/fypProjectsData";
 import FypTable from "./FypTable";
 import { Link } from "react-router-dom";
+import { useProjectStore } from "@/store/projectStore";
 
 const tableHeaders = [
   {
@@ -26,9 +27,28 @@ const tableHeaders = [
 ];
 
 const Fyps = () => {
-  const approved = fypProjectsData.filter((fyp) => fyp.status === "Approved");
-  const pending = fypProjectsData.filter((fyp) => fyp.status === "Pending");
-  const rejected = fypProjectsData.filter((fyp) => fyp.status === "Rejected");
+  const [approved, setApproved] = useState();
+  const [pending, setPending] = useState();
+  const [rejected, setRejected] = useState();
+  const { allProjects, sudo_getAllProjects } = useProjectStore();
+  useEffect(() => {
+    const fetchFypProjects = async () => {
+      try {
+        await sudo_getAllProjects();
+      } catch (error) {
+        console.log(error);
+      }
+    };
+    fetchFypProjects();
+  }, []);
+  useEffect(() => {
+    if (allProjects.length > 0) {
+      setApproved(allProjects.filter((fyp) => fyp.status === "Approved"));
+      setPending(allProjects.filter((fyp) => fyp.status === "Pending"));
+      setRejected(allProjects.filter((fyp) => fyp.status === "Rejected"));
+    }
+  }, [allProjects]);
+
   return (
     <main className="flex-1 gap-4 p-4 sm:px-6 sm:py-0 md:gap-8">
       {/* <div className="w-max ml-auto flex-1 my-3 md:grow-0">
@@ -92,28 +112,29 @@ const Fyps = () => {
           cardTitle="All FYPs"
           cardDescription="Manage approved FYPs"
           tableHeaders={tableHeaders}
-          fypProjectsArray={fypProjectsData}
+          projects={allProjects}
         />
+
         <FypTable
           value="approved"
           cardTitle="Approved FYPs"
           cardDescription="Manage approved FYPs"
           tableHeaders={tableHeaders}
-          fypProjectsArray={approved}
+          projects={approved}
         />
         <FypTable
           value="rejected"
           cardTitle="Rejected FYPs"
           cardDescription="Manage approved FYPs"
           tableHeaders={tableHeaders}
-          fypProjectsArray={rejected}
+          projects={rejected}
         />
         <FypTable
           value="pending"
           cardTitle="Pending FYPs"
           cardDescription="Manage approved FYPs"
           tableHeaders={tableHeaders}
-          fypProjectsArray={pending}
+          projects={pending}
         />
       </Tabs>
     </main>
