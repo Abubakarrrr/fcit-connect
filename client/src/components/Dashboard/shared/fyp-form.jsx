@@ -4,19 +4,8 @@ import { FormTextarea } from "./form-textarea";
 import DynamicSelect from "./SelectWithSearch";
 import SimpleSelect from "./SimpleSelect";
 import ErrorMessage from "@/components/shared/ErrorMessage";
+import { useProjectStore } from "@/store/projectStore";
 
-const categories = [
-  "Artificial Intelligence",
-  "Blockchain",
-  "Web Development",
-  "Mobile Development",
-  "Desktop Applications",
-  "Cloud Computing",
-  "Internet of Things (IoT)",
-  "Game Development",
-  "Data Science",
-  "Cybersecurity",
-];
 
 const departments = [
   "Computer Science",
@@ -25,19 +14,13 @@ const departments = [
   "Data Science",
 ];
 
-const supervisors = [
-  "Dr. Smith",
-  "Prof. Johnson",
-  "Dr. Brown",
-  "Prof. Taylor",
-  "Dr. Anderson",
-];
-
 const years = Array.from({ length: 2024 - 2019 + 1 }, (_, i) =>
   (2024 - i).toString()
 );
 
 export default function FypForm({ formState, onChange, errors }) {
+  const {categories,supervisors} = useProjectStore();
+
   return (
     <div className="space-y-6">
       <FormInput
@@ -117,7 +100,7 @@ export default function FypForm({ formState, onChange, errors }) {
       <DynamicSelect
         labelText="Select Category"
         emptyText="No categories"
-        items={categories}
+        items={categories || []}
         value={formState.category || ""}
         onChange={(value) => onChange("category", value)}
       />
@@ -126,7 +109,7 @@ export default function FypForm({ formState, onChange, errors }) {
       <DynamicSelect
         labelText="Select Supervisor"
         emptyText="No supervisor with this name."
-        items={supervisors}
+        items={supervisors || []}
         value={formState.supervisor || ""}
         onChange={(value) => onChange("supervisor", value)}
       />

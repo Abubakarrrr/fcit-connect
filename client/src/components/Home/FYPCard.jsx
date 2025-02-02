@@ -3,14 +3,17 @@ import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Heart, Eye } from "lucide-react";
 import ImagesCarousel from "../shared/Carousel";
 import { Link } from "react-router-dom";
+import { useAuthStore } from "@/store/authStore";
 
 export default function FYPCard({ fyp }) {
+  const { user } = useAuthStore();
   const { _id, title, year, description, likes, views, images, thumbnail } =
     fyp;
   const imagesArray = [thumbnail];
   for (const image of images) {
     imagesArray.push(image);
   }
+  const fypLink = user?.role === "admin" ? `/admin/fyps/${_id} ` : `/fyps/${_id}`;
   return (
     <Card className="overflow-hidden">
       <div className="relative">
@@ -30,7 +33,7 @@ export default function FYPCard({ fyp }) {
 
       <CardHeader className="space-y-2 p-4">
         <div className="flex items-center justify-between">
-          <Link to={`/fyps/${_id}`}>
+          <Link to={fypLink}>
             <h3 className="font-semibold text-lg line-clamp-1">{title}</h3>
           </Link>
           <Badge variant="" className="ml-2 shrink-0">
