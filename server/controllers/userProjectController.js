@@ -212,9 +212,15 @@ export const deleteProject = async (req, res) => {
 export const getSingleProject = async (req, res) => {
   try {
     const id = req.params.id;
-    const project = await Project.findById(id)
+    const project = await Project.findByIdAndUpdate(
+      id,
+      { $inc: { views: 1 } },
+      { new: true }
+    )
       .populate("teamMembers")
       .populate("user", "name");
+
+    console.log(project);
     if (!project) {
       return res
         .status(403)
@@ -235,7 +241,7 @@ export const getSingleProject = async (req, res) => {
 };
 export const getAllProjects = async (req, res) => {
   try {
-    const projects = await Project.find();
+    const projects = await Project.find({ status: { $ne: "Rejected" } });
     if (!projects) {
       return res
         .status(403)
