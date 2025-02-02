@@ -23,6 +23,8 @@ import RelatedFyps from "./RelatedFyps";
 import Documentation from "./DocumentationTab";
 import TeamMember from "./TeamMembersTab";
 import TechStack from "./TechStackTab";
+import { useAuthStore } from "@/store/authStore";
+import ProjectApprovalCard from "./AdminApproval";
 
 export default function FypShowcase({ fyp }) {
   const {
@@ -49,6 +51,7 @@ export default function FypShowcase({ fyp }) {
   for (const image of images) {
     imagesArray.push(image);
   }
+  const { user } = useAuthStore();
 
   return (
     <div>
@@ -162,46 +165,33 @@ export default function FypShowcase({ fyp }) {
       <div className="py-12 max-w-4xl mx-auto">
         <Tabs defaultValue="readme" className="w-full">
           <TabsList className="grid w-full grid-cols-2 md:grid-cols-4 gap-2 mb-20 rounded">
-            {readme && (
-              <TabsTrigger value="readme" className="rounded-md ">
-                <div className="flex items-center gap-2">
-                  <Package className="w-6 h-6 mr-2" />
-                  <span>Readme</span>
-                </div>
-              </TabsTrigger>
-            )}
+            <TabsTrigger value="readme" className="rounded-md ">
+              <div className="flex items-center gap-2">
+                <Package className="w-6 h-6 mr-2" />
+                <span>Readme</span>
+              </div>
+            </TabsTrigger>
 
-            {(frontend ||
-              backend ||
-              database ||
-              aiLibraries ||
-              devops ||
-              testing) && (
-                <TabsTrigger value="techstack" className="rounded-md ">
-                  <div className="flex items-center gap-2">
-                    <Layers className="w-6 h-6" />
-                    <span>Tech Stack</span>
-                  </div>
-                </TabsTrigger>
-              )}
+            <TabsTrigger value="techstack" className="rounded-md ">
+              <div className="flex items-center gap-2">
+                <Layers className="w-6 h-6" />
+                <span>Tech Stack</span>
+              </div>
+            </TabsTrigger>
 
-            {documentation && (
-              <TabsTrigger value="documentation" className="rounded-md ">
-                <div className="flex items-center gap-2">
-                  <BookOpen className="w-6 h-6" />
-                  <span>Documentation</span>
-                </div>
-              </TabsTrigger>
-            )}
+            <TabsTrigger value="documentation" className="rounded-md ">
+              <div className="flex items-center gap-2">
+                <BookOpen className="w-6 h-6" />
+                <span>Documentation</span>
+              </div>
+            </TabsTrigger>
 
-            {teamMembers && (
-              <TabsTrigger value="team" className="rounded-md ">
-                <div className="flex items-center gap-2">
-                  <User className="w-6 h-6" />
-                  <span>Team members</span>
-                </div>
-              </TabsTrigger>
-            )}
+            <TabsTrigger value="team" className="rounded-md ">
+              <div className="flex items-center gap-2">
+                <User className="w-6 h-6" />
+                <span>Team members</span>
+              </div>
+            </TabsTrigger>
           </TabsList>
           <TabsContent
             value="readme"
@@ -226,7 +216,11 @@ export default function FypShowcase({ fyp }) {
             value="documentation"
             className="bg-white border rounded-md p-6 shadow-sm"
           >
-            <Documentation title={title} documentation={documentation} />
+            <Documentation
+              title={title}
+              documentation={documentation}
+              name={fyp?.user?.name.split(" ")[0]}
+            />
           </TabsContent>
           <TabsContent
             value="team"
@@ -237,10 +231,15 @@ export default function FypShowcase({ fyp }) {
         </Tabs>
       </div>
 
-      <div>
-        <h2 className="text-4xl font-bold text-center">Related Projects</h2>
-        <RelatedFyps />
-      </div>
+      {user?.role === "user" && (
+        <div>
+          <h2 className="text-4xl font-bold text-center">Related Projects</h2>
+          <RelatedFyps />
+        </div>
+      )}
+      {user?.role === "admin" && (
+        <ProjectApprovalCard/>
+      )}
     </div>
   );
 }

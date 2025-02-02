@@ -21,7 +21,8 @@ import {
   deleteTeamMember,
   getTeamMember,
   getAllTeamMembers,
-  approveProject
+  approveProject,
+  rejectProject,
 } from "../controllers/adminController.js";
 import { verifyToken } from "../middlewares/verifyToken.js";
 const router = express.Router();
@@ -38,8 +39,8 @@ router.post("/delete-project/:id", verifyToken, deleteProject);
 router.get("/get-project/:id", verifyToken, getSingleProject);
 router.get("/get-projects", verifyToken, getAllProjects);
 router.get("/get-admin-projects", verifyToken, getAllAdminProjects);
-router.post("/approve-project/:id", verifyToken,approveProject);
-router.post("/reject-project/:id", verifyToken);
+router.post("/approve-project/:id", verifyToken, approveProject);
+router.post("/reject-project/:id", verifyToken, rejectProject);
 
 router.post("/create-category", verifyToken, createCategory);
 router.post("/update-category/:id", verifyToken, updateCategory);

@@ -71,9 +71,8 @@ const FypAdminRow = ({ project }) => {
 
       {/* Name Cell */}
       <td className="font-medium hover:underline underline-offset-2">
-        <Link to={`/admin/fyps/update/${_id}`}>{title}</Link>
+        <Link to={`/admin/fyps/${_id}`} target="_blank" rel="noopener noreferrer">{title}</Link>
       </td>
-
       {/* Status Cell */}
       <td>
         <Badge variant="outline">{status}</Badge>

@@ -10,9 +10,13 @@ import {
   TableCell,
 } from "@/components/ui/table";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
+<<<<<<< HEAD
 import { Trash, Edit2 } from "lucide-react"; // Icons from Lucide
 import { useProjectStore } from "@/store/projectStore";
 import { useToast } from "@/hooks/use-toast";
+=======
+import { Trash, Edit2 } from "lucide-react"; 
+>>>>>>> f07a19efb41a59f91d3175d70bfd6e4a6db5b09a
 
 const CategoryPage = () => {
   const [categories, setCategories] = useState([]);
