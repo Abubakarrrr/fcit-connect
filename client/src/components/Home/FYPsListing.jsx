@@ -5,39 +5,22 @@ import PaginationDemo from "../shared/Pagination";
 import { useProjectStore } from "@/store/projectStore";
 
 const FYPsListing = ({ allProjects }) => {
-<<<<<<< HEAD
   const { categories, supervisors } = useProjectStore();
 
-=======
-  const { categories,supervisors } = useProjectStore();
->>>>>>> f6b79e201ed36303535689fd12a203bb38b29ab4
   const [selectedCampus, setSelectedCampus] = useState(null);
   const [selectedDepartment, setSelectedDepartment] = useState(null);
   const [selectedYear, setSelectedYear] = useState(null);
   const [selectedCategory, setSelectedCategory] = useState(null);
   const [selectedSupervisor, setSelectedSupervisor] = useState(null);
-<<<<<<< HEAD
-  console.log(
-    selectedCampus,
-    selectedDepartment,
-    selectedYear,
-    selectedCategory,
-    selectedSupervisor
-  );
-=======
   const updatedCategories = categories ? ["All", ...categories] : [];
   const updatedSupervisors = supervisors ? ["All", ...supervisors] : [];
->>>>>>> f6b79e201ed36303535689fd12a203bb38b29ab4
+
   return (
     <div className="py-8">
       <div className="flex justify-end gap-4 pb-8">
         <Dropdown
           trigger={"Campus"}
-<<<<<<< HEAD
-          list={["Both", "NC", "OC"]}
-=======
-        list={["All", "NC", "OC"]}
->>>>>>> f6b79e201ed36303535689fd12a203bb38b29ab4
+          list={["All", "NC", "OC"]}
           selected={selectedCampus}
           handleSelect={setSelectedCampus}
         />
