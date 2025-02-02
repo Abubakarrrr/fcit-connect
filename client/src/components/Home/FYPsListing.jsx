@@ -6,12 +6,12 @@ import { useProjectStore } from "@/store/projectStore";
 
 const FYPsListing = ({ allProjects }) => {
   const { categories, supervisors } = useProjectStore();
+
   const [selectedCampus, setSelectedCampus] = useState(null);
   const [selectedDepartment, setSelectedDepartment] = useState(null);
   const [selectedYear, setSelectedYear] = useState(null);
   const [selectedCategory, setSelectedCategory] = useState(null);
   const [selectedSupervisor, setSelectedSupervisor] = useState(null);
-
   const updatedCategories = categories ? ["All", ...categories] : [];
   const updatedSupervisors = supervisors ? ["All", ...supervisors] : [];
 
