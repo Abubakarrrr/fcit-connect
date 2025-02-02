@@ -121,6 +121,10 @@ const UpdateTemplate = () => {
         {}
       );
       setErrors(errorMessages);
+      toast({
+        title: "Basic Details Tab information is missing",
+        description: "",
+      });
       return;
     } else {
       setErrors({});
@@ -131,6 +135,10 @@ const UpdateTemplate = () => {
     if (validationResult.error) {
       setThumbnailError("Please upload a thumbnail image");
       console.log(validationResult);
+      toast({
+        title: "Basic Details Tab information is missing",
+        description: "",
+      });
       return;
     } else {
       setThumbnailError("");

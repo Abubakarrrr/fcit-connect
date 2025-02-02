@@ -25,6 +25,7 @@ import TeamMember from "./TeamMembersTab";
 import TechStack from "./TechStackTab";
 import { useAuthStore } from "@/store/authStore";
 import ProjectApprovalCard from "./AdminApproval";
+import { Badge } from "@/components/ui/badge";
 
 export default function FypShowcase({ fyp }) {
   const { user } = useAuthStore();
@@ -47,6 +48,8 @@ export default function FypShowcase({ fyp }) {
     devops,
     testing,
     aiLibraries,
+    createdByAdmin,
+    status,
   } = fyp;
   const imagesArray = [thumbnail];
   for (const image of images) {
@@ -54,6 +57,7 @@ export default function FypShowcase({ fyp }) {
   }
   return (
     <div>
+      {user?.role === "admin" && <ProjectApprovalCard id={fyp._id} />}
       <div className="">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-10 items-center ">
           {/* Left Column */}
@@ -83,16 +87,30 @@ export default function FypShowcase({ fyp }) {
                     <FaGithub className="w-8 h-8" />
                   </a>
                 )}
+                <Badge
+                  variant=""
+                  className={`ml-2 shrink-0  hover:bg-gray-100 ${
+                    status === "Pending"
+                      ? "text-red-600 bg-white"
+                      : status === "Approved"
+                      ? "text-green-600 bg-white hover:bg-gray-100"
+                      : ""
+                  }`}
+                >
+                  {status}
+                </Badge>
               </div>
             </div>
 
             <div className="flex max-sm:flex-col gap-4">
-              <a href={githubLink} target="_blank" rel="noopener noreferrer">
-                <Button className="gap-2" size="lg" to={githubLink}>
-                  Get Access - $0 USD
-                  <ArrowRight className="w-4 h-4" />
-                </Button>
-              </a>
+              {!createdByAdmin && (
+                <a href={githubLink} target="_blank" rel="noopener noreferrer">
+                  <Button className="gap-2" size="lg" to={githubLink}>
+                    Get Access - $0 USD
+                    <ArrowRight className="w-4 h-4" />
+                  </Button>
+                </a>
+              )}
 
               {deployLink && (
                 <a href={deployLink} target="_blank" rel="noopener noreferrer">
@@ -238,7 +256,6 @@ export default function FypShowcase({ fyp }) {
           <RelatedFyps />
         </div>
       )}
-      {user?.role === "admin" && <ProjectApprovalCard id={fyp._id} />}
     </div>
   );
 }
