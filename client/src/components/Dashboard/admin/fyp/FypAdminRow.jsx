@@ -24,10 +24,6 @@ import { RxCross1 } from "react-icons/rx";
 import { Link, useLocation } from "react-router-dom";
 
 const FypAdminRow = ({ project }) => {
-  console.log(project);
-  if (!project) {
-    return <div>No FYP Found</div>;
-  }
   const { toast } = useToast();
   const [openDialog, setOpenDialog] = useState(false);
   const [openDropdown, setOpenDropdown] = useState(false);
@@ -57,7 +53,9 @@ const FypAdminRow = ({ project }) => {
       });
     }
   };
-
+  if (!project) {
+    return <div>No FYP Found</div>;
+  }
   return (
     <tr>
       {/* Image Cell */}

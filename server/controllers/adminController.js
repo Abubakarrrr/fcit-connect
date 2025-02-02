@@ -4,9 +4,17 @@ import { Project, User, TeamMember, Category } from "../models/index.js";
 
 export const createUser = async (req, res) => {
   const { email, password, name, role } = req.body;
+  const userId = req.userId;
   try {
-    if (!email || !password || !name) {
+    if (!email || !name) {
       throw new Error("All fields are required");
+    }
+    const Admin = await User.findById(userId);
+    if (!Admin || Admin.role != "admin") {
+      return res.status(403).json({
+        success: false,
+        message: "Unauthorized: Admin Access Required",
+      });
     }
     const userAlreadyExists = await User.findOne({ email: email });
 
@@ -43,8 +51,17 @@ export const createUser = async (req, res) => {
   }
 };
 export const updateUser = async (req, res) => {
+  const userId = req.userId;
+  const upadetData = req.body;
   try {
-    const userFromDB = await User.findByIdAndUpdate(req.params.id, req.body, {
+    const Admin = await User.findById(userId);
+    if (!Admin || Admin.role != "admin") {
+      return res.status(403).json({
+        success: false,
+        message: "Unauthorized: Admin Access Required",
+      });
+    }
+    const userFromDB = await User.findByIdAndUpdate(req.params.id, upadetData, {
       new: true,
     });
 
@@ -69,7 +86,15 @@ export const updateUser = async (req, res) => {
   }
 };
 export const deleteUser = async (req, res) => {
+  const userId = req.userId;
   try {
+    const Admin = await User.findById(userId);
+    if (!Admin || Admin.role != "admin") {
+      return res.status(403).json({
+        success: false,
+        message: "Unauthorized: Admin Access Required",
+      });
+    }
     const user = await User.findByIdAndDelete(req.params.id);
     if (!user) {
       return res.status(404).json({
@@ -91,7 +116,16 @@ export const deleteUser = async (req, res) => {
   }
 };
 export const getUser = async (req, res) => {
+  const userId = req.userId;
+
   try {
+    const Admin = await User.findById(userId);
+    if (!Admin || Admin.role != "admin") {
+      return res.status(403).json({
+        success: false,
+        message: "Unauthorized: Admin Access Required",
+      });
+    }
     const user = await User.findById(req.params.id);
     if (!user) {
       return res.status(404).json({
@@ -113,8 +147,16 @@ export const getUser = async (req, res) => {
   }
 };
 export const getAllUsers = async (req, res) => {
+  const userId = req.userId;
   try {
-    const users = await User.find();
+    const Admin = await User.findById(userId);
+    if (!Admin || Admin.role != "admin") {
+      return res.status(403).json({
+        success: false,
+        message: "Unauthorized: Admin Access Required",
+      });
+    }
+    const users = await User.find({ _id: { $ne: userId } });
     if (!users) {
       return res.status(404).json({
         success: false,
@@ -134,9 +176,18 @@ export const getAllUsers = async (req, res) => {
 
 export const createCategory = async (req, res) => {
   const { name } = req.body;
+  const userId = req.userId;
+
   try {
     if (!name) {
       throw new Error("Category name is required");
+    }
+    const user = await User.findById(userId);
+    if (!user || user.role != "admin") {
+      return res.status(403).json({
+        success: false,
+        message: "Unauthorized: Admin Access Required",
+      });
     }
     const categoryFromDB = await Category.findOne({ name: name });
 
@@ -166,7 +217,15 @@ export const createCategory = async (req, res) => {
 };
 export const updateCategory = async (req, res) => {
   const { name } = req.body;
+  const userId = req.userId;
   try {
+    const user = await User.findById(userId);
+    if (!user || user.role != "admin") {
+      return res.status(403).json({
+        success: false,
+        message: "Unauthorized: Admin Access Required",
+      });
+    }
     const categoryFromDB = await Category.findByIdAndUpdate(
       req.params.id,
       { name },
@@ -191,7 +250,16 @@ export const updateCategory = async (req, res) => {
   }
 };
 export const deleteCategory = async (req, res) => {
+  const userId = req.userId;
+
   try {
+    const user = await User.findById(userId);
+    if (!user || user.role != "admin") {
+      return res.status(403).json({
+        success: false,
+        message: "Unauthorized: Admin Access Required",
+      });
+    }
     const category = await Category.findByIdAndDelete(req.params.id);
     if (!category) {
       return res.status(404).json({
@@ -209,7 +277,16 @@ export const deleteCategory = async (req, res) => {
   }
 };
 export const getCategory = async (req, res) => {
+  const userId = req.userId;
+
   try {
+    const user = await User.findById(userId);
+    if (!user || user.role != "admin") {
+      return res.status(403).json({
+        success: false,
+        message: "Unauthorized: Admin Access Required",
+      });
+    }
     const category = await Category.findById(req.params.id);
     if (!category) {
       return res.status(404).json({
@@ -228,7 +305,16 @@ export const getCategory = async (req, res) => {
   }
 };
 export const getAllCategories = async (req, res) => {
+  const userId = req.userId;
+
   try {
+    const user = await User.findById(userId);
+    if (!user || user.role != "admin") {
+      return res.status(403).json({
+        success: false,
+        message: "Unauthorized: Admin Access Required",
+      });
+    }
     const categories = await Category.find();
     if (!categories) {
       return res.status(404).json({
@@ -298,6 +384,7 @@ export const createInitialProject = async (req, res) => {
       deployLink,
       thumbnail,
       createdByAdmin: true,
+      status: "Approved",
       user: user._id,
     });
     user.adminProjects.push(project._id);
@@ -495,7 +582,72 @@ export const getAllAdminProjects = async (req, res) => {
     res.status(400).json({ success: false, message: error.message });
   }
 };
+export const approveProject = async (req, res) => {
+  try {
+    const projectId = req.params.id;
+    const userId = req.userId;
 
+    const user = await User.findById(userId);
+    if (!user || user.role != "admin") {
+      return res.status(403).json({
+        success: false,
+        message: "Unauthorized: Admin Access Required",
+      });
+    }
+    const approvedProject = await Project.findByIdAndUpdate(
+      projectId,
+      { status: "Approved" },
+      { new: true }
+    );
+    if (!approveProject) {
+      return res.status(200).json({
+        success: false,
+        message: "Failed to approve Project",
+      });
+    }
+    return res.status(200).json({
+      success: true,
+      message: "Project approved successfully",
+      projectData: approvedProject,
+    });
+  } catch (error) {
+    console.log("error in project approval");
+    res.status(400).json({ success: false, message: error.message });
+  }
+};
+export const rejectProject = async (req, res) => {
+  try {
+    const projectId = req.params.id;
+    const userId = req.userId;
+
+    const user = await User.findById(userId);
+    if (!user || user.role != "admin") {
+      return res.status(403).json({
+        success: false,
+        message: "Unauthorized: Admin Access Required",
+      });
+    }
+    const rejectedProject = await Project.findByIdAndUpdate(
+      projectId,
+      { status: "Rejected" },
+      { new: true }
+    );
+    if (!rejectedProject) {
+      return res.status(200).json({
+        success: false,
+        message: "Failed to reject Project",
+      });
+    }
+    return res.status(200).json({
+      success: true,
+      message: "Project rejected by Admin",
+      projectData: rejectedProject,
+    });
+  } catch (error) {
+    console.log("error in project rejection");
+    res.status(400).json({ success: false, message: error.message });
+  }
+};
 export const addTeamMember = async (req, res) => {
   const userId = req.userId;
   const { teamMember } = req.body;

@@ -9,16 +9,15 @@ axios.defaults.withCredentials = true;
 export const useProjectStore = create((set) => ({
   project: null,
   allProjects: [],
-  adminProjects: [],
   teamMembers: [],
   message: null,
   categories: [],
-  adminCategories: [],
   supervisors: [],
-  adminSupervisors: [],
   isLoading: false,
   storeError: null,
 
+  adminProjects: [],
+  adminCategories: [],
   // USER APIs
   createIntialProject: async (projectData) => {
     set({ isLoading: true, storeError: null });
@@ -685,6 +684,52 @@ export const useProjectStore = create((set) => ({
       throw error;
     }
   },
+  sudo_approveProject: async (projectId) => {
+    set({ isLoading: true, storeError: null });
+    try {
+      const response = await axios.get(
+        `${ADMIN_API_URL}/approve-project/${projectId}`
+      );
+
+      if (response.data.projectData) {
+        set({
+          project: response.data.projectData,
+          message: response?.data?.message,
+          isLoading: false,
+        });
+        return response.data.projectData;
+      }
+    } catch (error) {
+      set({
+        isLoading: false,
+        storeError: error.response?.data?.message || "Error Approving Project",
+      });
+      throw error;
+    }
+  },
+  sudo_rejectProject: async (projectId) => {
+    set({ isLoading: true, storeError: null });
+    try {
+      const response = await axios.get(
+        `${ADMIN_API_URL}/reject-project/${projectId}`
+      );
+
+      if (response.data.projectData) {
+        set({
+          project: response.data.projectData,
+          message: response?.data?.message,
+          isLoading: false,
+        });
+        return response.data.projectData;
+      }
+    } catch (error) {
+      set({
+        isLoading: false,
+        storeError: error.response?.data?.message || "Error Rejecting Project",
+      });
+      throw error;
+    }
+  },
 
   sudo_addTeamMember: async (teamMember, projectId) => {
     set({ isLoading: true, storeError: null });
@@ -806,4 +851,95 @@ export const useProjectStore = create((set) => ({
       throw error;
     }
   },
+
+  sudo_createCategory: async (name) => {
+    set({ isLoading: true, storeError: null });
+    try {
+      const response = await axios.post(`${ADMIN_API_URL}/create-category`, {
+        name,
+      });
+
+      if (response.data.category) {
+        set({
+          message: response.data.message,
+          isLoading: false,
+        });
+        return response.data.category;
+      }
+    } catch (error) {
+      set({
+        isLoading: false,
+        storeError: error.response?.data?.message || "Error Adding Team Member",
+      });
+      throw error;
+    }
+  },
+  sudo_updateCategory: async (name, catId) => {
+    set({ isLoading: true, storeError: null });
+
+    try {
+      const response = await axios.post(
+        `${ADMIN_API_URL}/update-category/${catId}`,
+        { name }
+      );
+      if (response.data.category) {
+        set({
+          message: response.data.message,
+          isLoading: false,
+        });
+        return response.data.category;
+      }
+    } catch (error) {
+      set({
+        isLoading: false,
+        storeError:
+          error.response?.data?.message || "Error Updating Team Member",
+      });
+      throw error;
+    }
+  },
+  sudo_deleteCategory: async (catId) => {
+    set({ storeError: null });
+    try {
+      const response = await axios.post(
+        `${ADMIN_API_URL}/delete-category/${catId}`
+      );
+      if (response.data.success) {
+        set({
+          message: response.data.message,
+          isLoading: false,
+        });
+      }
+    } catch (error) {
+      set({
+        storeError:
+          error.response?.data?.message || "Error Deleting Category",
+      });
+      throw error;
+    }
+  },
+  sudo_getAllCategories: async () => {
+    set({ isLoading: true, storeError: null });
+    try {
+      const response = await axios.get(
+        `${ADMIN_API_URL}/get-all-categories`
+      );
+      if (response.data.categories) {
+        set({
+          message: response.data.message,
+          isLoading: false,
+          adminCategories: response.data.categories,
+        });
+        return response.data.categories;
+      }
+    } catch (error) {
+      set({
+        isLoading: false,
+        storeError:
+          error.response?.data?.message || "Error Finding Categories",
+      });
+      throw error;
+    }
+  },
+ 
 }));

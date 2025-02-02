@@ -2,6 +2,7 @@ import { create } from "zustand";
 import axios from "axios";
 
 const API_URL = "http://localhost:5000/api/auth";
+const ADMIN_API_URL = "http://localhost:5000/api/admin";
 axios.defaults.withCredentials = true;
 export const useAuthStore = create((set) => ({
   user: null,
@@ -10,10 +11,11 @@ export const useAuthStore = create((set) => ({
   isLoading: false,
   isCheckingAuth: true,
   message: null,
+  allUsers: [],
 
   signup: async (email, name, password) => {
     set({ isLoading: true, error: null });
-    try { 
+    try {
       const response = await axios.post(`${API_URL}/signup`, {
         email,
         password,
@@ -140,6 +142,66 @@ export const useAuthStore = create((set) => ({
         isCheckingAuth: false,
         error: null,
         isAthenticated: false,
+      });
+      throw error;
+    }
+  },
+
+  // ADMIN APIs
+  sudo_createUser: async (FormData) => {
+    set({ isLoading: true, error: null });
+    try {
+      const response = await axios.post(`${ADMIN_API_URL}/create-user`, {
+        email: FormData.email,
+        password: FormData.password,
+        name: FormData.name,
+        role: FormData.role,
+      });
+      set({
+        isLoading: false,
+      });
+      return response?.data?.user;
+    } catch (error) {
+      set({
+        isLoading: false,
+        error: error.response?.data?.message || "Error craeting user",
+      });
+      throw error;
+    }
+  },
+  sudo_updateUser: async (updateData, userId) => {
+    set({ isLoading: true, error: null });
+    console.log(updateData, userId);
+    try {
+      const response = await axios.post(
+        `${ADMIN_API_URL}/update-user/${userId}`,
+        updateData
+      );
+      set({
+        isLoading: false,
+      });
+      return response?.data?.user;
+    } catch (error) {
+      set({
+        isLoading: false,
+        error: error.response?.data?.message || "Error craeting user",
+      });
+      throw error;
+    }
+  },
+  sudo_getAllUsers: async () => {
+    set({ isLoading: true, error: null });
+    try {
+      const response = await axios.get(`${ADMIN_API_URL}/get-all-users`);
+      set({
+        allUsers: response?.data?.users,
+        isLoading: false,
+      });
+      return response?.data?.users;
+    } catch (error) {
+      set({
+        isLoading: false,
+        error: error.response?.data?.message || "Error fetching users",
       });
       throw error;
     }
