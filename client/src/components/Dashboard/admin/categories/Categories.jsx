@@ -3,7 +3,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Table, TableHeader, TableRow, TableHead, TableBody, TableCell } from "@/components/ui/table";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
-import { Trash, Edit2 } from "lucide-react"; // Icons from Lucide
+import { Trash, Edit2 } from "lucide-react"; 
 
 const CategoryPage = () => {
   const [categories, setCategories] = useState([

@@ -3,8 +3,11 @@ import { Card, CardContent } from "@/components/ui/card";
 import { useAuthStore } from "@/store/authStore";
 import { FileText, Download, Eye } from "lucide-react";
 
-export default function Documentation({ documentation, title }) {
-  const { user } = useAuthStore();
+export default function Documentation({ documentation, title, name }) {
+  if (!documentation || !name) {
+    return null;
+  }
+ 
   return (
     <Card className="w-full max-w-2xl mx-auto">
       <CardContent className="p-6">
@@ -14,7 +17,7 @@ export default function Documentation({ documentation, title }) {
             <FileText className="w-16 h-16 text-gray-400 mb-4" />
             <div className="text-center">
               <p className="text-sm text-muted-foreground">
-                Uploaded by {user?.name}
+                Uploaded by {name}
               </p>
             </div>
           </div>

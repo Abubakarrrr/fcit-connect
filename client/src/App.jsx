@@ -49,7 +49,7 @@ function App() {
   const isAdminRoute = location.pathname.startsWith("/admin");
   const isUserRoute = location.pathname.startsWith("/user");
   const { isCheckingAuth, checkAuth } = useAuthStore();
-  const {getAllCategories,getAllSupervisors} = useProjectStore();
+  const { getAllCategories, getAllSupervisors } = useProjectStore();
 
   useEffect(() => {
     const checkAuthentication = async () => {
@@ -132,10 +132,23 @@ function App() {
           <Route path="/blogs" element={<Blogs />} />
           <Route path="/about" element={<About />} />
           <Route path="/privacy-policy" element={<PrivacyPolicy />} />
-          <Route path="/login-with-google" element={<RedirectAuthenticatedUser>
-            <LoginWithGoogle />
-          </RedirectAuthenticatedUser>} />
+          <Route
+            path="/login-with-google"
+            element={
+              <RedirectAuthenticatedUser>
+                <LoginWithGoogle />
+              </RedirectAuthenticatedUser>
+            }
+          />
           <Route path="/fyps/:id" element={<FypDetails />} />
+          <Route
+            path="/admin/fyps/:id"
+            element={
+              <AdminProtectedRoute>
+                <FypDetails />
+              </AdminProtectedRoute>
+            }
+          />
           {/* <Route path="/fyps/new" element={<AddFyp/>} />   */}
 
           {/* Admin Routes  */}
