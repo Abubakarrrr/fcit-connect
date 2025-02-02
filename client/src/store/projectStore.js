@@ -684,11 +684,11 @@ export const useProjectStore = create((set) => ({
       throw error;
     }
   },
-  sudo_approveProject: async (projectId) => {
+  sudo_approveProject: async (projectId,feedback) => {
     set({ isLoading: true, storeError: null });
     try {
-      const response = await axios.get(
-        `${ADMIN_API_URL}/approve-project/${projectId}`
+      const response = await axios.post(
+        `${ADMIN_API_URL}/approve-project/${projectId}`,{feedback}
       );
 
       if (response.data.projectData) {
@@ -707,11 +707,11 @@ export const useProjectStore = create((set) => ({
       throw error;
     }
   },
-  sudo_rejectProject: async (projectId) => {
+  sudo_rejectProject: async (projectId,feedback) => {
     set({ isLoading: true, storeError: null });
     try {
-      const response = await axios.get(
-        `${ADMIN_API_URL}/reject-project/${projectId}`
+      const response = await axios.post(
+        `${ADMIN_API_URL}/reject-project/${projectId}`,{feedback}
       );
 
       if (response.data.projectData) {

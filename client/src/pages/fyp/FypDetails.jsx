@@ -4,20 +4,25 @@ import FypShowcase from "./FypShowcase";
 import Layout from "@/components/shared/Layout";
 import { useProjectStore } from "@/store/projectStore";
 import SkeletonCard from "@/components/shared/SkeletonCard";
+import { useAuthStore } from "@/store/authStore";
 
 const FypDetails = () => {
   const { id } = useParams();
-  const { project, getSingleProject } = useProjectStore();
+  const { project, getSingleProject, sudo_getSingleProject } =
+    useProjectStore();
+  const { user } = useAuthStore();
   useEffect(() => {
-    const getP = async () => {
-      await getSingleProject(id);
-      console.log("project")
-      console.log(project)
+    const getProject = async () => {
+      if (user?.role == "admin") {
+        await sudo_getSingleProject(id);
+      } else if (user?.role == "user") {
+        await getSingleProject(id);
+      }
     };
-    getP();
+    getProject();
   }, []);
   if (!project) {
-    return <SkeletonCard/>;
+    return <SkeletonCard />;
   }
 
   return (

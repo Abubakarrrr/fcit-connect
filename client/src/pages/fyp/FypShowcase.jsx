@@ -27,6 +27,7 @@ import { useAuthStore } from "@/store/authStore";
 import ProjectApprovalCard from "./AdminApproval";
 
 export default function FypShowcase({ fyp }) {
+  const { user } = useAuthStore();
   const {
     title,
     description,
@@ -51,8 +52,6 @@ export default function FypShowcase({ fyp }) {
   for (const image of images) {
     imagesArray.push(image);
   }
-  const { user } = useAuthStore();
-
   return (
     <div>
       <div className="">
@@ -109,7 +108,9 @@ export default function FypShowcase({ fyp }) {
               <div>
                 <User className="w-4 h-4" />
                 <div className="font-semibold">
-                  {fyp?.user?.name.split(" ")[0]}
+                  {user?.role == "admin"
+                    ? "ADMIN"
+                    : fyp?.user?.name?.split(" ")[0]}
                 </div>
                 <div className="text-sm text-gray-500">Creator</div>
               </div>
@@ -219,7 +220,7 @@ export default function FypShowcase({ fyp }) {
             <Documentation
               title={title}
               documentation={documentation}
-              name={fyp?.user?.name.split(" ")[0]}
+              name={fyp?.user?.name?.split(" ")[0]}
             />
           </TabsContent>
           <TabsContent
@@ -237,9 +238,7 @@ export default function FypShowcase({ fyp }) {
           <RelatedFyps />
         </div>
       )}
-      {user?.role === "admin" && (
-        <ProjectApprovalCard/>
-      )}
+      {user?.role === "admin" && <ProjectApprovalCard id={fyp._id} />}
     </div>
   );
 }
