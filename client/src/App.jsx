@@ -141,6 +141,9 @@ function App() {
             }
           />
           <Route path="/fyps/:id" element={<FypDetails />} />
+          {/* <Route path="/fyps/new" element={<AddFyp/>} />   */}
+
+          {/* Admin Routes  */}
           <Route
             path="/admin/fyps/:id"
             element={
@@ -149,9 +152,6 @@ function App() {
               </AdminProtectedRoute>
             }
           />
-          {/* <Route path="/fyps/new" element={<AddFyp/>} />   */}
-
-          {/* Admin Routes  */}
           <Route
             path="/admin"
             element={

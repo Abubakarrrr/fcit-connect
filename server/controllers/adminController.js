@@ -586,6 +586,7 @@ export const approveProject = async (req, res) => {
   try {
     const projectId = req.params.id;
     const userId = req.userId;
+    const { feedback } = req.body;
 
     const user = await User.findById(userId);
     if (!user || user.role != "admin") {
@@ -596,7 +597,7 @@ export const approveProject = async (req, res) => {
     }
     const approvedProject = await Project.findByIdAndUpdate(
       projectId,
-      { status: "Approved" },
+      { status: "Approved", feedback },
       { new: true }
     );
     if (!approveProject) {
@@ -619,6 +620,7 @@ export const rejectProject = async (req, res) => {
   try {
     const projectId = req.params.id;
     const userId = req.userId;
+    const { feedback } = req.body;
 
     const user = await User.findById(userId);
     if (!user || user.role != "admin") {
@@ -629,7 +631,7 @@ export const rejectProject = async (req, res) => {
     }
     const rejectedProject = await Project.findByIdAndUpdate(
       projectId,
-      { status: "Rejected" },
+      { status: "Rejected", feedback },
       { new: true }
     );
     if (!rejectedProject) {
