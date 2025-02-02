@@ -128,7 +128,11 @@ export const updateProject = async (req, res) => {
     }
     if (Object.keys(updatedFields).length > 0) {
       updatedFields.updated_at = Date.now();
-      await Project.findByIdAndUpdate(projectId, updatedFields, { new: true });
+      await Project.findByIdAndUpdate(
+        projectId,
+        { ...updatedFields, status: "Pending" },
+        { new: true }
+      );
     }
     const updatedProject = await Project.findById(projectId);
     return res.status(200).json({

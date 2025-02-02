@@ -1,19 +1,52 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Table, TableHeader, TableRow, TableHead, TableBody, TableCell } from "@/components/ui/table";
+import {
+  Table,
+  TableHeader,
+  TableRow,
+  TableHead,
+  TableBody,
+  TableCell,
+} from "@/components/ui/table";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
+<<<<<<< HEAD
+import { Trash, Edit2 } from "lucide-react"; // Icons from Lucide
+import { useProjectStore } from "@/store/projectStore";
+import { useToast } from "@/hooks/use-toast";
+=======
 import { Trash, Edit2 } from "lucide-react"; 
+>>>>>>> f07a19efb41a59f91d3175d70bfd6e4a6db5b09a
 
 const CategoryPage = () => {
-  const [categories, setCategories] = useState([
-    { id: 1, name: "AI and Machine Learning" },
-    { id: 2, name: "Web Development" },
-    { id: 3, name: "Data Science" },
-  ]);
+  const [categories, setCategories] = useState([]);
   const [formData, setFormData] = useState({ name: "" });
   const [editingCategory, setEditingCategory] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const { toast } = useToast();
 
+  const {
+    sudo_createCategory,
+    sudo_updateCategory,
+    sudo_getAllCategories,
+    sudo_deleteCategory,
+    adminCategories,
+  } = useProjectStore();
+  useEffect(() => {
+    const fetchUsers = async () => {
+      try {
+        await sudo_getAllCategories();
+      } catch (error) {
+        console.log(error);
+      }
+    };
+    fetchUsers();
+  }, []);
+  useEffect(() => {
+    if (adminCategories.length > 0) {
+      setCategories(adminCategories);
+    }
+  }, [adminCategories]);
   // Handle form input changes
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -21,21 +54,59 @@ const CategoryPage = () => {
   };
 
   // Add or update category
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
+    setIsLoading(true);
     if (editingCategory) {
-      setCategories((prev) =>
-        prev.map((cat) =>
-          cat.id === editingCategory.id ? { ...editingCategory, ...formData } : cat
-        )
-      );
-      setEditingCategory(null);
+      try {
+        const updatedUser = await sudo_updateCategory(
+          formData.name,
+          editingCategory._id
+        );
+        if (updatedUser) {
+          toast({
+            title: "Category Updated Successfully",
+            description: "",
+          });
+          setCategories((prev) =>
+            prev.map((user) => {
+              return user._id === updatedUser._id
+                ? { ...editingCategory, ...formData }
+                : user;
+            })
+          );
+          setEditingCategory(null);
+          setIsLoading(false);
+        }
+      } catch (error) {
+        setIsLoading(false);
+        console.log(error);
+        toast({
+          title: error.response?.data?.message || "Error Updating Category",
+          description: "",
+        });
+      }
     } else {
-      setCategories((prev) => [
-        ...prev,
-        { id: Date.now(), ...formData },
-      ]);
+      try {
+        const createdCategory = await sudo_createCategory(formData.name);
+        if (createdCategory) {
+          toast({
+            title: "Category Added Successfully",
+            description: "",
+          });
+          setCategories((prev) => [...prev, { ...createdCategory }]);
+          setIsLoading(false);
+        }
+      } catch (error) {
+        setIsLoading(false);
+        console.log(error);
+        toast({
+          title: error.response?.data?.message || "Error Creating Category",
+          description: "",
+        });
+      }
     }
     setFormData({ name: "" });
+    setIsLoading(false);
   };
 
   // Edit category
@@ -45,8 +116,24 @@ const CategoryPage = () => {
   };
 
   // Delete category
-  const handleDelete = (id) => {
-    setCategories((prev) => prev.filter((cat) => cat.id !== id));
+  const handleDelete = async (id) => {
+    setIsLoading(true);
+    try {
+      await sudo_deleteCategory(id);
+      toast({
+        title: "Category Deleted Successfully",
+        description: "",
+      });
+      setIsLoading(false);
+    } catch (error) {
+      setIsLoading(false);
+      console.log(error);
+      toast({
+        title: error.response?.data?.message || "Error Deleting Category",
+        description: "",
+      });
+    }
+    setCategories((prev) => prev.filter((cat) => cat._id !== id));
   };
 
   return (
@@ -63,7 +150,11 @@ const CategoryPage = () => {
               value={formData.name}
               onChange={handleInputChange}
             />
-            <Button onClick={handleSubmit} className="sm:col-span-3 w-full">
+            <Button
+              onClick={handleSubmit}
+              disabled={isLoading}
+              className="sm:col-span-3 w-full"
+            >
               {editingCategory ? "Update Category" : "Add Category"}
             </Button>
           </div>
@@ -76,27 +167,29 @@ const CategoryPage = () => {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {categories.map((category) => (
-                <TableRow key={category.id}>
-                  <TableCell>{category.name}</TableCell>
-                  <TableCell className="flex space-x-2">
-                    <Button
-                      variant="outline"
-                      size="icon"
-                      onClick={() => handleEdit(category)}
-                    >
-                      <Edit2 className="w-4 h-4" />
-                    </Button>
-                    <Button
-                      variant="outline"
-                      size="icon"
-                      onClick={() => handleDelete(category.id)}
-                    >
-                      <Trash className="w-4 h-4 text-red-500" />
-                    </Button>
-                  </TableCell>
-                </TableRow>
-              ))}
+              {categories.length > 0 &&
+                categories.map((category) => (
+                  <TableRow key={category._id}>
+                    <TableCell>{category.name}</TableCell>
+                    <TableCell className="flex space-x-2">
+                      <Button
+                        variant="outline"
+                        size="icon"
+                        disabled={isLoading}
+                        onClick={() => handleEdit(category)}
+                      >
+                        <Edit2 className="w-4 h-4" />
+                      </Button>
+                      <Button
+                        variant="outline"
+                        size="icon"
+                        onClick={() => handleDelete(category._id)}
+                      >
+                        <Trash className="w-4 h-4 text-red-500" />
+                      </Button>
+                    </TableCell>
+                  </TableRow>
+                ))}
             </TableBody>
           </Table>
         </CardContent>
