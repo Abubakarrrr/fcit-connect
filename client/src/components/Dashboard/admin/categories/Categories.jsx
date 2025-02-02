@@ -14,8 +14,6 @@ import { Trash, Edit2 } from "lucide-react"; // Icons from Lucide
 import { useProjectStore } from "@/store/projectStore";
 import { useToast } from "@/hooks/use-toast";
 
-
-
 const CategoryPage = () => {
   const [categories, setCategories] = useState([]);
   const [formData, setFormData] = useState({ name: "" });
