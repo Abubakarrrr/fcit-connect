@@ -15,7 +15,7 @@ const FypDetails = () => {
     const getProject = async () => {
       if (user?.role == "admin") {
         await sudo_getSingleProject(id);
-      } else if (user?.role == "user") {
+      } else {
         await getSingleProject(id);
       }
     };
