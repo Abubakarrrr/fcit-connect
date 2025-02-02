@@ -52,14 +52,12 @@ export function ShowcaseCard({
 }) {
   return (
     <Link to={`/fyps/${_id}`}
-      className="flex flex-col gap-2  group relative overflow-hidden cursor-pointer"
+      className="flex w-[330px] flex-col gap-2 group relative overflow-hidden cursor-pointer"
     >
       <img
         src={thumbnail}
         alt={title}
-        width={500}
-        height={300}
-        className="size-full object-cover max-h-[300px] rounded-xl"
+        className="size-full object-cover w-full max-h-[300px] rounded-xl"
       />
 
       <div className="flex flex-col">
