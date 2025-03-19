@@ -11,6 +11,7 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
+import Markdown from 'react-markdown'
 
 export function PredictiveAnalysisTool() {
   const [prompt, setPrompt] = useState("");
@@ -85,12 +86,13 @@ export function PredictiveAnalysisTool() {
           </div>
 
           {result && (
-            <div dangerouslySetInnerHTML={{ __html: result }}
+            <div 
               className={cn(
                 "mt-4 rounded-lg border bg-card p-4 text-card-foreground shadow-sm transition-opacity",
                 isLoading ? "opacity-50" : "opacity-100"
               )}
             >
+              <Markdown>{result}</Markdown>
               {/* <div className="whitespace-pre-line">{result}</div> */}
             </div>
           )}
