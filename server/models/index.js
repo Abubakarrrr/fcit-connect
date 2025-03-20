@@ -4,5 +4,6 @@ import { Project } from "./projectModel.js";
 import { User } from "./userModel.js";
 import { VectorEmbedding } from "./vectorEmbeddingModel.js";
 import { TeamMember } from "./teamMemberModel.js";
+import { Review } from "./reviewModel.js";
 
-export { Batch, Category, Project, User, VectorEmbedding, TeamMember };
+export { Batch, Category, Project, User, VectorEmbedding, TeamMember, Review };

@@ -28,15 +28,21 @@ export const createInitialProject = async (req, res) => {
       !githubLink ||
       !thumbnail
     ) {
-      return res.status(400).json({ error: "Missing required fields" });
+      return res
+        .status(400)
+        .json({ success: false, message: "Missing required fields" });
     }
 
     const user = await User.findById(userId);
     if (!user) {
-      return res.status(403).json({ error: "Unauthorized: No user found" });
+      return res
+        .status(403)
+        .json({ success: false, message: "Unauthorized: No user found" });
     }
     if (user.project) {
-      return res.status(403).json({ error: "User has already a project" });
+      return res
+        .status(403)
+        .json({ success: false, message: "User has already a project" });
     }
     const project = new Project({
       title,
@@ -85,24 +91,25 @@ export const updateProject = async (req, res) => {
     ) {
       return res
         .status(400)
-        .json({ status: false, message: "Missing required fields" });
+        .json({ success: false, message: "Missing required fields" });
     }
     const user = await User.findById(userId);
     if (!user) {
       return res
         .status(403)
-        .json({ status: false, message: "Unauthorized: No user found" });
+        .json({ success: false, message: "Unauthorized: No user found" });
     }
     const existingProject = await Project.findById(projectId);
     if (!existingProject) {
       return res
         .status(404)
-        .json({ status: false, message: "Project not found" });
+        .json({ success: false, message: "Project not found" });
     }
     if (existingProject._id != user._id) {
-      return res
-        .status(404)
-        .json({ status: false, message: "Unauthorized project update action" });
+      return res.status(404).json({
+        success: false,
+        message: "Unauthorized project update action",
+      });
     }
 
     const updatedFields = {};
@@ -154,7 +161,7 @@ export const getSingleUserProject = async (req, res) => {
     if (!user) {
       return res
         .status(403)
-        .json({ status: false, message: "Forbidden: No user found" });
+        .json({ success: false, message: "Forbidden: No user found" });
     }
     const project = await Project.findOne({ user: user._id })
       .populate("teamMembers")
@@ -162,7 +169,7 @@ export const getSingleUserProject = async (req, res) => {
     if (!project || project._id != projectId) {
       return res
         .status(403)
-        .json({ status: false, message: "No project found for the user" });
+        .json({ success: false, message: "No project found for the user" });
     }
     return res.status(200).json({
       success: true,
@@ -185,13 +192,13 @@ export const deleteProject = async (req, res) => {
     if (!user) {
       return res
         .status(403)
-        .json({ status: false, message: "Forbidden: No user found" });
+        .json({ success: false, message: "Forbidden: No user found" });
     }
     const project = await Project.findOne({ user: user._id });
     if (!project || project._id != projectId) {
       return res
         .status(403)
-        .json({ status: false, message: "No project found for the user" });
+        .json({ success: false, message: "No project found for the user" });
     }
     for (const memberId of project.teamMembers) {
       await TeamMember.findByIdAndDelete(memberId);
@@ -224,7 +231,7 @@ export const getSingleProject = async (req, res) => {
     if (!project) {
       return res
         .status(403)
-        .json({ status: false, message: "No project found" });
+        .json({ success: false, message: "No project found" });
     }
 
     return res.status(200).json({
@@ -245,7 +252,7 @@ export const getAllProjects = async (req, res) => {
     if (!projects) {
       return res
         .status(403)
-        .json({ status: false, message: "No project found" });
+        .json({ success: false, message: "No project found" });
     }
 
     return res.status(200).json({
@@ -258,6 +265,177 @@ export const getAllProjects = async (req, res) => {
     res.status(400).json({ success: false, message: error.message });
   }
 };
+export const getAllProjectsPage = async (req, res) => {
+  try {
+    const { page = 1, limit = 10 } = req.query; // Default to page 1 and 10 items per page
+
+    // Calculate the number of documents to skip
+    const skip = (page - 1) * limit;
+
+    // Find projects with pagination
+    const projects = await Project.find({ status: { $ne: "Rejected" } })
+      .skip(skip)
+      .limit(parseInt(limit));
+
+    // Count total number of projects for pagination metadata
+    const totalProjects = await Project.countDocuments({
+      status: { $ne: "Rejected" },
+    });
+
+    if (!projects || projects.length === 0) {
+      return res
+        .status(200)
+        .json({ success: false, message: "No project found" });
+    }
+
+    return res.status(200).json({
+      success: true,
+      message: "Projects found successfully",
+      projects,
+      pagination: {
+        total: totalProjects,
+        page: parseInt(page),
+        pages: Math.ceil(totalProjects / limit),
+      },
+    });
+  } catch (error) {
+    console.log("Error in finding projects:", error);
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+export const getAllEmbeddingProjects = async (req, res) => {
+  try {
+    const projects = await Project.find(
+      { status: { $ne: "Rejected" } },
+      "_id title description category year supervisor frontend backend database aiLibraries devops testing readme"
+    );
+
+    if (!projects || projects.length === 0) {
+      return res
+        .status(404)
+        .json({ success: false, message: "No project found" });
+    }
+
+    const formattedProjects = projects.map((project) => {
+      const techStack = [
+        ...project.frontend,
+        ...project.backend,
+        ...project.database,
+        ...project.aiLibraries,
+        ...project.devops,
+        ...project.testing,
+      ];
+
+      return {
+        _id: project._id,
+        title: project.title,
+        description: project.description,
+        category: project.category,
+        year: project.year,
+        supervisor: project.supervisor,
+        readme: project.readme,
+        tech_stack: techStack,
+      };
+    });
+
+    return res.status(200).json({
+      success: true,
+      message: "Embedding Projects found successfully",
+      projects: formattedProjects,
+    });
+  } catch (error) {
+    console.log("Error in finding projects:", error);
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+export const searchProjects = async (req, res) => {
+  try {
+    const { query } = req.query;
+
+    if (!query) {
+      return res
+        .status(400)
+        .json({ success: false, message: "Search query is required" });
+    }
+
+    const regex = new RegExp(query, "i");
+
+    const projects = await Project.find({
+      $or: [
+        { title: regex },
+        { description: regex },
+        { campus: regex },
+        { department: regex },
+        { year: regex },
+        { category: regex },
+        { supervisor: regex },
+        { githubLink: regex },
+        { figmaLink: regex },
+        { deployLink: regex },
+        { readme: regex },
+        { feedback: regex },
+        { frontend: regex },
+        { backend: regex },
+        { database: regex },
+        { aiLibraries: regex },
+        { devops: regex },
+        { testing: regex },
+      ],
+      status: { $ne: "Rejected" },
+    });
+
+    if (!projects || projects.length === 0) {
+      return res
+        .status(200)
+        .json({ success: false, message: "No projects found" });
+    }
+
+    return res.status(200).json({
+      success: true,
+      message: "Projects found successfully",
+      projects,
+    });
+  } catch (error) {
+    console.error("Error searching projects:", error);
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+export const getStatistics = async (req, res) => {
+  try {
+    // Count total number of users
+    const totalUsers = await User.countDocuments();
+
+    // Count total number of projects
+    const totalProjects = await Project.countDocuments();
+
+    // Aggregate total likes and views of all projects
+    const [likesAndViews] = await Project.aggregate([
+      {
+        $group: {
+          _id: null,
+          totalLikes: { $sum: "$likes" },
+          totalViews: { $sum: "$views" },
+        },
+      },
+    ]);
+
+    const statistics = {
+      totalUsers,
+      totalProjects,
+      totalLikes: likesAndViews ? likesAndViews.totalLikes : 0,
+      totalViews: likesAndViews ? likesAndViews.totalViews : 0,
+    };
+
+    return res.status(200).json({
+      success: true,
+      message: "Statistics retrieved successfully",
+      statistics,
+    });
+  } catch (error) {
+    console.error("Error retrieving statistics:", error);
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
 export const addTeamMember = async (req, res) => {
   const userId = req.userId;
   const { teamMember } = req.body;
@@ -266,17 +444,19 @@ export const addTeamMember = async (req, res) => {
     if (!teamMember.name || !teamMember.rollNo || !teamMember.email) {
       return res
         .status(404)
-        .json({ status: false, message: "Missing required fields" });
+        .json({ success: false, message: "Missing required fields" });
     }
     const user = await User.findById(userId);
     if (!user) {
-      return res.status(404).json({ status: false, message: "User not found" });
+      return res
+        .status(404)
+        .json({ success: false, message: "User not found" });
     }
     const project = await Project.findById(projectId);
     if (!project) {
       return res
         .status(404)
-        .json({ status: false, message: "Project not found" });
+        .json({ success: false, message: "Project not found" });
     }
     const existingTeamMember = await TeamMember.findOne({
       rollNo: teamMember.rollNo,
@@ -284,7 +464,7 @@ export const addTeamMember = async (req, res) => {
     if (existingTeamMember) {
       return res
         .status(400)
-        .json({ status: false, message: "Team member already exists" });
+        .json({ success: false, message: "Team member already exists" });
     }
     const newTeamMember = new TeamMember({
       ...teamMember,
@@ -318,7 +498,9 @@ export const updateTeamMember = async (req, res) => {
     }
     const user = await User.findById(userId);
     if (!user) {
-      return res.status(404).json({ status: false, message: "User not found" });
+      return res
+        .status(404)
+        .json({ success: false, message: "User not found" });
     }
     const updatedTeamMember = await TeamMember.findOneAndUpdate(
       {
@@ -330,7 +512,7 @@ export const updateTeamMember = async (req, res) => {
     if (!updatedTeamMember) {
       return res
         .status(404)
-        .json({ status: false, message: "Team member not found" });
+        .json({ success: false, message: "Team member not found" });
     }
     return res.status(200).json({
       success: true,
@@ -348,19 +530,21 @@ export const deleteTeamMember = async (req, res) => {
   try {
     const user = await User.findById(userId);
     if (!user) {
-      return res.status(404).json({ status: false, message: "User not found" });
+      return res
+        .status(404)
+        .json({ success: false, message: "User not found" });
     }
     const teamMember = await TeamMember.findById(memberId);
     if (!teamMember) {
       return res
         .status(404)
-        .json({ status: false, message: "Team member not found" });
+        .json({ success: false, message: "Team member not found" });
     }
     const project = await Project.findById(teamMember.project);
     if (!project) {
       return res
         .status(404)
-        .json({ status: false, message: "Project not found" });
+        .json({ success: false, message: "Project not found" });
     }
     project.teamMembers = project.teamMembers.filter(
       (mId) => mId.toString() !== memberId.toString()
@@ -384,13 +568,15 @@ export const getTeamMember = async (req, res) => {
   try {
     const user = await User.findById(userId);
     if (!user) {
-      return res.status(404).json({ status: false, message: "User not found" });
+      return res
+        .status(404)
+        .json({ success: false, message: "User not found" });
     }
     const teamMember = await TeamMember.findById(memberId);
     if (!teamMember) {
       return res
         .status(404)
-        .json({ status: false, message: "Team member not found" });
+        .json({ success: false, message: "Team member not found" });
     }
 
     return res.status(200).json({
@@ -410,7 +596,9 @@ export const getAllTeamMembers = async (req, res) => {
   try {
     const user = await User.findById(userId);
     if (!user) {
-      return res.status(404).json({ status: false, message: "User not found" });
+      return res
+        .status(404)
+        .json({ success: false, message: "User not found" });
     }
 
     const teamMembers = await TeamMember.find({ project: projectId });
@@ -434,7 +622,7 @@ export const uploadFile = async (req, res) => {
     if (!project) {
       return res
         .status(404)
-        .json({ status: false, message: "Project not found" });
+        .json({ success: false, message: "Project not found" });
     }
     if (type === "THUMBNAIL") {
       project.thumbnail = fileUrl;
@@ -449,7 +637,7 @@ export const uploadFile = async (req, res) => {
     } else {
       return res
         .status(404)
-        .json({ status: false, message: "File type not found" });
+        .json({ success: false, message: "File type not found" });
     }
     await project.save();
     return res.status(200).json({
@@ -470,7 +658,7 @@ export const deleteFile = async (req, res) => {
     if (!project) {
       return res
         .status(404)
-        .json({ status: false, message: "Project not found" });
+        .json({ success: false, message: "Project not found" });
     }
     if (type === "THUMBNAIL") {
       if (project.thumbnail == fileUrl) {
@@ -493,7 +681,7 @@ export const deleteFile = async (req, res) => {
     } else {
       return res
         .status(404)
-        .json({ status: false, message: "File type not found" });
+        .json({ success: false, message: "File type not found" });
     }
 
     await project.save();
