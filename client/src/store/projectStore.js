@@ -2,9 +2,9 @@ import { create } from "zustand";
 import axios from "axios";
 import { ID, storage } from "@/utils/appwriteConfig";
 
-const API_URL = "http://localhost:5000/api/project";
-const ADMIN_API_URL = "http://localhost:5000/api/admin";
-const CONTACT_API_URL = "http://localhost:5000/api/contact";
+const API_URL = `${import.meta.env.VITE_SERVER_URL}/api/auth`;
+const ADMIN_API_URL = `${import.meta.env.VITE_SERVER_URL}/api/admin`;
+const CONTACT_API_URL = `${import.meta.env.VITE_SERVER_URL}/api/contact`;
 axios.defaults.withCredentials = true;
 
 export const useProjectStore = create((set) => ({
@@ -161,16 +161,25 @@ export const useProjectStore = create((set) => ({
         console.log("DELETED");
         if (deletedProject.thumbnail) {
           const match = deletedProject.thumbnail.match(regex);
-          await storage.deleteFile(import.meta.env.VITE_APPWRITE_BUCKET_ID, match[1]);
+          await storage.deleteFile(
+            import.meta.env.VITE_APPWRITE_BUCKET_ID,
+            match[1]
+          );
         }
         if (deletedProject.documentation) {
           const match = deletedProject.documentation.match(regex);
-          await storage.deleteFile(import.meta.env.VITE_APPWRITE_BUCKET_ID, match[1]);
+          await storage.deleteFile(
+            import.meta.env.VITE_APPWRITE_BUCKET_ID,
+            match[1]
+          );
         }
         if (deletedProject.images.length > 0) {
           for (const imageUrl of deletedProject.images) {
             const match = imageUrl.match(regex);
-            await storage.deleteFile(import.meta.env.VITE_APPWRITE_BUCKET_ID, match[1]);
+            await storage.deleteFile(
+              import.meta.env.VITE_APPWRITE_BUCKET_ID,
+              match[1]
+            );
           }
         }
         set({
@@ -399,7 +408,10 @@ export const useProjectStore = create((set) => ({
     try {
       const regex = /\/files\/([^\/]+)\/view/;
       const match = fileUrl.match(regex);
-      await storage.deleteFile(import.meta.env.VITE_APPWRITE_BUCKET_ID, match[1]);
+      await storage.deleteFile(
+        import.meta.env.VITE_APPWRITE_BUCKET_ID,
+        match[1]
+      );
       await axios.post(`${API_URL}/delete-file/${projectId}`, {
         fileUrl,
         type,
@@ -597,7 +609,7 @@ export const useProjectStore = create((set) => ({
           message: response.data.message,
           isLoading: false,
         });
-        return response.data.review
+        return response.data.review;
       }
     } catch (error) {
       set({
@@ -762,16 +774,25 @@ export const useProjectStore = create((set) => ({
         console.log("DELETED");
         if (deletedProject.thumbnail) {
           const match = deletedProject.thumbnail.match(regex);
-          await storage.deleteFile(import.meta.env.VITE_APPWRITE_BUCKET_ID, match[1]);
+          await storage.deleteFile(
+            import.meta.env.VITE_APPWRITE_BUCKET_ID,
+            match[1]
+          );
         }
         if (deletedProject.documentation) {
           const match = deletedProject.documentation.match(regex);
-          await storage.deleteFile(import.meta.env.VITE_APPWRITE_BUCKET_ID, match[1]);
+          await storage.deleteFile(
+            import.meta.env.VITE_APPWRITE_BUCKET_ID,
+            match[1]
+          );
         }
         if (deletedProject.images.length > 0) {
           for (const imageUrl of deletedProject.images) {
             const match = imageUrl.match(regex);
-            await storage.deleteFile(import.meta.env.VITE_APPWRITE_BUCKET_ID, match[1]);
+            await storage.deleteFile(
+              import.meta.env.VITE_APPWRITE_BUCKET_ID,
+              match[1]
+            );
           }
         }
         set({
