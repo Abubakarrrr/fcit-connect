@@ -4,8 +4,7 @@ import SearchWithKeywords from "@/components/shared/SearchComponent";
 import SkeletonCard from "@/components/shared/SkeletonCard";
 import { useToast } from "@/hooks/use-toast";
 import { useProjectStore } from "@/store/projectStore";
-import { useScroll } from "framer-motion";
-import React, { useEffect, useState } from "react";
+import  { useEffect } from "react";
 
 const PublicFYPs = () => {
   const { allProjects, getAllProjects } = useProjectStore();

@@ -4,17 +4,29 @@ import { ID, storage } from "@/utils/appwriteConfig";
 
 const API_URL = "http://localhost:5000/api/project";
 const ADMIN_API_URL = "http://localhost:5000/api/admin";
+const CONTACT_API_URL = "http://localhost:5000/api/contact";
 axios.defaults.withCredentials = true;
 
 export const useProjectStore = create((set) => ({
   project: null,
   allProjects: [],
+  allEmbeddingProjects: [],
   teamMembers: [],
   message: null,
   categories: [],
   supervisors: [],
   isLoading: false,
   storeError: null,
+  pagination: {},
+  projectsPage: [],
+  searchedProjects: [],
+  statistics: {
+    totlaUsers: 0,
+    totalProjects: 0,
+    totalViews: 0,
+    totalLikes: 0,
+  },
+  reviews: [],
 
   adminProjects: [],
   adminCategories: [],
@@ -35,13 +47,13 @@ export const useProjectStore = create((set) => ({
     } = projectData;
     try {
       const thumbnail = await storage.createFile(
-        "678faed20020cb101db1",
+        import.meta.env.VITE_APPWRITE_BUCKET_ID,
         ID.unique(),
         projectData.thumbnail
       );
 
       const thumbnailUrl = storage.getFileView(
-        "678faed20020cb101db1",
+        import.meta.env.VITE_APPWRITE_BUCKET_ID,
         thumbnail?.$id
       );
       const response = await axios.post(`${API_URL}/create-project`, {
@@ -149,16 +161,16 @@ export const useProjectStore = create((set) => ({
         console.log("DELETED");
         if (deletedProject.thumbnail) {
           const match = deletedProject.thumbnail.match(regex);
-          await storage.deleteFile("678faed20020cb101db1", match[1]);
+          await storage.deleteFile(import.meta.env.VITE_APPWRITE_BUCKET_ID, match[1]);
         }
         if (deletedProject.documentation) {
           const match = deletedProject.documentation.match(regex);
-          await storage.deleteFile("678faed20020cb101db1", match[1]);
+          await storage.deleteFile(import.meta.env.VITE_APPWRITE_BUCKET_ID, match[1]);
         }
         if (deletedProject.images.length > 0) {
           for (const imageUrl of deletedProject.images) {
             const match = imageUrl.match(regex);
-            await storage.deleteFile("678faed20020cb101db1", match[1]);
+            await storage.deleteFile(import.meta.env.VITE_APPWRITE_BUCKET_ID, match[1]);
           }
         }
         set({
@@ -240,17 +252,127 @@ export const useProjectStore = create((set) => ({
       throw error;
     }
   },
+  getProjectsPage: async (page, limit) => {
+    set({ isLoading: true, storeError: null });
+    try {
+      const response = await axios.get(
+        `${API_URL}/get-projects-page?page=${page}&limit=${limit}`
+      );
+
+      if (response.data.projects) {
+        set({
+          searchedProjects: response.data.projects,
+          message: response?.data?.message,
+          isLoading: false,
+        });
+        return {
+          projects: response.data.projects,
+        };
+      } else {
+        set({
+          searchedProjects: [],
+          message: response?.data?.message,
+          isLoading: false,
+        });
+        return null;
+      }
+    } catch (error) {
+      set({
+        isLoading: false,
+        storeError: error.response?.data?.message || "Error Finding Projects",
+      });
+      throw error;
+    }
+  },
+  searchProjects: async (query) => {
+    set({ isLoading: true, storeError: null });
+    try {
+      const response = await axios.get(
+        `${API_URL}/search-projects?query=${query}`
+      );
+
+      if (response.data.projects) {
+        set({
+          projectsPage: response.data.projects,
+          pagination: response.data.pagination,
+          message: response?.data?.message,
+          isLoading: false,
+        });
+        return {
+          projects: response.data.projects,
+          pagination: response.data.pagination,
+        };
+      } else {
+        set({
+          projectsPage: [],
+          pagination: {},
+          message: response?.data?.message,
+          isLoading: false,
+        });
+        return null;
+      }
+    } catch (error) {
+      set({
+        isLoading: false,
+        storeError: error.response?.data?.message || "Error Finding Projects",
+      });
+      throw error;
+    }
+  },
+  getAllProjectsForEmbeddings: async () => {
+    set({ isLoading: true, storeError: null });
+    try {
+      const response = await axios.get(`${API_URL}/get-embedding-projects`);
+
+      if (response.data.projects) {
+        set({
+          allEmbeddingProjects: response.data.projects,
+          message: response?.data?.message,
+          isLoading: false,
+        });
+        return response.data.projects;
+      }
+    } catch (error) {
+      set({
+        isLoading: false,
+        storeError: error.response?.data?.message || "Error Finding Projects",
+      });
+      throw error;
+    }
+  },
+  getStatistics: async () => {
+    set({ isLoading: true, storeError: null });
+    try {
+      const response = await axios.get(`${API_URL}/statistics`);
+
+      if (response.data.statistics) {
+        set({
+          statistics: response.data.statistics,
+          message: response?.data?.message,
+          isLoading: false,
+        });
+        return response.data.statistics;
+      }
+    } catch (error) {
+      set({
+        isLoading: false,
+        storeError: error.response?.data?.message || "Error Getting Stats",
+      });
+      throw error;
+    }
+  },
+
   uploadFile: async (file, projectId, type) => {
     set({ isLoading: true, storeError: null });
     console.log("file uploading");
     try {
       const createdFile = await storage.createFile(
-        "678faed20020cb101db1",
+        import.meta.env.VITE_APPWRITE_BUCKET_ID,
         ID.unique(),
         file
       );
       const fileUrl = storage.getFileView(
-        "678faed20020cb101db1",
+        import.meta.env.VITE_APPWRITE_BUCKET_ID,
         createdFile.$id
       );
       await axios.post(`${API_URL}/upload-file/${projectId}`, {
@@ -277,7 +399,7 @@ export const useProjectStore = create((set) => ({
     try {
       const regex = /\/files\/([^\/]+)\/view/;
       const match = fileUrl.match(regex);
-      await storage.deleteFile("678faed20020cb101db1", match[1]);
+      await storage.deleteFile(import.meta.env.VITE_APPWRITE_BUCKET_ID, match[1]);
       await axios.post(`${API_URL}/delete-file/${projectId}`, {
         fileUrl,
         type,
@@ -460,6 +582,54 @@ export const useProjectStore = create((set) => ({
       throw error;
     }
   },
+  addReview: async (review) => {
+    set({ isLoading: true, storeError: null });
+    const { name, email, rating, comment } = review;
+    try {
+      const response = await axios.post(`${API_URL}/add-review`, {
+        name,
+        email,
+        rating,
+        comment,
+      });
+      if (response.data.review) {
+        set({
+          message: response.data.message,
+          isLoading: false,
+        });
+        return response.data.review
+      }
+    } catch (error) {
+      set({
+        isLoading: false,
+        storeError: error.response?.data?.message || "Error Creating Review",
+      });
+      throw error;
+    }
+  },
+  getReviews: async () => {
+    set({ isLoading: true, storeError: null });
+    try {
+      const response = await axios.get(`${CONTACT_API_URL}/get-reviews`);
+
+      if (response.data.reviews) {
+        set({
+          reviews: response.data.reviews,
+          message: response.data.message,
+          isLoading: false,
+        });
+
+        return response.data.reviews;
+      }
+    } catch (error) {
+      set({
+        isLoading: false,
+        storeError:
+          error.response?.data?.message || "Error Fetching Supervisors",
+      });
+      throw error;
+    }
+  },
 
   // ADMIN APIs
   sudo_createIntialProject: async (projectData) => {
@@ -478,13 +648,13 @@ export const useProjectStore = create((set) => ({
     } = projectData;
     try {
       const thumbnail = await storage.createFile(
-        "678faed20020cb101db1",
+        import.meta.env.VITE_APPWRITE_BUCKET_ID,
         ID.unique(),
         projectData.thumbnail
       );
 
       const thumbnailUrl = storage.getFileView(
-        "678faed20020cb101db1",
+        import.meta.env.VITE_APPWRITE_BUCKET_ID,
         thumbnail?.$id
       );
       const response = await axios.post(`${ADMIN_API_URL}/create-project`, {
@@ -592,16 +762,16 @@ export const useProjectStore = create((set) => ({
         console.log("DELETED");
         if (deletedProject.thumbnail) {
           const match = deletedProject.thumbnail.match(regex);
-          await storage.deleteFile("678faed20020cb101db1", match[1]);
+          await storage.deleteFile(import.meta.env.VITE_APPWRITE_BUCKET_ID, match[1]);
         }
         if (deletedProject.documentation) {
           const match = deletedProject.documentation.match(regex);
-          await storage.deleteFile("678faed20020cb101db1", match[1]);
+          await storage.deleteFile(import.meta.env.VITE_APPWRITE_BUCKET_ID, match[1]);
         }
         if (deletedProject.images.length > 0) {
           for (const imageUrl of deletedProject.images) {
             const match = imageUrl.match(regex);
-            await storage.deleteFile("678faed20020cb101db1", match[1]);
+            await storage.deleteFile(import.meta.env.VITE_APPWRITE_BUCKET_ID, match[1]);
           }
         }
         set({
@@ -684,11 +854,12 @@ export const useProjectStore = create((set) => ({
       throw error;
     }
   },
-  sudo_approveProject: async (projectId,feedback) => {
+  sudo_approveProject: async (projectId, feedback) => {
     set({ isLoading: true, storeError: null });
     try {
       const response = await axios.post(
-        `${ADMIN_API_URL}/approve-project/${projectId}`,{feedback}
+        `${ADMIN_API_URL}/approve-project/${projectId}`,
+        { feedback }
       );
 
       if (response.data.projectData) {
@@ -707,11 +878,12 @@ export const useProjectStore = create((set) => ({
       throw error;
     }
   },
-  sudo_rejectProject: async (projectId,feedback) => {
+  sudo_rejectProject: async (projectId, feedback) => {
     set({ isLoading: true, storeError: null });
     try {
       const response = await axios.post(
-        `${ADMIN_API_URL}/reject-project/${projectId}`,{feedback}
+        `${ADMIN_API_URL}/reject-project/${projectId}`,
+        { feedback }
       );
 
       if (response.data.projectData) {
@@ -912,8 +1084,7 @@ export const useProjectStore = create((set) => ({
       }
     } catch (error) {
       set({
-        storeError:
-          error.response?.data?.message || "Error Deleting Category",
+        storeError: error.response?.data?.message || "Error Deleting Category",
       });
       throw error;
     }
@@ -921,9 +1092,7 @@ export const useProjectStore = create((set) => ({
   sudo_getAllCategories: async () => {
     set({ isLoading: true, storeError: null });
     try {
-      const response = await axios.get(
-        `${ADMIN_API_URL}/get-all-categories`
-      );
+      const response = await axios.get(`${ADMIN_API_URL}/get-all-categories`);
       if (response.data.categories) {
         set({
           message: response.data.message,
@@ -935,11 +1104,9 @@ export const useProjectStore = create((set) => ({
     } catch (error) {
       set({
         isLoading: false,
-        storeError:
-          error.response?.data?.message || "Error Finding Categories",
+        storeError: error.response?.data?.message || "Error Finding Categories",
       });
       throw error;
     }
   },
- 
 }));

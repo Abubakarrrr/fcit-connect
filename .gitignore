@@ -19,6 +19,7 @@ server/dist-ssr
 server/*.local
 
 # Ignore editor directories and files
+.env
 .vscode/*
 !.vscode/extensions.json
 .idea
