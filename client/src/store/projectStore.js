@@ -2,7 +2,7 @@ import { create } from "zustand";
 import axios from "axios";
 import { ID, storage } from "@/utils/appwriteConfig";
 
-const API_URL = `${import.meta.env.VITE_SERVER_URL}/api/auth`;
+const API_URL = `${import.meta.env.VITE_SERVER_URL}/api/project`;
 const ADMIN_API_URL = `${import.meta.env.VITE_SERVER_URL}/api/admin`;
 const CONTACT_API_URL = `${import.meta.env.VITE_SERVER_URL}/api/contact`;
 axios.defaults.withCredentials = true;

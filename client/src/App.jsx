@@ -34,7 +34,6 @@ import { useAuthStore } from "@/store/authStore";
 import {
   UserManagementPage,
   CategoryPage,
-  SupervisorPage,
   AdminFypsListing,
 } from "./components/Dashboard/admin";
 import { AddFyp, Start, UpdateTemplate } from "./components/Dashboard/shared";
