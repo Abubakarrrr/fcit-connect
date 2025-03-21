@@ -3,6 +3,8 @@ import { ChevronRightIcon } from "lucide-react";
 import Marquee from "../ui/marquee";
 import { useProjectStore } from "@/store/projectStore";
 import { useEffect } from "react";
+import { useToast } from "@/hooks/use-toast";
+
 // import { BackgroundLines } from "../ui/background-lines";
 const allShowcases = [
   {
@@ -43,15 +45,10 @@ const allShowcases = [
   },
 ];
 
-
-export function ShowcaseCard({
-  title,
-  thumbnail,
-  description,
-  _id
-}) {
+export function ShowcaseCard({ title, thumbnail, description, _id }) {
   return (
-    <Link to={`/fyps/${_id}`}
+    <Link
+      to={`/fyps/${_id}`}
       className="flex w-[330px] flex-col gap-2 group relative overflow-hidden cursor-pointer"
     >
       <img
@@ -73,11 +70,12 @@ export function ShowcaseCard({
 
 export default function Showcase() {
   const { allProjects, getAllProjects } = useProjectStore();
+  const { toast } = useToast();
+
   useEffect(() => {
     const getProjects = async () => {
       try {
         await getAllProjects();
-        console.log(allProjects)
       } catch (error) {
         console.log(error);
         toast({
@@ -85,23 +83,23 @@ export default function Showcase() {
           description: "",
         });
       }
-    }
+    };
     getProjects();
   }, []);
   return (
     <section id="showcase" className="py-14 ">
       <div>
-      <h2 className="mb-2 text-center text-5xl font-bold leading-[1.2] tracking-tighter text-slate-900">
-        Showcase
-      </h2>
-      <h3 className="mx-auto mb-8 text-balance text-center text-lg font-medium tracking-tight text-slate-900/80">
-       Top 10 Featured FYPs.
-      </h3>
+        <h2 className="mb-2 text-center text-5xl font-bold leading-[1.2] tracking-tighter text-slate-900">
+          Showcase
+        </h2>
+        <h3 className="mx-auto mb-8 text-balance text-center text-lg font-medium tracking-tight text-slate-900/80">
+          Top 10 Featured FYPs.
+        </h3>
       </div>
       <div className="relative flex flex-col">
         <Marquee className=" [--duration:40s]">
           {allProjects.map((project, idx) => (
-            <ShowcaseCard key={idx} {...project}  />
+            <ShowcaseCard key={idx} {...project} />
           ))}
         </Marquee>
         <div className="pointer-events-none absolute inset-y-0 left-0 h-full w-1/12 bg-gradient-to-r from-background"></div>
