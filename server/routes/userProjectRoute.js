@@ -4,8 +4,11 @@ import {
   createInitialProject,
   updateProject,
   getAllProjects,
+  getAllProjectsPage,
+  getAllEmbeddingProjects,
   getSingleProject,
   getSingleUserProject,
+  searchProjects,
   deleteProject,
   addTeamMember,
   deleteTeamMember,
@@ -16,6 +19,7 @@ import {
   deleteFile,
   getAllCategories,
   getAllSupervisors,
+  getStatistics,
 } from "../controllers/userProjectController.js";
 
 const router = express.Router();
@@ -25,6 +29,11 @@ router.post("/delete-project/:id", verifyToken, deleteProject);
 router.get("/get-user-project/:id", verifyToken, getSingleUserProject);
 router.get("/get-project/:id", getSingleProject);
 router.get("/get-projects", getAllProjects);
+router.get("/get-embedding-projects", verifyToken, getAllEmbeddingProjects);
+router.get("/get-projects-page", getAllProjectsPage);
+router.get("/search-projects", searchProjects);
+router.get("/statistics", getStatistics);
+
 
 router.post("/add-team-member/:projectId", verifyToken, addTeamMember);
 router.post("/update-team-member/:memberId", verifyToken, updateTeamMember);
