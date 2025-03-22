@@ -31,3 +31,5 @@ server/*.local
 *.sw?
 
 node_modules
+
+.vercel
