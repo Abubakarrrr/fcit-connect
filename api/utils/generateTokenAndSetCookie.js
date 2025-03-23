@@ -5,10 +5,10 @@ const generateTokenAndSetCookie = (res, userId) => {
   });
 
   res.cookie("token", token, {
-    httpOnly: true, // prevents xss attacks
+    httpOnly: true,
     secure: process.env.NODE_ENV === "production",
-    samesite: "strict", // prevents csrf attack
-    maxAge: 7 * 24 * 60 * 60 * 1000, //7 days
+    sameSite: "none", // Allow cross-origin requests
+    maxAge: 7 * 24 * 60 * 60 * 1000,
   });
   return token;
 };
