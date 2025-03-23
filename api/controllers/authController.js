@@ -24,15 +24,15 @@ export const signup = async (req, res) => {
     }
 
     const hashedPassword = await bcrypt.hash(password, 10);
-    const verificationToken = Math.floor(
-      100000 + Math.random() * 900000
-    ).toString();
+    // const verificationToken = Math.floor(
+    //   100000 + Math.random() * 900000
+    // ).toString();
     const user = new User({
       email,
       password: hashedPassword,
       name,
-      verificationToken,
-      verificationExpiresAt: Date.now() + 24 * 3600 * 1000,
+      // verificationToken,
+      // verificationExpiresAt: Date.now() + 24 * 3600 * 1000,
     });
 
     await user.save();
@@ -40,7 +40,7 @@ export const signup = async (req, res) => {
     // jwt
     const token = generateTokenAndSetCookie(res, user._id);
     // send verfication email
-    await sendVerificationEmail(user.email, verificationToken);
+    // await sendVerificationEmail(user.email, verificationToken);
 
     res.status(200).json({
       success: true,
@@ -124,7 +124,7 @@ export const verifyEmail = async (req, res) => {
     user.verificationExpiresAt = undefined;
 
     await user.save();
-    await sendWelcomeEmail(user.email, user.name);
+    // await sendWelcomeEmail(user.email, user.name);
 
     res.status(200).json({
       success: true,
@@ -213,10 +213,10 @@ export const forgotPassword = async (req, res) => {
     userFromDB.resetPasswordExpiresAt = passwordResetTokenExpiresAt;
     await userFromDB.save();
 
-    await sendPasswordResetEmail(
-      userFromDB.email,
-      `${process.env.CLIENT_URL}/reset-password/${userFromDB.resetPasswordToken}`
-    );
+    // await sendPasswordResetEmail(
+    //   userFromDB.email,
+    //   `${process.env.CLIENT_URL}/reset-password/${userFromDB.resetPasswordToken}`
+    // );
 
     res.status(200).json({
       success: true,
