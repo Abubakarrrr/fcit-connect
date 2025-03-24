@@ -27,13 +27,12 @@ router.post("/create-project", verifyToken, createInitialProject);
 router.post("/update-project/:id", verifyToken, updateProject);
 router.post("/delete-project/:id", verifyToken, deleteProject);
 router.get("/get-user-project/:id", verifyToken, getSingleUserProject);
-router.get("/get-project/:id", getSingleProject);
 router.get("/get-projects", getAllProjects);
+router.get("/get-project/:id", getSingleProject);
 router.get("/get-embedding-projects", verifyToken, getAllEmbeddingProjects);
 router.get("/get-projects-page", getAllProjectsPage);
 router.get("/search-projects", searchProjects);
 router.get("/statistics", getStatistics);
-
 
 router.post("/add-team-member/:projectId", verifyToken, addTeamMember);
 router.post("/update-team-member/:memberId", verifyToken, updateTeamMember);
