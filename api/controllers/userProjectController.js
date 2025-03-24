@@ -1,3 +1,4 @@
+import axios from "axios";
 import { Project, User, TeamMember, Category } from "../models/index.js";
 
 export const createInitialProject = async (req, res) => {
@@ -306,8 +307,8 @@ export const getAllProjectsPage = async (req, res) => {
 export const getAllEmbeddingProjects = async (req, res) => {
   try {
     const projects = await Project.find(
-      { status: { $ne: "Rejected" } },
-      "_id title description category year supervisor frontend backend database aiLibraries devops testing readme"
+      { },
+      "_id title description category campus year supervisor frontend backend database aiLibraries devops testing readme"
     );
 
     if (!projects || projects.length === 0) {
@@ -316,33 +317,22 @@ export const getAllEmbeddingProjects = async (req, res) => {
         .json({ success: false, message: "No project found" });
     }
 
-    const formattedProjects = projects.map((project) => {
-      const techStack = [
-        ...project.frontend,
-        ...project.backend,
-        ...project.database,
-        ...project.aiLibraries,
-        ...project.devops,
-        ...project.testing,
-      ];
+    try {
+      // Send projects array to the embedding API
+      const response = await axios.post("http://127.0.0.1:8000/generate-embeddings", projects, {
+        headers: { "Content-Type": "application/json" },
+      });
+      return res.status(200).json({
+        success: true,
+        message: "Embedding created and synced",
+      });
+    } catch (error) {
+      console.error("Error fetching embeddings:", error);
+      return res
+        .status(500)
+        .json({ success: false, message: "Error in embedding generation", error: error.message });
+    }
 
-      return {
-        _id: project._id,
-        title: project.title,
-        description: project.description,
-        category: project.category,
-        year: project.year,
-        supervisor: project.supervisor,
-        readme: project.readme,
-        tech_stack: techStack,
-      };
-    });
-
-    return res.status(200).json({
-      success: true,
-      message: "Embedding Projects found successfully",
-      projects: formattedProjects,
-    });
   } catch (error) {
     console.log("Error in finding projects:", error);
     res.status(500).json({ success: false, message: error.message });
