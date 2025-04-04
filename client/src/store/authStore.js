@@ -2,6 +2,7 @@ import { create } from "zustand";
 import axios from "axios";
 
 const API_URL = `${import.meta.env.VITE_SERVER_URL}/api/auth`;
+const PUBLIC_URL = `${import.meta.env.VITE_SERVER_URL}/api/contact`;
 const ADMIN_API_URL = `${import.meta.env.VITE_SERVER_URL}/api/admin`;
 axios.defaults.withCredentials = true;
 export const useAuthStore = create((set) => ({
@@ -12,6 +13,7 @@ export const useAuthStore = create((set) => ({
   isCheckingAuth: true,
   message: null,
   allUsers: [],
+  reviews:[],
 
   signup: async (email, name, password) => {
     set({ isLoading: true, error: null });
@@ -206,4 +208,45 @@ export const useAuthStore = create((set) => ({
       throw error;
     }
   },
+
+
+  //review apis
+  add_review: async (name,email, rating,comment) => {
+    set({ isLoading: true, error: null });
+    try {
+      const response = await axios.post(`${PUBLIC_URL}/add-review`, {
+        name,
+        email,
+        rating,
+        comment,
+      });
+      set({
+        isLoading: false,
+      });
+    } catch (error) {
+      set({
+        isLoading: false,
+        error: error.response?.data?.message || "Error adding review",
+      });
+      throw error;
+    }
+  },
+
+  get_review: async () => {
+    set({ isLoading: true, error: null });
+    try {
+      const response = await axios.get(`${PUBLIC_URL}/get-reviews`);
+      set({
+        isLoading: false,
+        reviews: response?.data?.reviews
+      });
+    } catch (error) {
+      set({
+        isLoading: false,
+        error: error.response?.data?.message || "Error adding review",
+      });
+      throw error;
+    }
+  },
+
 }));

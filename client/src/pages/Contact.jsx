@@ -7,6 +7,8 @@ import { Textarea } from "@/components/ui/textarea";
 import { cn } from "@/lib/utils";
 import { Star } from "lucide-react";
 import { Input } from "@/components/ui/input";
+import { useAuthStore } from "@/store/authStore";
+import { useToast } from "@/hooks/use-toast";
 const Contact = () => {
   return (
     <div>
@@ -88,15 +90,20 @@ function ShareYourFeedback() {
   const [comment, setComment] = useState("");
   const [submitted, setSubmitted] = useState(false);
   const [error, setError] = useState("");
+  const {toast}=useToast();
 
-  const handleSubmit = () => {
+  const {add_review} = useAuthStore();
+  const handleSubmit = async() => {
     if (!name.trim() || !email.trim() || !rating || !comment.trim()) {
       setError("Please provide your name, email, rating, and a comment.");
       return;
     }
     setError("");
+    await add_review(name,email,rating,comment);
+    toast({
+      title: "Feedback Submitted",
+    });
     setSubmitted(true);
-    // Handle submission logic (e.g., send feedback to server)
     console.log("Feedback Submitted:", { name, email, rating, comment });
   };
 

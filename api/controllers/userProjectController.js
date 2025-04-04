@@ -266,6 +266,8 @@ export const getAllProjects = async (req, res) => {
     res.status(400).json({ success: false, message: error.message });
   }
 };
+
+
 export const getAllProjectsPage = async (req, res) => {
   try {
     const { page = 1, limit = 10 } = req.query; // Default to page 1 and 10 items per page
@@ -412,8 +414,8 @@ export const getStatistics = async (req, res) => {
     const statistics = {
       totalUsers,
       totalProjects,
-      totalLikes: likesAndViews ? likesAndViews.totalLikes : 0,
       totalViews: likesAndViews ? likesAndViews.totalViews : 0,
+      totalLikes: likesAndViews ? likesAndViews.totalLikes : 0,
     };
 
     return res.status(200).json({
@@ -713,3 +715,4 @@ export const getAllSupervisors = async (req, res) => {
     res.status(400).json({ success: false, message: error.message });
   }
 };
+

@@ -3,25 +3,25 @@ import { User, Review } from "../models/index.js";
 export const addReview = async (req, res) => {
   try {
     const { name, email, rating, comment } = req.body;
-    const userId = req.userId;
+    // const userId = req.userId;/
 
     if (!name || !email || !comment) {
       return res
         .status(400)
         .json({ success: false, message: "Missing required fields" });
     }
-    const user = await User.findById(userId);
-    if (!user) {
-      return res
-        .status(403)
-        .json({ success: false, message: "Unauthorized: No user found" });
-    }
+    // const user = await User.findById(userId);
+    // if (!user) {
+    //   return res
+    //     .status(403)
+    //     .json({ success: false, message: "Unauthorized: No user found" });
+    // }
     const review = new Review({
       name,
       email,
       comment,
       rating,
-      user: user._id,
+      // user: user._id,
     });
     await review.save();
 

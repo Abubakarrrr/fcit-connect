@@ -21,7 +21,7 @@ export const useProjectStore = create((set) => ({
   projectsPage: [],
   searchedProjects: [],
   statistics: {
-    totlaUsers: 0,
+    totalUsers: 0,
     totalProjects: 0,
     totalViews: 0,
     totalLikes: 0,
@@ -1123,6 +1123,26 @@ export const useProjectStore = create((set) => ({
         return response.data.categories;
       }
     } catch (error) {
+      set({
+        isLoading: false,
+        storeError: error.response?.data?.message || "Error Finding Categories",
+      });
+      throw error;
+    }
+  },
+
+
+  getStatistics: async () => {
+    set({ isLoading: true, storeError: null });
+    try {
+      const response = await axios.get(`${API_URL}/statistics`);
+      if (response.data) {
+        set({
+          isLoading: false,
+          statistics: response.data.statistics,
+        });
+      }
+} catch (error) {
       set({
         isLoading: false,
         storeError: error.response?.data?.message || "Error Finding Categories",
