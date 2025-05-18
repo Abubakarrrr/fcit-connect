@@ -27,6 +27,7 @@ import { useAuthStore } from "@/store/authStore";
 import ProjectApprovalCard from "./AdminApproval";
 import { Badge } from "@/components/ui/badge";
 import DOMPurify from "dompurify";
+import Autoplay from "embla-carousel-autoplay";
 
 function HTMLContent({ content }) {
   const sanitized = DOMPurify.sanitize(content);
@@ -161,12 +162,12 @@ export default function FypShowcase({ fyp }) {
             <div className="absolute inset-5 bg-[#FFD84D] rounded-xl overflow-hidden">
               <Carousel
                 className="w-full h-full"
-                //   plugins={[
-                //     Autoplay({
-                //       delay: 5000,
-                //       stopOnMouseEnter: true,
-                //     }),
-                //   ]}
+                  plugins={[
+                    Autoplay({
+                      delay: 5000,
+                      stopOnMouseEnter: true,
+                    }),
+                  ]}
               >
                 <CarouselContent>
                   {imagesArray.map((image, index) => (
