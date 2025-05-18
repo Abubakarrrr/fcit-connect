@@ -1,17 +1,22 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import {
-  BriefcaseIcon,
-  FlowerIcon,
-  HeartIcon,
-  LightbulbIcon,
-  MountainSnow,
-  SearchIcon,
-  SettingsIcon,
-} from "lucide-react";
+import { SearchIcon } from "lucide-react";
+import { useEffect, useState } from "react";
 
-export default function SearchWithKeywords() {
+export default function SearchWithKeywords({ setSearh }) {
+  const [searchTerm, setSearchTerm] = useState("");
+
+  const handleSearch = () => {
+    setSearh(searchTerm);
+  };
+
+  useEffect(() => {
+    if (searchTerm == "") {
+      setSearh("");
+    }
+  }, [searchTerm]);
+
   return (
     <>
       {/* Hero */}
@@ -22,30 +27,32 @@ export default function SearchWithKeywords() {
               All FYPs
             </h1>
             <p className="mt-3 text-xl text-muted-foreground">
-               Type the keywords to search
+              Type the keywords to search
             </p>
             <div className="mt-7 sm:mt-12 mx-auto max-w-xl relative">
               {/* Form */}
-              <form>
-                <div className="relative z-10 flex space-x-3 p-3 border bg-background rounded-lg shadow-lg">
-                  <div className="flex-[1_0_0%]">
-                    <Label htmlFor="article" className="sr-only">
-                      Search article
-                    </Label>
-                    <Input
-                      name="article"
-                      className="h-full"
-                      id="article"
-                      placeholder="Search FYP"
-                    />
-                  </div>
-                  <div className="flex-[0_0_auto]">
-                    <Button size={"icon"}>
-                      <SearchIcon />
-                    </Button>
-                  </div>
+              <div className="relative z-10 flex space-x-3 p-3 border bg-background rounded-lg shadow-lg">
+                <div className="flex-[1_0_0%]">
+                  <Label htmlFor="article" className="sr-only">
+                    Search article
+                  </Label>
+                  <Input
+                    value={searchTerm}
+                    onChange={(e) => {
+                      setSearchTerm(e.target.value);
+                    }}
+                    name="article"
+                    className="h-full"
+                    id="article"
+                    placeholder="Search FYP"
+                  />
                 </div>
-              </form>
+                <div className="flex-[0_0_auto]">
+                  <Button size={"icon"} onClick={handleSearch}>
+                    <SearchIcon />
+                  </Button>
+                </div>
+              </div>
               {/* End Form */}
               {/* SVG Element */}
               <div className="hidden md:block absolute top-0 end-0 -translate-y-12 translate-x-20">
