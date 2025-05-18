@@ -42,20 +42,13 @@ export default function ResetPassword() {
     }
     try {
       await resetPassword(token, newPassword, confirmNewPassword);
-      if (error) {
         toast({
-          title: error,
-          description: "",
-        });
-      } else {
-        toast({
-          title: message || "Password Reset Successfully",
-          description: "redirecting to login page...",
+          title: "Password Reset Successfully",
+          description: "Redirecting to login page...",
         });
         setTimeout(() => {
           navigate("/login");
-        }, 2000);
-      }
+        }, 500);
     } catch (error) {
       console.error(error);
       toast({

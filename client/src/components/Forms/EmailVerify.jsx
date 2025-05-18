@@ -24,18 +24,11 @@ export default function EmailVerify() {
     e.preventDefault();
     try {
       await verifyEmail(verificationCode);
-      if (error) {
-        toast({
-          title: error,
-          description: "",
-        });
-      } else {
-        navigate("/");
-        toast({
-          title: "Email Verified Successfully",
-          description: "",
-        });
-      }
+      navigate("/");
+      toast({
+        title: "Email Verified Successfully",
+        description: "",
+      });
     } catch (error) {
       console.log(error);
       toast({
