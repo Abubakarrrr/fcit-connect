@@ -69,7 +69,7 @@ export function PredictiveAnalysisTool() {
             <Input
               value={prompt}
               onChange={(e) => setPrompt(e.target.value)}
-              placeholder="e.g., Analyze market trends for eco-friendly products in Q3"
+              placeholder="e.g., I am planning to build AI powered ecommerce website"
               className="flex-1"
               disabled={isLoading}
             />
@@ -99,7 +99,7 @@ export function PredictiveAnalysisTool() {
         </form>
       </CardContent>
       <CardFooter className="text-sm text-muted-foreground">
-        Powered by AI predictive analytics
+        Powered by Gemini Flash
       </CardFooter>
     </Card>
   );

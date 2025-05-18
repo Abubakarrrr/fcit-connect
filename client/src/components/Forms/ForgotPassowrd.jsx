@@ -29,17 +29,10 @@ export default function ForgotPassword() {
     e.preventDefault();
     try {
       await forgotPassword(email);
-      if (error) {
         toast({
-          title: error,
+          title: "Password reset link sent to your email",
           description: "",
         });
-      } else {
-        toast({
-          title: message,
-          description: "",
-        });
-      }
     } catch (error) {
       console.log(error);
       toast({

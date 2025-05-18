@@ -36,18 +36,11 @@ export default function Login() {
     try {
       const { email, password } = formData;
       await login(email, password);
-      if (error) {
-        toast({
-          title: error,
-          description: "",
-        });
-      } else {
-        navigate("/");
-        toast({
-          title: "Login successfull",
-          description: "",
-        });
-      }
+      navigate("/");
+      toast({
+        title: "Login successfull",
+        description: "",
+      });
     } catch (error) {
       console.log(error);
       toast({
@@ -127,9 +120,12 @@ export default function Login() {
                           onChange={handleChange}
                         />
                         <PasswordInput
+                          name="password"
+                          id="password"
                           value={formData.password}
                           onChange={handleChange}
                         />
+
                         <Link to={"/forgot-password"}>
                           <p className="text-sm underline underline-offset-2">
                             Forgot your password?

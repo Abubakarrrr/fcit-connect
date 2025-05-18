@@ -35,12 +35,12 @@ const Hero = () => {
     <div className="flex flex-col items-center text-center gap-6 py-20">
       <AnimatedShinyTextDemo />
       <h1 className="md:text-5xl text-3xl font-bold">
-        FCIT Connect <br />
+        FCIT  Connect <br />
         All Our FYPs in one place
       </h1>
       <p className="max-w-3xl text-center">
         {" "}
-        Upload, showcase, and connect with others in your academic community.
+        Upload, showcase, and connect with others in FCIT academic community.
         Discover, collaborate, and make your ideas stand out with ease.
       </p>
       <div className="">

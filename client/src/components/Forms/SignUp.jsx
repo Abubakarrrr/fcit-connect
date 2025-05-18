@@ -48,14 +48,11 @@ export default function SignUp() {
       if (isValid) {
         const { name, email, password } = formData;
         await signup(email, name, password);
-        if (error) {
-          toast({
-            title: error,
-            description: "",
-          });
-        } else {
-          navigate("/verify-email");
-        }
+        toast({
+          title: "Signup successfull",
+          description: "",
+        });
+        navigate("/verify-email");
       }
     } catch (error) {
       console.log(error);
