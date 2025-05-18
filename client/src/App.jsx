@@ -42,7 +42,7 @@ import RedirectAuthenticatedUser from "./utils/RedirectAuthenticatedUser";
 import ListedFyp from "./components/Dashboard/user/listedfyp/ListedFyp";
 import AdminProtectedRoute from "./utils/AdminProtectedRoute";
 import { useProjectStore } from "./store/projectStore";
-
+import { Analytics } from "@vercel/analytics/react"
 function App() {
   const location = useLocation();
   const isAdminRoute = location.pathname.startsWith("/admin");
@@ -69,7 +69,7 @@ function App() {
 
   return (
     <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
-      {/* <Analytics/> */}
+      <Analytics/>
       <Toaster />
       <div className="font-primary">
         {!isAdminRoute && !isUserRoute && <Navbar />}

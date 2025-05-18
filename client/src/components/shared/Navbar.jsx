@@ -45,9 +45,9 @@ export default function Navbar() {
           <DesktopNav />
         </div>
         <div className="flex items-center space-x-2 ml-auto">
-          <div className="hidden sm:flex">
+          {/* <div className="hidden sm:flex">
             <ModeToggle />
-          </div>
+          </div> */}
           {!isAthenticated && (
             <div className="flex gap-x-2 items-center">
               <div className="space-x-2 max-sm:hidden">
