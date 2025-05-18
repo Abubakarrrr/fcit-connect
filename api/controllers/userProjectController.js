@@ -228,7 +228,6 @@ export const getSingleProject = async (req, res) => {
       .populate("teamMembers")
       .populate("user", "name");
 
-    console.log(project);
     if (!project) {
       return res
         .status(403)
@@ -241,6 +240,29 @@ export const getSingleProject = async (req, res) => {
       projectData: {
         ...project._doc,
       },
+    });
+  } catch (error) {
+    console.log("error in finding single project");
+    res.status(400).json({ success: false, message: error.message });
+  }
+};
+export const likeProject = async (req, res) => {
+  try {
+    const id = req.params.id;
+    const project = await Project.findByIdAndUpdate(
+      id,
+      { $inc: { likes: 1 } },
+      { new: true }
+    );
+    if (!project) {
+      return res
+        .status(403)
+        .json({ success: false, message: "Failed to like" });
+    }
+
+    return res.status(200).json({
+      success: true,
+      message: "Project Liked",
     });
   } catch (error) {
     console.log("error in finding single project");
@@ -267,93 +289,25 @@ export const getAllProjects = async (req, res) => {
   }
 };
 
-
 export const getAllProjectsPage = async (req, res) => {
   try {
-    const { page = 1, limit = 10 } = req.query; // Default to page 1 and 10 items per page
+    const { page = 1, limit = 10, search = "", ...queryFilters } = req.query;
 
-    // Calculate the number of documents to skip
-    const skip = (page - 1) * limit;
+    const filter = {
+      status: { $ne: "Rejected" }, // Exclude rejected projects
+    };
 
-    // Find projects with pagination
-    const projects = await Project.find({ status: { $ne: "Rejected" } })
-      .skip(skip)
-      .limit(parseInt(limit));
-
-    // Count total number of projects for pagination metadata
-    const totalProjects = await Project.countDocuments({
-      status: { $ne: "Rejected" },
-    });
-
-    if (!projects || projects.length === 0) {
-      return res
-        .status(200)
-        .json({ success: false, message: "No project found" });
+    // Add dynamic filters
+    for (const key in queryFilters) {
+      if (queryFilters[key] !== undefined && queryFilters[key] !== "") {
+        filter[key] = queryFilters[key];
+      }
     }
 
-    return res.status(200).json({
-      success: true,
-      message: "Projects found successfully",
-      projects,
-      pagination: {
-        total: totalProjects,
-        page: parseInt(page),
-        pages: Math.ceil(totalProjects / limit),
-      },
-    });
-  } catch (error) {
-    console.log("Error in finding projects:", error);
-    res.status(500).json({ success: false, message: error.message });
-  }
-};
-export const getAllEmbeddingProjects = async (req, res) => {
-  try {
-    const projects = await Project.find(
-      { },
-      "_id title description category campus year supervisor frontend backend database aiLibraries devops testing readme"
-    );
-
-    if (!projects || projects.length === 0) {
-      return res
-        .status(404)
-        .json({ success: false, message: "No project found" });
-    }
-
-    try {
-      // Send projects array to the embedding API
-      const response = await axios.post("http://127.0.0.1:8000/generate-embeddings", projects, {
-        headers: { "Content-Type": "application/json" },
-      });
-      return res.status(200).json({
-        success: true,
-        message: "Embedding created and synced",
-      });
-    } catch (error) {
-      console.error("Error fetching embeddings:", error);
-      return res
-        .status(500)
-        .json({ success: false, message: "Error in embedding generation", error: error.message });
-    }
-
-  } catch (error) {
-    console.log("Error in finding projects:", error);
-    res.status(500).json({ success: false, message: error.message });
-  }
-};
-export const searchProjects = async (req, res) => {
-  try {
-    const { query } = req.query;
-
-    if (!query) {
-      return res
-        .status(400)
-        .json({ success: false, message: "Search query is required" });
-    }
-
-    const regex = new RegExp(query, "i");
-
-    const projects = await Project.find({
-      $or: [
+    // Search filter
+    if (search && search.trim() !== "") {
+      const regex = new RegExp(search.trim(), "i"); // case-insensitive
+      filter.$or = [
         { title: regex },
         { description: regex },
         { campus: regex },
@@ -372,26 +326,134 @@ export const searchProjects = async (req, res) => {
         { aiLibraries: regex },
         { devops: regex },
         { testing: regex },
-      ],
-      status: { $ne: "Rejected" },
-    });
+      ];
+    }
+
+    const skip = (page - 1) * limit;
+
+    const projects = await Project.find(filter)
+      .skip(skip)
+      .limit(parseInt(limit));
+
+    const totalProjects = await Project.countDocuments(filter);
 
     if (!projects || projects.length === 0) {
       return res
         .status(200)
-        .json({ success: false, message: "No projects found" });
+        .json({ success: false, message: "No project found" });
     }
 
     return res.status(200).json({
       success: true,
       message: "Projects found successfully",
       projects,
+      pagination: {
+        total: totalProjects,
+        page: parseInt(page),
+        pages: Math.ceil(totalProjects / limit),
+      },
     });
   } catch (error) {
-    console.error("Error searching projects:", error);
+    console.error("Error in finding projects:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Internal Server Error",
+      error: error.message,
+    });
+  }
+};
+
+export const getAllEmbeddingProjects = async (req, res) => {
+  try {
+    const projects = await Project.find(
+      {},
+      "_id title description category campus year supervisor frontend backend database aiLibraries devops testing readme"
+    );
+
+    if (!projects || projects.length === 0) {
+      return res
+        .status(404)
+        .json({ success: false, message: "No project found" });
+    }
+
+    try {
+      // Send projects array to the embedding API
+      const response = await axios.post(
+        "http://127.0.0.1:8000/generate-embeddings",
+        projects,
+        {
+          headers: { "Content-Type": "application/json" },
+        }
+      );
+      return res.status(200).json({
+        success: true,
+        message: "Embedding created and synced",
+      });
+    } catch (error) {
+      console.error("Error fetching embeddings:", error);
+      return res.status(500).json({
+        success: false,
+        message: "Error in embedding generation",
+        error: error.message,
+      });
+    }
+  } catch (error) {
+    console.log("Error in finding projects:", error);
     res.status(500).json({ success: false, message: error.message });
   }
 };
+// export const searchProjects = async (req, res) => {
+//   try {
+//     const { query } = req.query;
+
+//     if (!query) {
+//       return res
+//         .status(400)
+//         .json({ success: false, message: "Search query is required" });
+//     }
+
+//     const regex = new RegExp(query, "i");
+
+//     const projects = await Project.find({
+//       $or: [
+//         { title: regex },
+//         { description: regex },
+//         { campus: regex },
+//         { department: regex },
+//         { year: regex },
+//         { category: regex },
+//         { supervisor: regex },
+//         { githubLink: regex },
+//         { figmaLink: regex },
+//         { deployLink: regex },
+//         { readme: regex },
+//         { feedback: regex },
+//         { frontend: regex },
+//         { backend: regex },
+//         { database: regex },
+//         { aiLibraries: regex },
+//         { devops: regex },
+//         { testing: regex },
+//       ],
+//       status: { $ne: "Rejected" },
+//     });
+
+//     if (!projects || projects.length === 0) {
+//       return res
+//         .status(200)
+//         .json({ success: false, message: "No projects found" });
+//     }
+
+//     return res.status(200).json({
+//       success: true,
+//       message: "Projects found successfully",
+//       projects,
+//     });
+//   } catch (error) {
+//     console.error("Error searching projects:", error);
+//     res.status(500).json({ success: false, message: error.message });
+//   }
+// };
 export const getStatistics = async (req, res) => {
   try {
     // Count total number of users
@@ -715,4 +777,3 @@ export const getAllSupervisors = async (req, res) => {
     res.status(400).json({ success: false, message: error.message });
   }
 };
-

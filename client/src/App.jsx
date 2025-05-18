@@ -53,8 +53,8 @@ function App() {
   useEffect(() => {
     const checkAuthentication = async () => {
       try {
-        // await getAllCategories();
-        // await getAllSupervisors();
+        await getAllCategories();
+        await getAllSupervisors();
         await checkAuth();
       } catch (error) {
         // console.log(error);

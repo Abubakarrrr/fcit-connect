@@ -18,7 +18,7 @@ export const useProjectStore = create((set) => ({
   isLoading: false,
   storeError: null,
   pagination: {},
-  projectsPage: [],
+  projectsPaginated: [],
   searchedProjects: [],
   statistics: {
     totalUsers: 0,
@@ -261,30 +261,62 @@ export const useProjectStore = create((set) => ({
       throw error;
     }
   },
-  getProjectsPage: async (page, limit) => {
+  getProjectsPaginate: async (page, limit, filters, search) => {
     set({ isLoading: true, storeError: null });
+
+    // Convert filters to query string, ignoring undefined or empty values
+    const filterQuery = Object.entries(filters)
+      .filter(([_, value]) => value !== undefined && value !== "")
+      .map(
+        ([key, value]) =>
+          `${encodeURIComponent(key)}=${encodeURIComponent(value)}`
+      )
+      .join("&");
+
+    const query = `page=${page}&limit=${limit}&search=${search}${
+      filterQuery ? `&${filterQuery}` : ""
+    }`;
+
     try {
-      const response = await axios.get(
-        `${API_URL}/get-projects-page?page=${page}&limit=${limit}`
-      );
+      const response = await axios.get(`${API_URL}/get-projects-page?${query}`);
 
       if (response.data.projects) {
         set({
-          searchedProjects: response.data.projects,
+          projectsPaginated: response.data.projects,
+          pagination: response.data.pagination,
           message: response?.data?.message,
           isLoading: false,
         });
-        return {
-          projects: response.data.projects,
-        };
+        return { projectsPaginated: response.data.projects };
       } else {
         set({
-          searchedProjects: [],
+          projectsPaginated: [],
           message: response?.data?.message,
           isLoading: false,
         });
         return null;
       }
+    } catch (error) {
+      set({
+        isLoading: false,
+        storeError: error.response?.data?.message || "Error Finding Projects",
+      });
+      throw error;
+    }
+  },
+
+  likeProject: async (id) => {
+    set({ isLoading: true, storeError: null });
+    try {
+      const response = await axios.post(`${API_URL}/like-project/${id}`);
+
+      if (response.data.success) {
+        set({
+          message: response?.data?.message,
+          isLoading: false,
+        });
+      }
+      return null;
     } catch (error) {
       set({
         isLoading: false,
@@ -1131,7 +1163,6 @@ export const useProjectStore = create((set) => ({
     }
   },
 
-
   getStatistics: async () => {
     set({ isLoading: true, storeError: null });
     try {
@@ -1142,7 +1173,7 @@ export const useProjectStore = create((set) => ({
           statistics: response.data.statistics,
         });
       }
-} catch (error) {
+    } catch (error) {
       set({
         isLoading: false,
         storeError: error.response?.data?.message || "Error Finding Categories",
