@@ -49,12 +49,12 @@ export function ShowcaseCard({ title, thumbnail, description, _id }) {
   return (
     <Link
       to={`/fyps/${_id}`}
-      className="flex w-[330px] flex-col gap-2 group relative overflow-hidden cursor-pointer"
+      className="flex w-[330px] h-[370px] flex-col gap-2 group relative overflow-hidden cursor-pointer "
     >
       <img
         src={thumbnail}
         alt={title}
-        className="size-full object-cover w-full max-h-[300px] rounded-xl"
+        className="size-full object-cover  max-h-[360px] rounded-xl border"
       />
 
       <div className="flex flex-col">
@@ -62,7 +62,7 @@ export function ShowcaseCard({ title, thumbnail, description, _id }) {
           {title}
           <ChevronRightIcon className="size-4 translate-x-0 opacity-0 transition-all duration-300 ease-out group-hover:translate-x-1 group-hover:opacity-100" />
         </div>
-        <p className="text-neutral-400 text-sm">{description}</p>
+        {/* <p className="text-neutral-400 text-sm">{description}</p> */}
       </div>
     </Link>
   );

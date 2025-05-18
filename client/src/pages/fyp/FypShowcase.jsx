@@ -26,6 +26,12 @@ import TechStack from "./TechStackTab";
 import { useAuthStore } from "@/store/authStore";
 import ProjectApprovalCard from "./AdminApproval";
 import { Badge } from "@/components/ui/badge";
+import DOMPurify from "dompurify";
+
+function HTMLContent({ content }) {
+  const sanitized = DOMPurify.sanitize(content);
+  return <div className="ql-editor" dangerouslySetInnerHTML={{ __html: sanitized }} />;
+}
 
 export default function FypShowcase({ fyp }) {
   const { user } = useAuthStore();
@@ -216,7 +222,7 @@ export default function FypShowcase({ fyp }) {
             value="readme"
             className="bg-white border rounded-md p-6 shadow-sm"
           >
-            <div dangerouslySetInnerHTML={{ __html: readme }} />
+           <HTMLContent content={readme} />
           </TabsContent>
           <TabsContent
             value="techstack"

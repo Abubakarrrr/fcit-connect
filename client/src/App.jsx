@@ -1,3 +1,4 @@
+import 'react-quill/dist/quill.snow.css'; // this loads Quill's default snow theme
 import { useEffect } from "react";
 import { Route, Routes, useLocation } from "react-router-dom";
 import { Toaster } from "./components/ui/toaster";
@@ -43,6 +44,7 @@ import ListedFyp from "./components/Dashboard/user/listedfyp/ListedFyp";
 import AdminProtectedRoute from "./utils/AdminProtectedRoute";
 import { useProjectStore } from "./store/projectStore";
 import { Analytics } from "@vercel/analytics/react"
+
 function App() {
   const location = useLocation();
   const isAdminRoute = location.pathname.startsWith("/admin");
