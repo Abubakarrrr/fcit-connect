@@ -291,3 +291,36 @@ export const checkAuth = async (req, res) => {
     res.status(400).json({ success: false, message: error.message });
   }
 };
+
+export const resendVerificationEmail = async (req, res) => {
+  const { email } = req.body;
+  try {
+    if (!email) {
+      throw new Error("Email is required");
+    }
+    const user = await User.findOne({ email });
+    if (!user) {
+      return res.status(400).json({ success: false, message: "User not found" });
+    }
+    if (user.isVerified) {
+      return res.status(400).json({ success: false, message: "User already verified" });
+    }
+    // Generate new verification token and expiry
+    const verificationToken = Math.floor(100000 + Math.random() * 900000).toString();
+    user.verificationToken = verificationToken;
+    user.verificationExpiresAt = Date.now() + 24 * 3600 * 1000;
+    await user.save();
+    await sendEmail(
+      user.email,
+      `Resend: Verify your email for FCIT Connect, ${user.name}`,
+      OTPVerificationTemplate(verificationToken)
+    );
+    res.status(200).json({
+      success: true,
+      message: "Verification email resent successfully",
+    });
+  } catch (error) {
+    console.log("error in resendVerificationEmail");
+    res.status(400).json({ success: false, message: error.message });
+  }
+};

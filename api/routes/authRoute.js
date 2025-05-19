@@ -8,6 +8,7 @@ import {
   resetPassword,
   checkAuth,
   loginWithGoogle,
+  resendVerificationEmail,
 } from "../controllers/authController.js";
 import { verifyToken } from "../middlewares/verifyToken.js";
 const router = express.Router();
@@ -18,6 +19,7 @@ router.post("/login-with-google", loginWithGoogle);
 router.post("/logout", logout);
 
 router.post("/verify-email", verifyEmail);
+router.post("/resend-verification-email", resendVerificationEmail);
 router.post("/forgot-password", forgotPassword);
 router.post("/reset-password", resetPassword);
 router.get("/check-auth", verifyToken, checkAuth);

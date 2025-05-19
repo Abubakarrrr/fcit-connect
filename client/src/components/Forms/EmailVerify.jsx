@@ -1,6 +1,6 @@
 "use client";
 import { useNavigate } from "react-router-dom";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { OTPInput } from "input-otp";
 
 import { Button } from "@/components/ui/button";
@@ -18,7 +18,8 @@ export default function EmailVerify() {
   const [verificationCode, setVerificationCode] = useState("");
   const { toast } = useToast();
   const navigate = useNavigate();
-  const { error, isLoading, verifyEmail } = useAuthStore();
+  const { error, isLoading, verifyEmail, user, resendVerificationEmail } = useAuthStore();
+  const [resendCooldown, setResendCooldown] = useState(0);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -34,6 +35,37 @@ export default function EmailVerify() {
       toast({
         title: error.response?.data?.message || "Email verification failed",
         description: "",
+      });
+    }
+  };
+
+  useEffect(() => {
+    let timer;
+    if (resendCooldown > 0) {
+      timer = setTimeout(() => setResendCooldown(resendCooldown - 1), 1000);
+    }
+    return () => clearTimeout(timer);
+  }, [resendCooldown]);
+  
+  const handleResend = async () => {
+    try {
+      if (!user?.email) {
+        toast({
+          title: "User email not found",
+          description: "Please sign up or log in again.",
+        });
+        return;
+      }
+      await resendVerificationEmail(user.email);
+      setResendCooldown(300); 
+      toast({
+        title: "Verification email resent",
+        description: "Please check your inbox.",
+      });
+    } catch (error) {
+      toast({
+        title: "Failed to resend verification email",
+        description: error.response?.data?.message || "Try again later.",
       });
     }
   };
@@ -69,6 +101,19 @@ export default function EmailVerify() {
                         >
                           {isLoading ? "Verifying" : "Verify Email"}
                         </Button>
+
+                        <div className="mt-4 text-center text-sm text-muted-foreground">
+                          Didn't receive an email?{" "}
+                          <button
+                            type="button"
+                            onClick={handleResend}
+                            className="text-primary hover:underline"
+                            disabled={resendCooldown > 0}
+                          >
+                            Resend
+                            {resendCooldown > 0 ? ` (${resendCooldown})` : ""}
+                          </button>
+                        </div>
                       </div>
                     </div>
                   </CardContent>
