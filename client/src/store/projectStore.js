@@ -10,6 +10,7 @@ axios.defaults.withCredentials = true;
 export const useProjectStore = create((set) => ({
   project: null,
   allProjects: [],
+  top10Projects: [],
   allEmbeddingProjects: [],
   teamMembers: [],
   message: null,
@@ -257,6 +258,28 @@ export const useProjectStore = create((set) => ({
       set({
         isLoading: false,
         storeError: error.response?.data?.message || "Error Finding Projects",
+      });
+      throw error;
+    }
+  },
+  getTop10Projects: async () => {
+    set({ isLoading: true, storeError: null });
+    try {
+      const response = await axios.get(`${API_URL}/get-top10-projects`);
+
+      if (response.data.projects) {
+        set({
+          top10Projects: response.data.projects,
+          message: response?.data?.message,
+          isLoading: false,
+        });
+        return response.data.projects;
+      }
+    } catch (error) {
+      set({
+        isLoading: false,
+        storeError:
+          error.response?.data?.message || "Error Finding Top 10 Projects",
       });
       throw error;
     }

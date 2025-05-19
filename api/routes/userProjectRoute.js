@@ -21,6 +21,7 @@ import {
   getAllSupervisors,
   getStatistics,
   likeProject,
+  getTop10Projects,
 } from "../controllers/userProjectController.js";
 
 const router = express.Router();
@@ -30,6 +31,7 @@ router.post("/delete-project/:id", verifyToken, deleteProject);
 router.post("/like-project/:id", likeProject);
 router.get("/get-user-project/:id", verifyToken, getSingleUserProject);
 router.get("/get-projects", getAllProjects);
+router.get("/get-top10-projects", getTop10Projects);
 router.get("/get-project/:id", getSingleProject);
 router.get("/get-embedding-projects", verifyToken, getAllEmbeddingProjects);
 router.get("/get-projects-page", getAllProjectsPage);

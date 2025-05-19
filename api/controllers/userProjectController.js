@@ -246,6 +246,30 @@ export const getSingleProject = async (req, res) => {
     res.status(400).json({ success: false, message: error.message });
   }
 };
+export const getTop10Projects = async (req, res) => {
+  try {
+    const projects = await Project.find({ status: { $ne: "Rejected" } })
+      .sort({ likes: -1 })
+      .limit(10)
+      .populate("teamMembers")
+      .populate("user", "name");
+
+    if (!projects) {
+      return res
+        .status(403)
+        .json({ success: false, message: "No projects found" });
+    }
+
+    return res.status(200).json({
+      success: true,
+      message: "Top 10 Projects found successfully",
+      projects,
+    });
+  } catch (error) {
+    console.log("error in finding single project");
+    res.status(400).json({ success: false, message: error.message });
+  }
+};
 export const likeProject = async (req, res) => {
   try {
     const id = req.params.id;
