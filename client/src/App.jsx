@@ -1,9 +1,8 @@
-import 'react-quill/dist/quill.snow.css'; // this loads Quill's default snow theme
+import 'react-quill/dist/quill.snow.css';
 import { useEffect } from "react";
 import { Route, Routes, useLocation } from "react-router-dom";
 import { Toaster } from "./components/ui/toaster";
 import "./App.css";
-import { ThemeProvider } from "@/components/theme-provider";
 import {
   Login,
   SignUp,
@@ -44,7 +43,7 @@ import ListedFyp from "./components/Dashboard/user/listedfyp/ListedFyp";
 import AdminProtectedRoute from "./utils/AdminProtectedRoute";
 import { useProjectStore } from "./store/projectStore";
 import { Analytics } from "@vercel/analytics/react"
-
+import Stats from "./components/Dashboard/admin/stats/Stats";
 function App() {
   const location = useLocation();
   const isAdminRoute = location.pathname.startsWith("/admin");
@@ -70,7 +69,7 @@ function App() {
   }
 
   return (
-    <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
+    <div>
       <Analytics/>
       <Toaster />
       <div className="font-primary">
@@ -221,7 +220,7 @@ function App() {
               path="analytics"
               element={
                 <AdminProtectedRoute>
-                  <h1>analytics</h1>
+                  <Stats />
                 </AdminProtectedRoute>
               }
             />
@@ -274,7 +273,7 @@ function App() {
         </Routes>
         {!isAdminRoute && !isUserRoute && <Footer />}
       </div>
-    </ThemeProvider>
+    </div>
   );
 }
 
