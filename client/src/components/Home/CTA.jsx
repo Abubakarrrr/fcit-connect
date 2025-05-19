@@ -1,43 +1,34 @@
 import React from "react";
 import { Button } from "../ui/button";
 import { Link } from "react-router-dom";
+
 const CTASection = () => {
   return (
-    <div className="relative bg-cover bg-center py-[67px] my-8 px-8 flex items-center justify-center bg-[#06B6D4] rounded-2xl">
-      {/* Left Top Star Image */}
+    <div className="relative bg-gradient-to-r from-gray-900 via-gray-800 to-black rounded-2xl my-12 px-6 py-16 overflow-hidden shadow-xl">
+      {/* Decorative Stars */}
       <img
         src="/star.svg"
         alt="Star"
-        className="absolute top-0 left-0 sm:w-72 sm:h-52 w-20 h-20 max-lg:opacity-60"
+        className="absolute top-4 left-4 w-12 h-12 opacity-30 animate-pulse"
       />
       <img
         src="/star.svg"
         alt="Star"
-        className="absolute top-4 left-44 sm:w-72 sm:h-52 w-20 h-20 opacity-30"
-      />
-
-      {/* Right Bottom Star Image */}
-      <img
-        src="/star.svg"
-        alt="Star"
-        className="absolute bottom-0 right-0 sm:w-72 sm:h-52 w-20 h-20 max-lg:opacity-60"
-      />
-      <img
-        src="/star.svg"
-        alt="Star"
-        className="absolute bottom-4 right-44 sm:w-72 sm:h-52 w-20 h-20 opacity-40"
+        className="absolute bottom-4 right-4 w-16 h-16 opacity-40 animate-spin-slow"
       />
 
       {/* CTA Content */}
-      <div className="text-center text-white z-10">
-        <h2 className="text-2xl md:text-4xl font-bold mb-4">
+      <div className="relative z-10 text-center text-white max-w-3xl mx-auto">
+        <h2 className="text-3xl sm:text-4xl font-extrabold leading-tight mb-4 bg-gradient-to-r from-blue-400 to-purple-500 bg-clip-text text-transparent">
           Ready to Share and Collaborate?
         </h2>
-        <p className="md:text-lg mb-6 md:max-w-4xl ">
-          Join our community of innovators and start your journey today!
+        <p className="text-gray-400 text-lg mb-6">
+          Be a part of FCIT Connect. Join a growing community of innovators and contribute to a smarter academic ecosystem.
         </p>
         <Link to="/signup">
-          <Button variant="secondary">Get Started</Button>
+          <Button className="bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white px-6 py-3 text-base font-medium transition-all duration-300 rounded-xl">
+            Get Started
+          </Button>
         </Link>
       </div>
     </div>
