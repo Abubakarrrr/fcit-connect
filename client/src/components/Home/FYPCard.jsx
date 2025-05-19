@@ -2,7 +2,7 @@ import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Heart, Eye } from "lucide-react";
 import ImagesCarousel from "../shared/Carousel";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { useAuthStore } from "@/store/authStore";
 import { useEffect, useState } from "react";
 import { useProjectStore } from "@/store/projectStore";

@@ -14,8 +14,8 @@ const departments = [
   "Data Science",
 ];
 
-const years = Array.from({ length: 2024 - 2019 + 1 }, (_, i) =>
-  (2024 - i).toString()
+const years = Array.from({ length: 2025 - 2019 + 1 }, (_, i) =>
+  (2025 - i).toString()
 );
 
 export default function FypForm({ formState, onChange, errors }) {
