@@ -8,8 +8,8 @@ import { useProjectStore } from "@/store/projectStore";
 import { useEffect, useState } from "react";
 
 const PublicFYPs = () => {
-  const { projectsPaginated, getProjectsPaginate } = useProjectStore();
-  const { categories, supervisors } = useProjectStore();
+  const { projectsPaginated, getProjectsPaginate, categories, supervisors } =
+    useProjectStore();
   const { toast } = useToast();
   const [isLoading, setIsLoading] = useState(false);
   const [page, setPage] = useState(1);
@@ -45,7 +45,7 @@ const PublicFYPs = () => {
       }
     };
     getProjects();
-  }, [page, filters,search]);
+  }, [page, filters, search]);
 
   useEffect(() => {
     setFilters({
@@ -75,7 +75,13 @@ const PublicFYPs = () => {
         />
         <Dropdown
           trigger={"Department"}
-          list={["All", "CS", "IT", "SE", "DS"]}
+          list={[
+            "All",
+            "Computer Science",
+            "Information Technology",
+            "Software Engineering",
+            "Data Science",
+          ]}
           selected={selectedDepartment}
           handleSelect={setSelectedDepartment}
         />

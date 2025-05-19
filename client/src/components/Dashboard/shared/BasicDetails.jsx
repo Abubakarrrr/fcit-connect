@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import FypForm from "./fyp-form";
 import FypThumbnail from "./fyp-thumbnail";
 import {

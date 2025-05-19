@@ -1,10 +1,16 @@
-"use client"
+"use client";
 
-import { useState, useEffect } from "react"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "./card"
-import { Tabs, TabsList, TabsTrigger } from "./tabs"
-import { ChartContainer, ChartTooltipContent } from "./chart"
-import { Bar, Cell, Pie } from "recharts"
+import { useState, useEffect } from "react";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "./card";
+import { Tabs, TabsList, TabsTrigger } from "./tabs";
+import { ChartContainer, ChartTooltipContent } from "./chart";
+import { Bar, Cell, Pie } from "recharts";
 import {
   BarChart as RechartsBarChart,
   PieChart as RechartsPieChart,
@@ -13,31 +19,41 @@ import {
   YAxis,
   Tooltip,
   Legend,
-} from "recharts"
+} from "recharts";
+import { useToast } from "@/hooks/use-toast";
+import { useProjectStore } from "@/store/projectStore";
 
 // Dummy data based on the provided JSON structure
 const generateDummyProjects = () => {
-  const campuses = ["OC", "NC"]
+  const campuses = ["OC", "NC"];
   const departments = [
     "Software Engineering",
     "Computer Science",
     "Data Science",
     "Artificial Intelligence",
     "Cybersecurity",
-  ]
-  const categories = ["Web Development", "Mobile Development", "AI/ML", "IoT", "Blockchain", "Game Development"]
-  const years = ["2020", "2021", "2022", "2023", "2024"]
+  ];
+  const categories = [
+    "Web Development",
+    "Mobile Development",
+    "AI/ML",
+    "IoT",
+    "Blockchain",
+    "Game Development",
+  ];
+  const years = ["2020", "2021", "2022", "2023", "2024"];
 
-  const projects = []
+  const projects = [];
 
   // Generate 100 random projects
   for (let i = 0; i < 100; i++) {
-    const year = years[Math.floor(Math.random() * years.length)]
-    const campus = campuses[Math.floor(Math.random() * campuses.length)]
-    const department = departments[Math.floor(Math.random() * departments.length)]
-    const category = categories[Math.floor(Math.random() * categories.length)]
-    const likes = Math.floor(Math.random() * 50)
-    const views = Math.floor(Math.random() * 100) + 20
+    const year = years[Math.floor(Math.random() * years.length)];
+    const campus = campuses[Math.floor(Math.random() * campuses.length)];
+    const department =
+      departments[Math.floor(Math.random() * departments.length)];
+    const category = categories[Math.floor(Math.random() * categories.length)];
+    const likes = Math.floor(Math.random() * 50);
+    const views = Math.floor(Math.random() * 100) + 20;
 
     projects.push({
       _id: { $oid: `project_${i}` },
@@ -47,7 +63,9 @@ const generateDummyProjects = () => {
       department,
       year,
       category,
-      supervisor: `Dr. ${String.fromCharCode(65 + Math.floor(Math.random() * 26))}`,
+      supervisor: `Dr. ${String.fromCharCode(
+        65 + Math.floor(Math.random() * 26)
+      )}`,
       githubLink: "http://github.com/example",
       thumbnail: "https://example.com/thumbnail.jpg",
       likes: { $numberInt: likes.toString() },
@@ -55,81 +73,122 @@ const generateDummyProjects = () => {
       createdByAdmin: Math.random() > 0.5,
       status: Math.random() > 0.3 ? "Approved" : "Pending",
       created_at: { $date: { $numberLong: Date.now().toString() } },
-    })
+    });
   }
 
-  return projects
-}
+  return projects;
+};
 
-const dummyProjects = generateDummyProjects()
+// const dummyProjects = generateDummyProjects();
 
 const AdminDashboard = () => {
-  const [selectedYear, setSelectedYear] = useState("2022")
-  const [filteredProjects, setFilteredProjects] = useState([])
-  const availableYears = ["2020", "2021", "2022", "2023", "2024"]
+  const { allProjects, getAllProjects } = useProjectStore();
+  const { toast } = useToast();
+
+  const [selectedYear, setSelectedYear] = useState("2025");
+  const [filteredProjects, setFilteredProjects] = useState([]);
+  const availableYears = [
+    "2019",
+    "2020",
+    "2021",
+    "2022",
+    "2023",
+    "2024",
+    "2025",
+  ];
+  const [isLoading, setIsLoading] = useState(false);
+
+  useEffect(() => {
+    const getProjects = async () => {
+      setIsLoading(true);
+      try {
+        await getAllProjects();
+        setIsLoading(false);
+      } catch (error) {
+        setIsLoading(false);
+        console.log(error);
+        toast({
+          title: error.response?.data?.message || "Error Fetching Projects",
+          description: "",
+        });
+      }
+    };
+    getProjects();
+  }, []);
 
   useEffect(() => {
     // Filter projects based on selected year
-    const filtered = dummyProjects.filter((project) => project.year === selectedYear)
-    setFilteredProjects(filtered)
-  }, [selectedYear])
+    // console.log(allProjects);
+    if (allProjects?.length > 0) {
+      const filtered = allProjects.filter(
+        (project) => project.year === selectedYear
+      );
+      setFilteredProjects(filtered);
+    }
+  }, [selectedYear]);
 
   // Calculate statistics
-  const totalProjects = filteredProjects.length
-  const totalLikes = filteredProjects.reduce((sum, project) => sum + Number.parseInt(project.likes.$numberInt || 0), 0)
-  const totalViews = filteredProjects.reduce((sum, project) => sum + Number.parseInt(project.views.$numberInt || 0), 0)
+  const totalProjects = filteredProjects.length;
+  const totalLikes = filteredProjects.reduce(
+    (sum, project) => sum + Number.parseInt(project.likes.$numberInt || 0),
+    0
+  );
+  const totalViews = filteredProjects.reduce(
+    (sum, project) => sum + Number.parseInt(project.views.$numberInt || 0),
+    0
+  );
 
   // Campus-wise data
   const campusData = filteredProjects.reduce((acc, project) => {
-    const campus = project.campus
-    acc[campus] = (acc[campus] || 0) + 1
-    return acc
-  }, {})
+    const campus = project.campus;
+    acc[campus] = (acc[campus] || 0) + 1;
+    return acc;
+  }, {});
 
   const campusChartData = Object.keys(campusData).map((campus) => ({
     name: campus,
     value: campusData[campus],
-  }))
+  }));
 
   // Department-wise data
   const departmentData = filteredProjects.reduce((acc, project) => {
-    const dept = project.department
-    acc[dept] = (acc[dept] || 0) + 1
-    return acc
-  }, {})
+    const dept = project.department;
+    acc[dept] = (acc[dept] || 0) + 1;
+    return acc;
+  }, {});
 
   const departmentChartData = Object.keys(departmentData).map((dept) => ({
     name: dept,
     value: departmentData[dept],
-  }))
+  }));
 
   // Category-wise data
   const categoryData = filteredProjects.reduce((acc, project) => {
-    const category = project.category
-    acc[category] = (acc[category] || 0) + 1
-    return acc
-  }, {})
+    const category = project.category;
+    acc[category] = (acc[category] || 0) + 1;
+    return acc;
+  }, {});
 
   const categoryChartData = Object.keys(categoryData).map((category) => ({
     name: category,
     value: categoryData[category],
-  }))
+  }));
 
   // Top supervisors data
   const supervisorData = filteredProjects.reduce((acc, project) => {
-    const supervisor = project.supervisor
+    const supervisor = project.supervisor;
     if (!acc[supervisor]) {
       acc[supervisor] = {
         count: 0,
         likes: 0,
         views: 0,
-      }
+      };
     }
-    acc[supervisor].count++
-    acc[supervisor].likes += Number.parseInt(project.likes.$numberInt || 0)
-    acc[supervisor].views += Number.parseInt(project.views.$numberInt || 0)
-    return acc
-  }, {})
+    acc[supervisor].count++;
+    acc[supervisor].likes += Number.parseInt(project.likes.$numberInt || 0);
+    acc[supervisor].views += Number.parseInt(project.views.$numberInt || 0);
+    return acc;
+  }, {});
 
   // Sort supervisors by project count and take top 5
   const topSupervisors = Object.entries(supervisorData)
@@ -140,10 +199,17 @@ const AdminDashboard = () => {
       views: data.views,
     }))
     .sort((a, b) => b.projects - a.projects)
-    .slice(0, 5)
+    .slice(0, 5);
 
   // COLORS for pie charts
-  const COLORS = ["#0088FE", "#00C49F", "#FFBB28", "#FF8042", "#8884d8", "#82ca9d"]
+  const COLORS = [
+    "#0088FE",
+    "#00C49F",
+    "#FFBB28",
+    "#FF8042",
+    "#8884d8",
+    "#82ca9d",
+  ];
 
   return (
     <div className="p-6 bg-gray-50 min-h-screen">
@@ -152,8 +218,12 @@ const AdminDashboard = () => {
 
         {/* Year Selector */}
         <div className="mb-8">
-          <Tabs defaultValue={selectedYear} onValueChange={setSelectedYear} className="w-full">
-            <TabsList className="grid grid-cols-5 w-[500px]">
+          <Tabs
+            defaultValue={selectedYear}
+            onValueChange={setSelectedYear}
+            className="w-full"
+          >
+            <TabsList className="grid md:grid-cols-7 grid-cols-4 h-fit">
               {availableYears.map((year) => (
                 <TabsTrigger key={year} value={year}>
                   {year}
@@ -167,11 +237,15 @@ const AdminDashboard = () => {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
           <Card>
             <CardHeader className="pb-2">
-              <CardTitle className="text-sm font-medium">Total Projects</CardTitle>
+              <CardTitle className="text-sm font-medium">
+                Total Projects
+              </CardTitle>
             </CardHeader>
             <CardContent>
               <div className="text-3xl font-bold">{totalProjects}</div>
-              <p className="text-xs text-muted-foreground">For year {selectedYear}</p>
+              <p className="text-xs text-muted-foreground">
+                For year {selectedYear}
+              </p>
             </CardContent>
           </Card>
           <Card>
@@ -180,7 +254,9 @@ const AdminDashboard = () => {
             </CardHeader>
             <CardContent>
               <div className="text-3xl font-bold">{totalLikes}</div>
-              <p className="text-xs text-muted-foreground">Across all projects in {selectedYear}</p>
+              <p className="text-xs text-muted-foreground">
+                Across all projects in {selectedYear}
+              </p>
             </CardContent>
           </Card>
           <Card>
@@ -189,7 +265,9 @@ const AdminDashboard = () => {
             </CardHeader>
             <CardContent>
               <div className="text-3xl font-bold">{totalViews}</div>
-              <p className="text-xs text-muted-foreground">Across all projects in {selectedYear}</p>
+              <p className="text-xs text-muted-foreground">
+                Across all projects in {selectedYear}
+              </p>
             </CardContent>
           </Card>
         </div>
@@ -200,7 +278,9 @@ const AdminDashboard = () => {
           <Card>
             <CardHeader>
               <CardTitle>Campus Distribution</CardTitle>
-              <CardDescription>Projects by campus in {selectedYear}</CardDescription>
+              <CardDescription>
+                Projects by campus in {selectedYear}
+              </CardDescription>
             </CardHeader>
             <CardContent className="h-80">
               <ChartContainer
@@ -217,13 +297,18 @@ const AdminDashboard = () => {
                     cx="50%"
                     cy="50%"
                     labelLine={true}
-                    label={({ name, percent }) => `${name}: ${(percent * 100).toFixed(0)}%`}
+                    label={({ name, percent }) =>
+                      `${name}: ${(percent * 100).toFixed(0)}%`
+                    }
                     outerRadius={80}
                     fill="#8884d8"
                     dataKey="value"
                   >
                     {campusChartData.map((entry, index) => (
-                      <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                      <Cell
+                        key={`cell-${index}`}
+                        fill={COLORS[index % COLORS.length]}
+                      />
                     ))}
                   </Pie>
                   <Tooltip content={<ChartTooltipContent />} />
@@ -237,7 +322,9 @@ const AdminDashboard = () => {
           <Card>
             <CardHeader>
               <CardTitle>Department Distribution</CardTitle>
-              <CardDescription>Projects by department in {selectedYear}</CardDescription>
+              <CardDescription>
+                Projects by department in {selectedYear}
+              </CardDescription>
             </CardHeader>
             <CardContent className="h-80">
               <ChartContainer
@@ -250,7 +337,11 @@ const AdminDashboard = () => {
               >
                 <RechartsBarChart data={departmentChartData}>
                   <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis dataKey="name" tick={{ fontSize: 12 }} tickFormatter={(value) => value.split(" ")[0]} />
+                  <XAxis
+                    dataKey="name"
+                    tick={{ fontSize: 12 }}
+                    tickFormatter={(value) => value.split(" ")[0]}
+                  />
                   <YAxis />
                   <Tooltip content={<ChartTooltipContent />} />
                   <Bar dataKey="value" fill="var(--color-value)" radius={4} />
@@ -266,7 +357,9 @@ const AdminDashboard = () => {
           <Card>
             <CardHeader>
               <CardTitle>Category Distribution</CardTitle>
-              <CardDescription>Projects by category in {selectedYear}</CardDescription>
+              <CardDescription>
+                Projects by category in {selectedYear}
+              </CardDescription>
             </CardHeader>
             <CardContent className="h-80">
               <ChartContainer
@@ -283,13 +376,18 @@ const AdminDashboard = () => {
                     cx="50%"
                     cy="50%"
                     labelLine={true}
-                    label={({ name, percent }) => `${name}: ${(percent * 100).toFixed(0)}%`}
+                    label={({ name, percent }) =>
+                      `${name}: ${(percent * 100).toFixed(0)}%`
+                    }
                     outerRadius={80}
                     fill="#8884d8"
                     dataKey="value"
                   >
                     {categoryChartData.map((entry, index) => (
-                      <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                      <Cell
+                        key={`cell-${index}`}
+                        fill={COLORS[index % COLORS.length]}
+                      />
                     ))}
                   </Pie>
                   <Tooltip content={<ChartTooltipContent />} />
@@ -303,7 +401,10 @@ const AdminDashboard = () => {
           <Card>
             <CardHeader>
               <CardTitle>Engagement by Department</CardTitle>
-              <CardDescription>Average likes and views per project by department in {selectedYear}</CardDescription>
+              <CardDescription>
+                Average likes and views per project by department in{" "}
+                {selectedYear}
+              </CardDescription>
             </CardHeader>
             <CardContent className="h-80">
               <ChartContainer
@@ -320,23 +421,31 @@ const AdminDashboard = () => {
               >
                 <RechartsBarChart
                   data={Object.keys(departmentData).map((dept) => {
-                    const deptProjects = filteredProjects.filter((p) => p.department === dept)
+                    const deptProjects = filteredProjects.filter(
+                      (p) => p.department === dept
+                    );
                     const totalLikes = deptProjects.reduce(
-                      (sum, p) => sum + Number.parseInt(p.likes.$numberInt || 0),
-                      0,
-                    )
+                      (sum, p) =>
+                        sum + Number.parseInt(p.likes.$numberInt || 0),
+                      0
+                    );
                     const totalViews = deptProjects.reduce(
-                      (sum, p) => sum + Number.parseInt(p.views.$numberInt || 0),
-                      0,
-                    )
-                    const count = deptProjects.length
+                      (sum, p) =>
+                        sum + Number.parseInt(p.views.$numberInt || 0),
+                      0
+                    );
+                    const count = deptProjects.length;
 
                     return {
                       name: dept.split(" ")[0], // Abbreviate department name
-                      avgLikes: count ? Math.round((totalLikes / count) * 10) / 10 : 0,
-                      avgViews: count ? Math.round((totalViews / count) * 10) / 10 : 0,
+                      avgLikes: count
+                        ? Math.round((totalLikes / count) * 10) / 10
+                        : 0,
+                      avgViews: count
+                        ? Math.round((totalViews / count) * 10) / 10
+                        : 0,
                       fullName: dept, // Store full name for tooltip
-                    }
+                    };
                   })}
                   layout="vertical"
                 >
@@ -346,7 +455,7 @@ const AdminDashboard = () => {
                   <Tooltip
                     content={({ active, payload }) => {
                       if (active && payload && payload.length) {
-                        const data = payload[0].payload
+                        const data = payload[0].payload;
                         return (
                           <div className="rounded-lg border bg-background p-2 shadow-sm">
                             <div className="font-medium">{data.fullName}</div>
@@ -354,27 +463,43 @@ const AdminDashboard = () => {
                               <div className="flex items-center justify-between gap-2">
                                 <div className="flex items-center gap-1">
                                   <div className="h-2 w-2 rounded-full bg-[var(--color-avgLikes)]" />
-                                  <div className="text-xs text-muted-foreground">Avg. Likes</div>
+                                  <div className="text-xs text-muted-foreground">
+                                    Avg. Likes
+                                  </div>
                                 </div>
-                                <div className="text-xs font-medium">{data.avgLikes}</div>
+                                <div className="text-xs font-medium">
+                                  {data.avgLikes}
+                                </div>
                               </div>
                               <div className="flex items-center justify-between gap-2">
                                 <div className="flex items-center gap-1">
                                   <div className="h-2 w-2 rounded-full bg-[var(--color-avgViews)]" />
-                                  <div className="text-xs text-muted-foreground">Avg. Views</div>
+                                  <div className="text-xs text-muted-foreground">
+                                    Avg. Views
+                                  </div>
                                 </div>
-                                <div className="text-xs font-medium">{data.avgViews}</div>
+                                <div className="text-xs font-medium">
+                                  {data.avgViews}
+                                </div>
                               </div>
                             </div>
                           </div>
-                        )
+                        );
                       }
-                      return null
+                      return null;
                     }}
                   />
                   <Legend />
-                  <Bar dataKey="avgLikes" fill="var(--color-avgLikes)" radius={4} />
-                  <Bar dataKey="avgViews" fill="var(--color-avgViews)" radius={4} />
+                  <Bar
+                    dataKey="avgLikes"
+                    fill="var(--color-avgLikes)"
+                    radius={4}
+                  />
+                  <Bar
+                    dataKey="avgViews"
+                    fill="var(--color-avgViews)"
+                    radius={4}
+                  />
                 </RechartsBarChart>
               </ChartContainer>
             </CardContent>
@@ -386,7 +511,9 @@ const AdminDashboard = () => {
           <Card>
             <CardHeader>
               <CardTitle>Top Supervisors</CardTitle>
-              <CardDescription>Supervisors with the most projects in {selectedYear}</CardDescription>
+              <CardDescription>
+                Supervisors with the most projects in {selectedYear}
+              </CardDescription>
             </CardHeader>
             <CardContent className="h-80">
               <ChartContainer
@@ -407,7 +534,11 @@ const AdminDashboard = () => {
                   <YAxis dataKey="name" type="category" width={100} />
                   <Tooltip content={<ChartTooltipContent />} />
                   <Legend />
-                  <Bar dataKey="projects" fill="var(--color-projects)" radius={4} />
+                  <Bar
+                    dataKey="projects"
+                    fill="var(--color-projects)"
+                    radius={4}
+                  />
                   <Bar dataKey="likes" fill="var(--color-likes)" radius={4} />
                 </RechartsBarChart>
               </ChartContainer>
@@ -420,7 +551,9 @@ const AdminDashboard = () => {
           <Card>
             <CardHeader>
               <CardTitle>Project Status Overview</CardTitle>
-              <CardDescription>Approved vs Pending projects in {selectedYear}</CardDescription>
+              <CardDescription>
+                Approved vs Pending projects in {selectedYear}
+              </CardDescription>
             </CardHeader>
             <CardContent className="h-80">
               <ChartContainer
@@ -439,8 +572,12 @@ const AdminDashboard = () => {
                   data={[
                     {
                       name: "Status",
-                      approved: filteredProjects.filter((p) => p.status === "Approved").length,
-                      pending: filteredProjects.filter((p) => p.status === "Pending").length,
+                      approved: filteredProjects.filter(
+                        (p) => p.status === "Approved"
+                      ).length,
+                      pending: filteredProjects.filter(
+                        (p) => p.status === "Pending"
+                      ).length,
                     },
                   ]}
                 >
@@ -449,8 +586,16 @@ const AdminDashboard = () => {
                   <YAxis />
                   <Tooltip content={<ChartTooltipContent />} />
                   <Legend />
-                  <Bar dataKey="approved" fill="var(--color-approved)" radius={4} />
-                  <Bar dataKey="pending" fill="var(--color-pending)" radius={4} />
+                  <Bar
+                    dataKey="approved"
+                    fill="var(--color-approved)"
+                    radius={4}
+                  />
+                  <Bar
+                    dataKey="pending"
+                    fill="var(--color-pending)"
+                    radius={4}
+                  />
                 </RechartsBarChart>
               </ChartContainer>
             </CardContent>
@@ -458,7 +603,7 @@ const AdminDashboard = () => {
         </div>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default AdminDashboard
+export default AdminDashboard;
