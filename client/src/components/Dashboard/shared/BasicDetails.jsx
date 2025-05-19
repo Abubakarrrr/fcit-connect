@@ -57,7 +57,6 @@ const BasicDetails = () => {
     setFile(null);
     setThumbnailUrl(null);
   };
-  console.log(user.role);
   const handleSubmit = async (e) => {
     e.preventDefault();
     const { error } = validationSchema.validate(formState, {
