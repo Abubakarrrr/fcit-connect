@@ -1,5 +1,3 @@
-"use client";
-
 import { useState, useEffect } from "react";
 import {
   Card,
@@ -24,65 +22,65 @@ import { useToast } from "@/hooks/use-toast";
 import { useProjectStore } from "@/store/projectStore";
 
 // Dummy data based on the provided JSON structure
-const generateDummyProjects = () => {
-  const campuses = ["OC", "NC"];
-  const departments = [
-    "Software Engineering",
-    "Computer Science",
-    "Data Science",
-    "Artificial Intelligence",
-    "Cybersecurity",
-  ];
-  const categories = [
-    "Web Development",
-    "Mobile Development",
-    "AI/ML",
-    "IoT",
-    "Blockchain",
-    "Game Development",
-  ];
-  const years = ["2020", "2021", "2022", "2023", "2024"];
+// const generateDummyProjects = () => {
+//   const campuses = ["OC", "NC"];
+//   const departments = [
+//     "Software Engineering",
+//     "Computer Science",
+//     "Data Science",
+//     "Artificial Intelligence",
+//     "Cybersecurity",
+//   ];
+//   const categories = [
+//     "Web Development",
+//     "Mobile Development",
+//     "AI/ML",
+//     "IoT",
+//     "Blockchain",
+//     "Game Development",
+//   ];
+//   const years = ["2020", "2021", "2022", "2023", "2024"];
 
-  const projects = [];
+//   const projects = [];
 
-  // Generate 100 random projects
-  for (let i = 0; i < 100; i++) {
-    const year = years[Math.floor(Math.random() * years.length)];
-    const campus = campuses[Math.floor(Math.random() * campuses.length)];
-    const department =
-      departments[Math.floor(Math.random() * departments.length)];
-    const category = categories[Math.floor(Math.random() * categories.length)];
-    const likes = Math.floor(Math.random() * 50);
-    const views = Math.floor(Math.random() * 100) + 20;
+//   // Generate 100 random projects
+//   for (let i = 0; i < 100; i++) {
+//     const year = years[Math.floor(Math.random() * years.length)];
+//     const campus = campuses[Math.floor(Math.random() * campuses.length)];
+//     const department =
+//       departments[Math.floor(Math.random() * departments.length)];
+//     const category = categories[Math.floor(Math.random() * categories.length)];
+//     const likes = Math.floor(Math.random() * 50);
+//     const views = Math.floor(Math.random() * 100) + 20;
 
-    projects.push({
-      _id: { $oid: `project_${i}` },
-      title: `Project ${i}`,
-      description: `Description for project ${i}`,
-      campus,
-      department,
-      year,
-      category,
-      supervisor: `Dr. ${String.fromCharCode(
-        65 + Math.floor(Math.random() * 26)
-      )}`,
-      githubLink: "http://github.com/example",
-      thumbnail: "https://example.com/thumbnail.jpg",
-      likes: { $numberInt: likes.toString() },
-      views: { $numberInt: views.toString() },
-      createdByAdmin: Math.random() > 0.5,
-      status: Math.random() > 0.3 ? "Approved" : "Pending",
-      created_at: { $date: { $numberLong: Date.now().toString() } },
-    });
-  }
+//     projects.push({
+//       _id: { $oid: `project_${i}` },
+//       title: `Project ${i}`,
+//       description: `Description for project ${i}`,
+//       campus,
+//       department,
+//       year,
+//       category,
+//       supervisor: `Dr. ${String.fromCharCode(
+//         65 + Math.floor(Math.random() * 26)
+//       )}`,
+//       githubLink: "http://github.com/example",
+//       thumbnail: "https://example.com/thumbnail.jpg",
+//       likes: { $numberInt: likes.toString() },
+//       views: { $numberInt: views.toString() },
+//       createdByAdmin: Math.random() > 0.5,
+//       status: Math.random() > 0.3 ? "Approved" : "Pending",
+//       created_at: { $date: { $numberLong: Date.now().toString() } },
+//     });
+//   }
 
-  return projects;
-};
+//   return projects;
+// };
 
 // const dummyProjects = generateDummyProjects();
 
 const AdminDashboard = () => {
-  const { allProjects, getAllProjects } = useProjectStore();
+  const { allProjects, sudo_getAllProjects } = useProjectStore();
   const { toast } = useToast();
 
   const [selectedYear, setSelectedYear] = useState("2025");
@@ -102,7 +100,7 @@ const AdminDashboard = () => {
     const getProjects = async () => {
       setIsLoading(true);
       try {
-        await getAllProjects();
+        await sudo_getAllProjects();
         setIsLoading(false);
       } catch (error) {
         setIsLoading(false);
@@ -118,8 +116,7 @@ const AdminDashboard = () => {
 
   useEffect(() => {
     // Filter projects based on selected year
-    // console.log(allProjects);
-    if (allProjects?.length > 0) {
+    if (!isLoading && allProjects?.length > 0) {
       const filtered = allProjects.filter(
         (project) => project.year === selectedYear
       );
@@ -130,11 +127,11 @@ const AdminDashboard = () => {
   // Calculate statistics
   const totalProjects = filteredProjects.length;
   const totalLikes = filteredProjects.reduce(
-    (sum, project) => sum + Number.parseInt(project.likes.$numberInt || 0),
+    (sum, project) => sum + Number.parseInt(project.likes || 0),
     0
   );
   const totalViews = filteredProjects.reduce(
-    (sum, project) => sum + Number.parseInt(project.views.$numberInt || 0),
+    (sum, project) => sum + Number.parseInt(project.views || 0),
     0
   );
 
@@ -185,8 +182,8 @@ const AdminDashboard = () => {
       };
     }
     acc[supervisor].count++;
-    acc[supervisor].likes += Number.parseInt(project.likes.$numberInt || 0);
-    acc[supervisor].views += Number.parseInt(project.views.$numberInt || 0);
+    acc[supervisor].likes += Number.parseInt(project.likes || 0);
+    acc[supervisor].views += Number.parseInt(project.views || 0);
     return acc;
   }, {});
 
@@ -426,12 +423,12 @@ const AdminDashboard = () => {
                     );
                     const totalLikes = deptProjects.reduce(
                       (sum, p) =>
-                        sum + Number.parseInt(p.likes.$numberInt || 0),
+                        sum + Number.parseInt(p.likes || 0),
                       0
                     );
                     const totalViews = deptProjects.reduce(
                       (sum, p) =>
-                        sum + Number.parseInt(p.views.$numberInt || 0),
+                        sum + Number.parseInt(p.views || 0),
                       0
                     );
                     const count = deptProjects.length;
@@ -520,7 +517,7 @@ const AdminDashboard = () => {
                 config={{
                   projects: {
                     label: "Projects",
-                    color: "hsl(var(--chart-8))",
+                    color: "hsl(var(--chart-7))",
                   },
                   likes: {
                     label: "Likes",
@@ -566,6 +563,10 @@ const AdminDashboard = () => {
                     label: "Pending",
                     color: "hsl(var(--chart-6))",
                   },
+                  rejected: {
+                    label: "Rejected",
+                    color: "hsl(var(--chart-8))",
+                  },
                 }}
               >
                 <RechartsBarChart
@@ -577,6 +578,9 @@ const AdminDashboard = () => {
                       ).length,
                       pending: filteredProjects.filter(
                         (p) => p.status === "Pending"
+                      ).length,
+                      rejected: filteredProjects.filter(
+                        (p) => p.status === "Rejected"
                       ).length,
                     },
                   ]}
@@ -594,6 +598,11 @@ const AdminDashboard = () => {
                   <Bar
                     dataKey="pending"
                     fill="var(--color-pending)"
+                    radius={4}
+                  />
+                  <Bar
+                    dataKey="rejected"
+                    fill="var(--color-rejected)"
                     radius={4}
                   />
                 </RechartsBarChart>
