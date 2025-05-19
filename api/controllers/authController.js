@@ -43,7 +43,7 @@ export const signup = async (req, res) => {
 
     await sendEmail(
       user.email,
-      `Welcome to FCIT connect, ${user.name}`,
+      `Welcome to FCIT Connect, ${user.name}`,
       OTPVerificationTemplate(verificationToken)
     );
 
@@ -219,7 +219,7 @@ export const forgotPassword = async (req, res) => {
 
     await sendEmail(
       userFromDB.email,
-      "Password reset",
+      "Password Reset",
       PasswordResetTemplate(
         `${process.env.CLIENT_URL}/reset-password/${userFromDB.resetPasswordToken}`
       )
