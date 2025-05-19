@@ -45,6 +45,7 @@ export default function FypShowcase({ fyp }) {
     images,
     thumbnail,
     likes,
+    campus,
     views,
     documentation,
     readme,
@@ -141,8 +142,8 @@ export default function FypShowcase({ fyp }) {
               </div>
               <div>
                 <PanelTop className="w-4 h-4" />
-                <div className="font-semibold">12</div>
-                <div className="text-sm text-gray-500">Pages</div>
+                <div className="font-semibold">Campus</div>
+                <div className="text-sm text-gray-500">{campus}</div>
               </div>
               <div>
                 <Heart className="w-4 h-4" />
@@ -159,9 +160,9 @@ export default function FypShowcase({ fyp }) {
 
           {/* Right Column - Carousel */}
           <div className="relative aspect-[4/3] bg-[#15171B] rounded-xl">
-            <div className="absolute inset-5 bg-[#FFD84D] rounded-xl overflow-hidden">
+            <div className="absolute inset-5 bg-[#FFD84D] rounded-xl overflow-hidden flex items-center justify-center">
               <Carousel
-                className="w-full h-full"
+                className="w-full "
                   plugins={[
                     Autoplay({
                       delay: 5000,

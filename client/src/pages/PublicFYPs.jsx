@@ -3,6 +3,7 @@ import Dropdown from "@/components/shared/Dropdown";
 import Layout from "@/components/shared/Layout";
 import SearchWithKeywords from "@/components/shared/SearchComponent";
 import SkeletonCard from "@/components/shared/SkeletonCard";
+import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 import { useProjectStore } from "@/store/projectStore";
 import { useEffect, useState } from "react";
@@ -28,6 +29,14 @@ const PublicFYPs = () => {
   const updatedCategories = categories ? ["All", ...categories] : [];
   const updatedSupervisors = supervisors ? ["All", ...supervisors] : [];
   const [search, setSearch] = useState("");
+
+  const handleResetFilters = () => {
+    setSelectedCampus("All");
+    setSelectedDepartment("All");
+    setSelectedYear("All");
+    setSelectedCategory("All");
+    setSelectedSupervisor("All");
+  };
 
   useEffect(() => {
     const getProjects = async () => {
@@ -66,7 +75,7 @@ const PublicFYPs = () => {
   return (
     <Layout>
       <SearchWithKeywords setSearh={setSearch} />
-      <div className="flex justify-end gap-4 pb-8">
+      <div className="flex justify-end items-end gap-4 pb-8">
         <Dropdown
           trigger={"Campus"}
           list={["All", "NC", "OC"]}
@@ -87,7 +96,7 @@ const PublicFYPs = () => {
         />
         <Dropdown
           trigger={"Year"}
-          list={["All", "2021", "2022", "2023", "2024"]}
+          list={["All", "2021", "2022", "2023", "2024", "2025"]}
           selected={selectedYear}
           handleSelect={setSelectedYear}
         />
@@ -103,6 +112,13 @@ const PublicFYPs = () => {
           selected={selectedSupervisor}
           handleSelect={setSelectedSupervisor}
         />
+
+        <Button
+          className="h-12 px-6 bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white hover:shadow-lg transition-all duration-300"
+          onClick={handleResetFilters}
+        >
+          Reset
+        </Button>
       </div>
       {isLoading ? (
         <SkeletonCard />

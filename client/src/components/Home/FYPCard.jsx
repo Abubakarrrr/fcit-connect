@@ -45,8 +45,9 @@ export default function FYPCard({ fyp }) {
   }, [isLiked]);
 
   return (
-      <Card className="overflow-hidden cursor-pointer" onClick={() => navigate(fypLink)}>
+      <Card className="overflow-hidden ">
         <div className="relative">
+
           {/* <img
           src={imageUrl}
           alt={projectName}
@@ -61,7 +62,7 @@ export default function FYPCard({ fyp }) {
         </button> */}
         </div>
 
-        <CardHeader className="space-y-2 p-4">
+        <CardHeader className="space-y-2 p-4 cursor-pointer"  onClick={() => navigate(fypLink)}>
           <div className="flex items-center justify-between">
             <div to={fypLink}>
               <h3 className="font-semibold text-lg line-clamp-1">{title}</h3>
