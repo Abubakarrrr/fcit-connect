@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import DocumentationTab from "./DocumentationTab";
 import ScreenShotsTab from "./ScreenShotsTab";
@@ -134,7 +134,6 @@ const UpdateTemplate = () => {
     });
     if (validationResult.error) {
       setThumbnailError("Please upload a thumbnail image");
-      console.log(validationResult);
       toast({
         title: "Basic Details Tab information is missing",
         description: "",
@@ -146,6 +145,7 @@ const UpdateTemplate = () => {
     try {
       setIsLoadingLc(true);
       if (user?.role == "admin") {
+        console.log("updating as admin: ", user.role);
         await sudo_updateProject(
           {
             ...formState,
@@ -155,6 +155,7 @@ const UpdateTemplate = () => {
           project?._id
         );
       } else if (user.role == "user") {
+        console.log("updating as user: ", user.role);
         await updateProject(
           {
             ...formState,

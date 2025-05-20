@@ -1,4 +1,3 @@
-import React from "react";
 import {
   Card,
   CardHeader,
@@ -24,7 +23,6 @@ const FypTable = ({
   tableHeaders,
   projects,
 }) => {
-  console.log(projects)
   return (
     <TabsContent value={value}>
       <Card x-chunk="dashboard-06-chunk-0">

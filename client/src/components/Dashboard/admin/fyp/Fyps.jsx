@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from "react";
-import { File, ListFilter, PlusCircle, Search } from "lucide-react";
+import { useEffect, useState } from "react";
+import { ListFilter, PlusCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -10,7 +10,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { fypProjectsData } from "@/components/shared/fypProjectsData";
+// import { fypProjectsData } from "@/components/shared/fypProjectsData";
 import FypTable from "./FypTable";
 import { Link } from "react-router-dom";
 import { useProjectStore } from "@/store/projectStore";
