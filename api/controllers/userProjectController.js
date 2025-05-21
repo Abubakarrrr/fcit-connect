@@ -217,6 +217,72 @@ export const deleteProject = async (req, res) => {
     res.status(400).json({ success: false, message: error.message });
   }
 };
+
+export const likeProject = async (req, res) => {
+  try {
+    const id = req.params.id;
+    const user = await User.findById(req.userId);
+    if (!user) {
+      return res
+        .status(403)
+        .json({ success: false, message: "Forbidden: No user found" });
+    }
+    const project = await Project.findById(id);
+    if (!project) {
+      return res
+        .status(403)
+        .json({ success: false, message: "Failed to like, no project found" });
+    }
+
+    project.likes.push(user._id);
+    await project.save();
+
+    return res.status(200).json({
+      success: true,
+      message: "Project Liked",
+    });
+  } catch (error) {
+    console.log("error in liking project");
+    res.status(400).json({ success: false, message: error.message });
+  }
+};
+
+export const unLikeProject = async (req, res) => {
+  try {
+    const id = req.params.id;
+
+    const user = await User.findById(req.userId);
+    if (!user) {
+      return res
+        .status(403)
+        .json({ success: false, message: "Forbidden: No user found" });
+    }
+
+    const project = await Project.findById(id);
+    if (!project) {
+      return res
+        .status(404)
+        .json({ success: false, message: "No project found to unlike" });
+    }
+
+    // Remove user ID from likes array if present
+    project.likes = project.likes.filter(
+      (userId) => userId.toString() !== user._id.toString()
+    );
+
+    await project.save();
+
+    return res.status(200).json({
+      success: true,
+      message: "Project unliked successfully",
+    });
+  } catch (error) {
+    console.error("Error unliking project:", error);
+    res.status(400).json({ success: false, message: error.message });
+  }
+};
+
+
 export const getSingleProject = async (req, res) => {
   try {
     const id = req.params.id;
@@ -270,29 +336,7 @@ export const getTop10Projects = async (req, res) => {
     res.status(400).json({ success: false, message: error.message });
   }
 };
-export const likeProject = async (req, res) => {
-  try {
-    const id = req.params.id;
-    const project = await Project.findByIdAndUpdate(
-      id,
-      { $inc: { likes: 1 } },
-      { new: true }
-    );
-    if (!project) {
-      return res
-        .status(403)
-        .json({ success: false, message: "Failed to like" });
-    }
 
-    return res.status(200).json({
-      success: true,
-      message: "Project Liked",
-    });
-  } catch (error) {
-    console.log("error in finding single project");
-    res.status(400).json({ success: false, message: error.message });
-  }
-};
 export const getAllProjects = async (req, res) => {
   try {
     const projects = await Project.find({ status: { $ne: "Rejected" } });
@@ -486,12 +530,18 @@ export const getStatistics = async (req, res) => {
     // Count total number of projects
     const totalProjects = await Project.countDocuments();
 
-    // Aggregate total likes and views of all projects
+    // Aggregate total likes (length of likes array) and total views
     const [likesAndViews] = await Project.aggregate([
+      {
+        $project: {
+          views: 1,
+          likesCount: { $size: "$likes" },
+        },
+      },
       {
         $group: {
           _id: null,
-          totalLikes: { $sum: "$likes" },
+          totalLikes: { $sum: "$likesCount" },
           totalViews: { $sum: "$views" },
         },
       },
@@ -514,6 +564,7 @@ export const getStatistics = async (req, res) => {
     res.status(500).json({ success: false, message: error.message });
   }
 };
+
 export const addTeamMember = async (req, res) => {
   const userId = req.userId;
   const { teamMember } = req.body;

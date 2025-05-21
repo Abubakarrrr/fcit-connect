@@ -22,7 +22,12 @@ const ProjectSchema = new mongoose.Schema({
   devops: [{ type: String }],
   testing: [{ type: String }],
   readme: { type: String },
-  likes: { type: Number, default: 0 },
+  likes: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+    },
+  ],
   views: { type: Number, default: 0 },
   createdByAdmin: { type: Boolean, default: false },
   status: {

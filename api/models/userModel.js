@@ -18,6 +18,7 @@ const UserSchema = new mongoose.Schema({
   resetPasswordExpiresAt: { type: Date, default: undefined },
   profilePicture: { type: String, default: null },
   isVerified: { type: Boolean, default: false },
+  isActive: { type: Boolean, default: true },
   project: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "Project",

@@ -10,7 +10,8 @@ import { useToast } from "@/hooks/use-toast";
 
 export default function FYPCard({ fyp }) {
   const { user } = useAuthStore();
-  const { likeProject } = useProjectStore();
+  const { likeProject, unLikeProject } = useProjectStore();
+  const navigate = useNavigate();
   const { toast } = useToast();
   const { _id, title, year, description, likes, views, images, thumbnail } =
     fyp;
@@ -21,31 +22,45 @@ export default function FYPCard({ fyp }) {
   const fypLink =
     user?.role === "admin" ? `/admin/fyps/${_id} ` : `/fyps/${_id}`;
   const [isLiked, setIsLiked] = useState(false);
-  const [isLikedGlobal, setIsLikedGlobal] = useState(false);
+  const [allLikes, setAllLikes] = useState(likes || []);
   const [isLoading, setIsLoading] = useState(false);
-  const navigate = useNavigate();
 
   useEffect(() => {
-    const likeP = async () => {
-      if (!isLikedGlobal && isLiked) {
-        console.log("liking");
-        setIsLoading(true);
-        try {
-          await likeProject(_id);
-          setIsLikedGlobal(true);
-          setIsLoading(false);
-        } catch (error) {
-          setIsLoading(false);
-          console.log(error);
-          toast({
-            title: "Can't Like Project",
-            description: "",
-          });
-        }
+    const likeIds = allLikes.map((like) => like.toString()); // ensure string comparison
+    setIsLiked(likeIds.includes(user?._id));
+  }, [allLikes, user?._id]);
+
+  const likeP = async () => {
+    setIsLoading(true);
+    if (!isLiked) {
+      try {
+        await likeProject(_id);
+        setAllLikes([...allLikes, user._id]);
+        setIsLoading(false);
+      } catch (error) {
+        setIsLoading(false);
+        console.log(error);
+        toast({
+          title: error.response?.data?.message || "Can't Like Project",
+          description: "Please check if you are logged in",
+        });
       }
-    };
-    likeP();
-  }, [isLiked]);
+    } else if (isLiked) {
+      try {
+        await unLikeProject(_id);
+        setAllLikes(allLikes.filter((userId) => userId !== user._id));
+        setIsLoading(false);
+      } catch (error) {
+        setIsLoading(false);
+        console.log(error);
+        toast({
+          title: error.response?.data?.message || "Can't Like Project",
+          description: "Please check if you are logged in",
+     
+        });
+      }
+    }
+  };
 
   return (
     <Card className="overflow-hidden ">
@@ -87,7 +102,7 @@ export default function FYPCard({ fyp }) {
             className="flex items-center gap-1 cursor-pointer"
             onClick={(e) => {
               e.stopPropagation();
-              setIsLiked(!isLiked);
+              likeP();
             }}
             disabled={isLoading}
           >
@@ -96,9 +111,7 @@ export default function FYPCard({ fyp }) {
                 isLiked ? "fill-red-500" : "fill-white"
               }`}
             />
-            <span className="selection:bg-none">
-              {isLiked ? likes + 1 : likes}
-            </span>
+            <span className="selection:bg-none">{allLikes.length}</span>
           </button>
           <div className="flex items-center gap-1">
             <Eye className="w-4 h-4 text-black fill-gray-100" />

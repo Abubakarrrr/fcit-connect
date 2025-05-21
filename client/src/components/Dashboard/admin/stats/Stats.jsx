@@ -127,7 +127,7 @@ const AdminDashboard = () => {
   // Calculate statistics
   const totalProjects = filteredProjects.length;
   const totalLikes = filteredProjects.reduce(
-    (sum, project) => sum + Number.parseInt(project.likes || 0),
+    (sum, project) => sum + Number.parseInt(project.likes.length || 0),
     0
   );
   const totalViews = filteredProjects.reduce(
@@ -182,7 +182,7 @@ const AdminDashboard = () => {
       };
     }
     acc[supervisor].count++;
-    acc[supervisor].likes += Number.parseInt(project.likes || 0);
+    acc[supervisor].likes += Number.parseInt(project.likes.length || 0);
     acc[supervisor].views += Number.parseInt(project.views || 0);
     return acc;
   }, {});

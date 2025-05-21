@@ -153,7 +153,7 @@ export const login = async (req, res) => {
     }
     const userFromDB = await User.findOne({ email: email });
 
-    if (!userFromDB) {
+    if (!userFromDB || !userFromDB.isActive) {
       return res
         .status(400)
         .json({ success: false, message: "Invalid email or password" });
@@ -272,7 +272,7 @@ export const checkAuth = async (req, res) => {
   const { userId } = req;
   try {
     const userFromDB = await User.findOne({ _id: userId });
-    if (!userFromDB) {
+    if (!userFromDB || !userFromDB.isActive) {
       return res
         .status(400)
         .json({ success: false, message: "User Authentication Failed" });
