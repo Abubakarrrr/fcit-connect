@@ -35,7 +35,7 @@ router.get("/get-user-project/:id", verifyToken, getSingleUserProject);
 router.get("/get-projects", getAllProjects);
 router.get("/get-top10-projects", getTop10Projects);
 router.get("/get-project/:id", getSingleProject);
-router.get("/get-embedding-projects", verifyToken, getAllEmbeddingProjects);
+router.get("/get-embedding-projects",  getAllEmbeddingProjects);
 router.get("/get-projects-page", getAllProjectsPage);
 // router.get("/search-projects", searchProjects);
 router.get("/statistics", getStatistics);

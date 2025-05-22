@@ -12,11 +12,8 @@ export default function ProjectApprovalCard({ id }) {
   const { toast } = useToast();
   const navigate = useNavigate();
   const [feedback, setFeedback] = useState("");
-  const {
-    sudo_approveProject,
-    sudo_rejectProject,
-    sudo_getSingleProject,
-  } = useProjectStore();
+  const { sudo_approveProject, sudo_rejectProject, sudo_getSingleProject } =
+    useProjectStore();
   const [isLoading, setIsLoading] = useState(false);
   const [project, setProject] = useState(null);
   const [fetching, setFetching] = useState(true);
@@ -38,7 +35,7 @@ export default function ProjectApprovalCard({ id }) {
   useEffect(() => {
     fetchProject();
     // eslint-disable-next-line
-  }, [id]);
+  }, []);
 
   const handleReject = async () => {
     setIsLoading(true);
@@ -89,7 +86,11 @@ export default function ProjectApprovalCard({ id }) {
   };
 
   if (fetching) {
-    return <div className="w-full my-2"><CardContent>Loading...</CardContent></div>;
+    return (
+      <div className="w-full my-2">
+        <CardContent>Loading...</CardContent>
+      </div>
+    );
   }
 
   return (
@@ -97,9 +98,7 @@ export default function ProjectApprovalCard({ id }) {
       <CardContent className="flex items-center justify-between gap-4">
         {/* Status Badge */}
         <div className="flex flex-col gap-2 items-start w-1/5 min-w-[120px]">
-          <div>
-            {project && getStatusBadge(project.status)}
-          </div>
+          <div>{project && getStatusBadge(project.status)}</div>
           {project && project.feedback && (
             <div className="text-xs text-muted-foreground mt-1">
               Last Feedback: {project.feedback}
@@ -115,24 +114,51 @@ export default function ProjectApprovalCard({ id }) {
         />
         {/* Buttons */}
         <div className="flex gap-2">
-          <Button
-            variant="destructive"
-            className="flex items-center gap-2 px-4 py-2 bg-red-600 hover:bg-red-700 transition-all"
-            onClick={handleReject}
-            disabled={isLoading}
-          >
-            <X size={18} />
-            Reject
-          </Button>
-          <Button
-            variant="default"
-            className="flex items-center gap-2 px-4 py-2 bg-green-600 hover:bg-green-700 transition-all"
-            onClick={handleApprove}
-            disabled={isLoading}
-          >
-            <Check size={18} />
-            Approve
-          </Button>
+          {project?.status === "Pending" && (
+            <>
+              <Button
+                variant="default"
+                className="flex items-center gap-2 px-4 py-2 bg-green-600 hover:bg-green-700 transition-all"
+                onClick={handleApprove}
+                disabled={isLoading}
+              >
+                <Check size={18} />
+                Approve
+              </Button>
+              <Button
+                variant="destructive"
+                className="flex items-center gap-2 px-4 py-2 bg-red-600 hover:bg-red-700 transition-all"
+                onClick={handleReject}
+                disabled={isLoading}
+              >
+                <X size={18} />
+                Reject
+              </Button>
+            </>
+          )}
+          {project?.status === "Approved" && (
+            <Button
+              variant="destructive"
+              className="flex items-center gap-2 px-4 py-2 bg-red-600 hover:bg-red-700 transition-all"
+              onClick={handleReject}
+              disabled={isLoading}
+            >
+              <X size={18} />
+              Reject
+            </Button>
+          )}
+
+          {project?.status === "Rejected" && (
+            <Button
+              variant="default"
+              className="flex items-center gap-2 px-4 py-2 bg-green-600 hover:bg-green-700 transition-all"
+              onClick={handleApprove}
+              disabled={isLoading}
+            >
+              <Check size={18} />
+              Approve
+            </Button>
+          )}
         </div>
       </CardContent>
     </div>
