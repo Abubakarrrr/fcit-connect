@@ -348,6 +348,26 @@ export const useProjectStore = create((set) => ({
       throw error;
     }
   },
+  unLikeProject: async (id) => {
+    set({ isLoading: true, storeError: null });
+    try {
+      const response = await axios.post(`${API_URL}/unlike-project/${id}`);
+
+      if (response.data.success) {
+        set({
+          message: response?.data?.message,
+          isLoading: false,
+        });
+      }
+      return null;
+    } catch (error) {
+      set({
+        isLoading: false,
+        storeError: error.response?.data?.message || "Error Finding Projects",
+      });
+      throw error;
+    }
+  },
   searchProjects: async (query) => {
     set({ isLoading: true, storeError: null });
     try {
@@ -1186,22 +1206,4 @@ export const useProjectStore = create((set) => ({
     }
   },
 
-  getStatistics: async () => {
-    set({ isLoading: true, storeError: null });
-    try {
-      const response = await axios.get(`${API_URL}/statistics`);
-      if (response.data) {
-        set({
-          isLoading: false,
-          statistics: response.data.statistics,
-        });
-      }
-    } catch (error) {
-      set({
-        isLoading: false,
-        storeError: error.response?.data?.message || "Error Finding Categories",
-      });
-      throw error;
-    }
-  },
 }));

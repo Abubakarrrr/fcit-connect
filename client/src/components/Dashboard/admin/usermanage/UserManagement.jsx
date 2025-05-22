@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import {
@@ -20,12 +20,27 @@ import { Trash, Edit2 } from "lucide-react";
 import { Avatar } from "@/components/ui/avatar";
 import { useAuthStore } from "@/store/authStore";
 import { useToast } from "@/hooks/use-toast";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogTitle,
+} from "@radix-ui/react-dialog";
+import { DialogFooter, DialogHeader } from "@/components/ui/dialog";
+import { useProjectStore } from "@/store/projectStore";
 
 const UserManagementPage = () => {
   const { sudo_getAllUsers, sudo_createUser, sudo_updateUser, allUsers } =
     useAuthStore();
+  const { sudo_deleteProject } = useProjectStore();
+  const { sudo_deleteUser } = useAuthStore();
+
   const { toast } = useToast();
   const [isLoading, setIsLoading] = useState(false);
+  const [openDialog, setOpenDialog] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
+  const [deleteThisUser, setDeleteThisUser] = useState({});
+
   const [users, setUsers] = useState([]);
 
   useEffect(() => {
@@ -115,8 +130,28 @@ const UserManagementPage = () => {
   };
 
   // Delete user
-  const handleDelete = (id) => {
-    setUsers((prev) => prev.filter((user) => user._id !== id));
+  const handleDelete = async (role, userId, projectId) => {
+    try {
+      setIsDeleting(true);
+      if (role !== "supervisor" && projectId) {
+        await sudo_deleteProject(projectId);
+      }
+      await sudo_deleteUser(userId);
+      setIsDeleting(false);
+      setOpenDialog(false);
+      setUsers((prev) => prev.filter((user) => user._id !== userId));
+      toast({
+        title: "User deleted successfully",
+        description: "",
+      });
+    } catch (error) {
+      setIsDeleting(false);
+      console.error("Error deleting user:", error);
+      toast({
+        title: "Error deleting user",
+        description: "",
+      });
+    }
   };
 
   // Helper function to get user initials
@@ -157,7 +192,11 @@ const UserManagementPage = () => {
               <option value="supervisor">Supervisor</option>
               <option value="admin">Admin</option>
             </select>
-            <Button onClick={handleSubmit} disabled={isLoading} className="sm:col-span-3 w-full">
+            <Button
+              onClick={handleSubmit}
+              disabled={isLoading}
+              className="sm:col-span-3 w-full"
+            >
               {editingUser ? "Update User" : "Add User"}
             </Button>
           </div>
@@ -195,7 +234,10 @@ const UserManagementPage = () => {
                       <Button
                         variant="outline"
                         size="icon"
-                        onClick={() => handleDelete(user.id)}
+                        onClick={() => {
+                          setDeleteThisUser(user);
+                          setOpenDialog(true);
+                        }}
                       >
                         <Trash className="w-4 h-4 text-red-500" />
                       </Button>
@@ -215,6 +257,41 @@ const UserManagementPage = () => {
           </div>
         </CardFooter>
       </Card>
+      {openDialog && (
+        <div className=" w-full h-screen fixed top-0 left-0 z-30 flex items-center justify-center">
+          <Dialog open={openDialog} onOpenChange={setOpenDialog}>
+            <DialogContent className="bg-white p-5 shadow-2xl rounded-lg">
+              <DialogHeader>
+                <DialogTitle className="mb-2">
+                  Are you sure you want to delete{" "}
+                  <span className="font-bold">{deleteThisUser?.name}</span> ?
+                </DialogTitle>
+                <DialogDescription className="text-red-500">
+                  The project associated to this user will also be deleted.
+                </DialogDescription>
+              </DialogHeader>
+              <DialogFooter className="mt-2">
+                <Button variant="outline" onClick={() => setOpenDialog(false)}>
+                  Cancel
+                </Button>
+                <Button
+                  disabled={isDeleting}
+                  variant="destructive"
+                  onClick={() => {
+                    handleDelete(
+                      deleteThisUser?.role,
+                      deleteThisUser?._id,
+                      deleteThisUser?.project
+                    );
+                  }}
+                >
+                  Delete
+                </Button>
+              </DialogFooter>
+            </DialogContent>
+          </Dialog>
+        </div>
+      )}
     </div>
   );
 };

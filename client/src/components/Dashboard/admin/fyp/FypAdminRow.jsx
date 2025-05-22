@@ -16,12 +16,10 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { useToast } from "@/hooks/use-toast";
-import { useAuthStore } from "@/store/authStore";
 import { useProjectStore } from "@/store/projectStore";
-import { MoreHorizontal, Pencil, Trash, Check } from "lucide-react";
+import { MoreHorizontal, Pencil, Trash } from "lucide-react";
 import { useState } from "react";
-import { RxCross1 } from "react-icons/rx";
-import { Link, useLocation } from "react-router-dom";
+import { Link } from "react-router-dom";
 
 const FypAdminRow = ({ project }) => {
   const { toast } = useToast();
@@ -29,8 +27,8 @@ const FypAdminRow = ({ project }) => {
   const [openDropdown, setOpenDropdown] = useState(false);
   const { sudo_deleteProject } = useProjectStore();
   const { thumbnail, title, status, updated_at, _id } = project;
-  const location = useLocation();
-  const isAdminRoute = location.pathname.startsWith("/admin");
+  // const location = useLocation();
+  // const isAdminRoute = location.pathname.startsWith("/admin");
   const dateObject = new Date(updated_at);
   const formattedDate = dateObject.toISOString().split("T")[0];
   const [isDeleting, setIsDeleting] = useState(false);

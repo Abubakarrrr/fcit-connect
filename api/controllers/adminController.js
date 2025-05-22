@@ -18,33 +18,43 @@ export const createUser = async (req, res) => {
     }
     const userAlreadyExists = await User.findOne({ email: email });
 
-    if (userAlreadyExists) {
+    if (userAlreadyExists && userAlreadyExists?.isActive) {
       return res.status(400).json({
         success: false,
         message: "User with this email is already registered",
       });
     }
 
-    const hashedPassword = await bcrypt.hash(password || "fcit", 10);
-
-    const user = new User({
-      email,
-      password: hashedPassword,
-      name,
-      isVerified: true,
-      role: role || "user",
-    });
-
-    await user.save();
-
-    res.status(200).json({
-      success: true,
-      message: "User created successfully",
-      user: {
-        ...user._doc,
-        password: undefined,
-      },
-    });
+    if (userAlreadyExists && !userAlreadyExists.isActive) {
+      userAlreadyExists.isActive = true;
+      userAlreadyExists.save();
+      return res.status(200).json({
+        success: true,
+        message: "User created successfully",
+        user: {
+          ...userAlreadyExists._doc,
+          password: undefined,
+        },
+      });
+    } else {
+      const hashedPassword = await bcrypt.hash(password || "fcit", 10);
+      const user = new User({
+        email,
+        password: hashedPassword,
+        name,
+        isVerified: true,
+        role: role || "user",
+      });
+      await user.save();
+      return res.status(200).json({
+        success: true,
+        message: "User created successfully",
+        user: {
+          ...user._doc,
+          password: undefined,
+        },
+      });
+    }
   } catch (error) {
     console.log("error in registering user");
     res.status(400).json({ success: false, message: error.message });
@@ -86,35 +96,56 @@ export const updateUser = async (req, res) => {
   }
 };
 export const deleteUser = async (req, res) => {
-  const userId = req.userId;
+  const userId = req.userId; // Admin's ID
+  const targetUserId = req.params.id;
+
   try {
-    const Admin = await User.findById(userId);
-    if (!Admin || Admin.role != "admin") {
+    // Check if requesting user is an admin
+    const adminUser = await User.findById(userId);
+    if (!adminUser || adminUser.role !== "admin") {
       return res.status(403).json({
         success: false,
         message: "Unauthorized: Admin Access Required",
       });
     }
-    const user = await User.findByIdAndDelete(req.params.id);
-    if (!user) {
+
+    // Find target user
+    const userToDelete = await User.findById(targetUserId);
+    if (!userToDelete) {
       return res.status(404).json({
         success: false,
         message: "User not found",
       });
     }
+
+    if (userToDelete.role === "admin") {
+      return res.status(403).json({
+        success: false,
+        message: "Cannot delete another admin user",
+      });
+    }
+
+    // Soft delete: mark inactive
+    userToDelete.isActive = false;
+    await userToDelete.save();
+
     res.status(200).json({
       success: true,
       message: "User deleted successfully",
       user: {
-        ...user._doc,
-        password: undefined,
+        _id: userToDelete._id,
+        name: userToDelete.name,
+        email: userToDelete.email,
+        role: userToDelete.role,
+        isActive: userToDelete.isActive,
       },
     });
   } catch (error) {
-    console.log("error in deleting user");
-    res.status(400).json({ success: false, message: error.message });
+    console.error("Error in deleting user:", error);
+    res.status(500).json({ success: false, message: error.message });
   }
 };
+
 export const getUser = async (req, res) => {
   const userId = req.userId;
 
@@ -127,7 +158,7 @@ export const getUser = async (req, res) => {
       });
     }
     const user = await User.findById(req.params.id);
-    if (!user) {
+    if (!user || !user.isActive) {
       return res.status(404).json({
         success: false,
         message: "User not found",
@@ -156,7 +187,7 @@ export const getAllUsers = async (req, res) => {
         message: "Unauthorized: Admin Access Required",
       });
     }
-    const users = await User.find({ _id: { $ne: userId } });
+    const users = await User.find({ role: { $ne: "admin" }, isActive: true });
     if (!users) {
       return res.status(404).json({
         success: false,
@@ -507,43 +538,67 @@ export const getSingleProject = async (req, res) => {
 };
 export const deleteProject = async (req, res) => {
   try {
-    const userId = req.userId;
+    const adminId = req.userId;
     const projectId = req.params.id;
 
-    const user = await User.findById(userId);
-    if (!user || user.role != "admin") {
+    // Check if the requester is an admin
+    const adminUser = await User.findById(adminId);
+    if (!adminUser || adminUser.role !== "admin") {
       return res.status(403).json({
         success: false,
         message: "Unauthorized: Admin Access Required",
       });
     }
+
+    // Find the project
     const project = await Project.findById(projectId);
     if (!project) {
-      return res
-        .status(403)
-        .json({ success: false, message: "No project found" });
+      return res.status(200).json({
+        success: true,
+        message: "Project deleted successfully",
+      });
     }
-    for (const memberId of project?.teamMembers) {
-      await TeamMember.findByIdAndDelete(memberId);
+    // Fetch the user who created this project
+    const ownerUser = await User.findById(project.user);
+    if (!ownerUser) {
+      return res.status(404).json({
+        success: false,
+        message: "Creator of the project not found",
+      });
     }
-    user.project = undefined;
-    if (user.adminProjects.length > 0) {
-      user.adminProjects = user.adminProjects.filter(
+
+    // Clean up based on who created the project
+    if (project.createdByAdmin) {
+      // Remove project from adminProjects array
+      ownerUser.adminProjects = ownerUser.adminProjects.filter(
         (id) => id.toString() !== project._id.toString()
       );
+    } else {
+      // Set user's project to undefined
+      ownerUser.project = undefined;
     }
-    await user.save();
+
+    await ownerUser.save();
+
+    // Delete all team members associated with the project
+    for (const memberId of project.teamMembers) {
+      await TeamMember.findByIdAndDelete(memberId);
+    }
+
+    // Delete the project
     const deletedProject = await Project.findByIdAndDelete(project._id);
+
     return res.status(200).json({
       success: true,
       message: "Project deleted successfully",
       deletedProject,
     });
   } catch (error) {
-    console.log("error deleting project");
-    res.status(400).json({ success: false, message: error.message });
+    console.error("Error deleting project:", error);
+    res.status(500).json({ success: false, message: error.message });
   }
 };
+
 export const getAllProjects = async (req, res) => {
   try {
     const projects = await Project.find();

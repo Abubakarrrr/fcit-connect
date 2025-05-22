@@ -13,7 +13,7 @@ export const useAuthStore = create((set) => ({
   isCheckingAuth: true,
   message: null,
   allUsers: [],
-  reviews:[],
+  reviews: [],
 
   signup: async (email, name, password) => {
     set({ isLoading: true, error: null });
@@ -173,7 +173,6 @@ export const useAuthStore = create((set) => ({
   },
   sudo_updateUser: async (updateData, userId) => {
     set({ isLoading: true, error: null });
-    console.log(updateData, userId);
     try {
       const response = await axios.post(
         `${ADMIN_API_URL}/update-user/${userId}`,
@@ -186,7 +185,25 @@ export const useAuthStore = create((set) => ({
     } catch (error) {
       set({
         isLoading: false,
-        error: error.response?.data?.message || "Error craeting user",
+        error: error.response?.data?.message || "Error creating user",
+      });
+      throw error;
+    }
+  },
+  sudo_deleteUser: async (userId) => {
+    set({ isLoading: true, error: null });
+    try {
+      const response = await axios.post(
+        `${ADMIN_API_URL}/delete-user/${userId}`
+      );
+      set({
+        isLoading: false,
+      });
+      return response?.data?.user;
+    } catch (error) {
+      set({
+        isLoading: false,
+        error: error.response?.data?.message || "Error deleting user",
       });
       throw error;
     }
@@ -209,12 +226,11 @@ export const useAuthStore = create((set) => ({
     }
   },
 
-
   //review apis
-  add_review: async (name,email, rating,comment) => {
+  add_review: async (name, email, rating, comment) => {
     set({ isLoading: true, error: null });
     try {
-      const response = await axios.post(`${PUBLIC_URL}/add-review`, {
+      await axios.post(`${PUBLIC_URL}/add-review`, {
         name,
         email,
         rating,
@@ -238,7 +254,7 @@ export const useAuthStore = create((set) => ({
       const response = await axios.get(`${PUBLIC_URL}/get-reviews`);
       set({
         isLoading: false,
-        reviews: response?.data?.reviews
+        reviews: response?.data?.reviews,
       });
     } catch (error) {
       set({
@@ -252,15 +268,18 @@ export const useAuthStore = create((set) => ({
   resendVerificationEmail: async (email) => {
     set({ isLoading: true, error: null, message: null });
     try {
-      const response = await axios.post(`${API_URL}/resend-verification-email`, { email });
+      const response = await axios.post(
+        `${API_URL}/resend-verification-email`,
+        { email }
+      );
       set({ message: response.data.message, isLoading: false });
     } catch (error) {
       set({
         isLoading: false,
-        error: error.response?.data?.message || "Error resending verification email",
+        error:
+          error.response?.data?.message || "Error resending verification email",
       });
       throw error;
     }
   },
-
 }));
