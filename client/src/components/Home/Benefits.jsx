@@ -30,7 +30,7 @@ export default function BenefitsSection() {
   return (
     <div className="py-16 px-4 ">
       <div className="max-w-5xl mx-auto">
-        <h2 className="text-5xl text-center mb-8 font-semibold  ">
+        <h2 className="text-5xl text-center mb-8 font-semibold bg-gradient-to-r from-blue-400 to-purple-500 bg-clip-text text-transparent ">
           Why FCIT Connect?
         </h2>
         <div className="space-y-12">
@@ -40,7 +40,7 @@ export default function BenefitsSection() {
                 {/* Left section: Content */}
                 <div className="md:w-1/2 w-full flex justify-center">
                   <div className="p-6 max-md:text-center">
-                    <h3 className="text-3xl font-semibold mb-2 text-pink-600 dark:text-indigo-300">
+                    <h3 className="text-3xl font-semibold mb-2 bg-gradient-to-r from-blue-400 to-purple-500 bg-clip-text text-transparent">
                       {step.title}
                     </h3>
                     <p className="text-gray-600 dark:text-gray-300">

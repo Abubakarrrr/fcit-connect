@@ -34,6 +34,26 @@ function HTMLContent({ content }) {
   return <div className="ql-editor" dangerouslySetInnerHTML={{ __html: sanitized }} />;
 }
 
+const getStatusBadge = (status) => {
+  const statusValue = (status || "").toLowerCase();
+  let color = "bg-gray-400";
+  let text = "Pending";
+  if (statusValue === "Approved") {
+    color = "bg-green-600";
+    text = "Approved";
+  } else if (statusValue === "Rejected") {
+    color = "bg-red-600";
+    text = "Rejected";
+  }
+  return (
+    <span
+      className={`px-3 py-1 rounded-full text-white text-xs font-semibold ${color}`}
+    >
+      {text}
+    </span>
+  );
+};
+
 export default function FypShowcase({ fyp }) {
   const { user } = useAuthStore();
   const {
@@ -97,7 +117,7 @@ export default function FypShowcase({ fyp }) {
                 )}
                 <Badge
                   variant=""
-                  className={`ml-2 shrink-0  hover:bg-gray-100 ${
+                  className={`ml-2 shrink-0 hover:bg-gray-100 ${
                     status === "Pending"
                       ? "text-red-600 bg-white"
                       : status === "Approved"
@@ -147,7 +167,7 @@ export default function FypShowcase({ fyp }) {
               </div>
               <div>
                 <Heart className="w-4 h-4" />
-                <div className="font-semibold">{likes}</div>
+                <div className="font-semibold">{likes.length}</div>
                 <div className="text-sm text-gray-500">Likes</div>
               </div>
               <div>

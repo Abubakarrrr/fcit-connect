@@ -23,7 +23,7 @@ export default function SearchWithKeywords({ setSearh }) {
       <div className="relative overflow-hidden">
         <div className=" py-10">
           <div className="text-center">
-            <h1 className="scroll-m-20 text-4xl font-extrabold tracking-tight lg:text-5xl">
+            <h1 className="scroll-m-20 text-4xl font-extrabold tracking-tight lg:text-5xl bg-gradient-to-r from-blue-400 to-purple-500 bg-clip-text text-transparent">
               All FYPs
             </h1>
             <p className="mt-3 text-xl text-muted-foreground">

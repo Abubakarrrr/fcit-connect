@@ -88,7 +88,7 @@ export default function SignUp() {
                   </CardHeader>
                   <CardContent>
                     <Link to="/login-with-google">
-                      <Button className="w-full" variant={"outline"}>
+                      <Button className="w-full" variant={"outline"} type="button">
                         <svg
                           className="w-4 h-auto mr-2"
                           width={46}

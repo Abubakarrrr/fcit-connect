@@ -53,10 +53,10 @@ export function PredictiveAnalysisTool() {
   };
 
   return (
-    <Card className="w-full max-w-3xl mx-auto my-16">
+    <Card className="w-full max-w-3xl mx-auto my-16 ">
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
-          <Sparkles className="h-5 w-5 text-primary" />
+          <Sparkles className="h-5 w-5 text-primary " />
           Predictive Analysis Tool
         </CardTitle>
         <CardDescription>

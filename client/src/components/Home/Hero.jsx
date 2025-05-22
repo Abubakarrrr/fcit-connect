@@ -34,7 +34,8 @@ const Hero = () => {
   return (
     <div className="flex flex-col items-center text-center gap-6 py-20">
       <AnimatedShinyTextDemo />
-      <h1 className="md:text-5xl text-3xl font-bold">
+      <h1 className="md:text-5xl text-3xl font-bold
+      bg-gradient-to-r from-blue-400 to-purple-500 bg-clip-text text-transparent">
         FCIT  Connect <br />
         All Our FYPs in one place
       </h1>

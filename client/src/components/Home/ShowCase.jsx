@@ -13,10 +13,10 @@ export function ShowcaseCard({ title, thumbnail, likes, _id }) {
       to={`/fyps/${_id}`}
       className="flex w-[330px] h-[370px] flex-col gap-2 group relative overflow-hidden cursor-pointer"
     >
-      <div className="absolute top-2 right-2 px-3 py-2 bg-red-100 rounded-lg flex items-center gap-2">
+      {/* <div className="absolute top-2 right-2 px-3 py-2 bg-red-100 rounded-lg flex items-center gap-2">
         <Heart className="w-4 h-4 text-red-500 fill-red-500" />
-        <span className="text-red-500 font-medium text-sm">{likes}</span>
-      </div>
+        <span className="text-red-500 font-medium text-sm">{likes.length}</span>
+      </div> */}
       <img
         src={thumbnail}
         alt={title}
@@ -52,7 +52,7 @@ export default function Showcase() {
     return (
       <section id="showcase" className="py-14 ">
         <div>
-          <h2 className="mb-2 text-center text-5xl font-bold leading-[1.2] tracking-tighter text-slate-900">
+          <h2 className="mb-2 text-center text-5xl font-bold leading-[1.2] tracking-tighter bg-gradient-to-r from-blue-400 to-purple-500 bg-clip-text text-transparent">
             Showcase
           </h2>
           <h3 className="mx-auto mb-8 text-balance text-center text-lg font-medium tracking-tight text-slate-900/80">

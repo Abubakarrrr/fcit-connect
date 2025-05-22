@@ -91,7 +91,7 @@ export function Testimonials() {
   return (
     <>
       <div className="text-center mt-16">
-        <h2 className="text-5xl font-bold">What our users say</h2>
+        <h2 className="text-5xl font-bold bg-gradient-to-r from-blue-400 to-purple-500 bg-clip-text text-transparent">What our users say</h2>
         <p className="mt-3">
           Hear from students, alumni, and visitors who have used our platform to
           share, discover, and connect over academic projects.
