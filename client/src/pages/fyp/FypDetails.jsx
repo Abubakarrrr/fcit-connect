@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import FypShowcase from "./FypShowcase";
 import Layout from "@/components/shared/Layout";
@@ -8,15 +8,18 @@ import { useAuthStore } from "@/store/authStore";
 
 const FypDetails = () => {
   const { id } = useParams();
-  const { project, getSingleProject, sudo_getSingleProject } =
-    useProjectStore();
+  const { getSingleProject, sudo_getSingleProject } = useProjectStore();
   const { user } = useAuthStore();
+  const [project, setProject] = useState();
   useEffect(() => {
     const getProject = async () => {
-      if (user?.role == "admin") {
-        await sudo_getSingleProject(id);
+      if (user?.role === "admin") {
+        console.log("getting project here");
+        const p = await sudo_getSingleProject(id);
+        setProject(p);
       } else {
-        await getSingleProject(id);
+        const p2 = await getSingleProject(id);
+        setProject(p2);
       }
     };
     getProject();
