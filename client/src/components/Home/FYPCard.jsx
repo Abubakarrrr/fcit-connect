@@ -19,14 +19,26 @@ export default function FYPCard({ fyp }) {
   for (const image of images) {
     imagesArray.push(image);
   }
+
   const fypLink =
     user?.role === "admin" ? `/admin/fyps/${_id} ` : `/fyps/${_id}`;
   const [isLiked, setIsLiked] = useState(false);
-  const [allLikes, setAllLikes] = useState(likes || []);
+  const [allLikes, setAllLikes] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
-    const likeIds = allLikes.map((like) => like.toString()); // ensure string comparison
+    if (Array.isArray(likes)) {
+      setAllLikes(likes);
+    } else {
+      setAllLikes([]);  
+    }
+  }, [likes]);
+
+  useEffect(() => {
+    const likeIds = [];
+    for (const id of allLikes) {
+      likeIds.push(id);
+    }
     setIsLiked(likeIds.includes(user?._id));
   }, [allLikes, user?._id]);
 
@@ -56,7 +68,6 @@ export default function FYPCard({ fyp }) {
         toast({
           title: error.response?.data?.message || "Can't Like Project",
           description: "Please check if you are logged in",
-     
         });
       }
     }
@@ -111,7 +122,7 @@ export default function FYPCard({ fyp }) {
                 isLiked ? "fill-red-500" : "fill-white"
               }`}
             />
-            <span className="selection:bg-none">{allLikes.length}</span>
+            <span className="selection:bg-none">{allLikes?.length}</span>
           </button>
           <div className="flex items-center gap-1">
             <Eye className="w-4 h-4 text-black fill-gray-100" />
