@@ -19,7 +19,7 @@ import {
 // import Autoplay from "embla-carousel-autoplay";
 import { FaGithub } from "react-icons/fa";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import RelatedFyps from "./RelatedFyps";
+// import RelatedFyps from "./RelatedFyps";
 import Documentation from "./DocumentationTab";
 import TeamMember from "./TeamMembersTab";
 import TechStack from "./TechStackTab";
@@ -278,12 +278,12 @@ export default function FypShowcase({ fyp }) {
         </Tabs>
       </div>
 
-      {user?.role === "user" && (
+      {/* {user?.role === "user" && (
         <div>
           <h2 className="text-4xl font-bold text-center">Related Projects</h2>
           <RelatedFyps />
         </div>
-      )}
+      )} */}
     </div>
   );
 }
