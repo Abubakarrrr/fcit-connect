@@ -100,9 +100,13 @@ export default function FYPCard({ fyp }) {
       </div>
 
       <CardHeader
-        className={`space-y-2 p-4 ${status === "Pending" ? "cursor-default" : "cursor-pointer"}`}
+        className={`space-y-2 p-4 ${
+          status === "Pending" && user?.role !== "admin"
+            ? "cursor-default"
+            : "cursor-pointer"
+        }`}
         onClick={() => {
-          if (status !== "Pending") {
+          if (status !== "Pending" || user?.role === "admin") {
             navigate(fypLink);
           }
         }}
@@ -135,29 +139,31 @@ export default function FYPCard({ fyp }) {
         </p>
       </CardHeader>
 
-      <CardContent className="p-4 pt-0">
-        <div className="flex items-center gap-4 text-sm text-muted-foreground">
-          <button
-            className="flex items-center gap-1 cursor-pointer"
-            onClick={(e) => {
-              e.stopPropagation();
-              likeP();
-            }}
-            disabled={isLoading}
-          >
-            <Heart
-              className={`w-4 h-4 text-red-600 ${
-                isLiked ? "fill-red-500" : "fill-white"
-              }`}
-            />
-            <span className="selection:bg-none">{allLikes?.length}</span>
-          </button>
-          <div className="flex items-center gap-1">
-            <Eye className="w-4 h-4 text-black fill-gray-100" />
-            <span>{views}</span>
+      {status === "Approved" && (
+        <CardContent className="p-4 pt-0">
+          <div className="flex items-center gap-4 text-sm text-muted-foreground">
+            <button
+              className="flex items-center gap-1 cursor-pointer"
+              onClick={(e) => {
+                e.stopPropagation();
+                likeP();
+              }}
+              disabled={isLoading}
+            >
+              <Heart
+                className={`w-4 h-4 text-red-600 ${
+                  isLiked ? "fill-red-500" : "fill-white"
+                }`}
+              />
+              <span className="selection:bg-none">{allLikes?.length}</span>
+            </button>
+            <div className="flex items-center gap-1">
+              <Eye className="w-4 h-4 text-black fill-gray-100" />
+              <span>{views}</span>
+            </div>
           </div>
-        </div>
-      </CardContent>
+        </CardContent>
+      )}
     </Card>
   );
 }
