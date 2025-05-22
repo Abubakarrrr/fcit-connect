@@ -14,7 +14,6 @@ const FypDetails = () => {
   useEffect(() => {
     const getProject = async () => {
       if (user?.role === "admin") {
-        console.log("getting project here");
         const p = await sudo_getSingleProject(id);
         setProject(p);
       } else {
