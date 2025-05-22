@@ -13,8 +13,17 @@ export default function FYPCard({ fyp }) {
   const { likeProject, unLikeProject } = useProjectStore();
   const navigate = useNavigate();
   const { toast } = useToast();
-  const { _id, title, year, description, likes, views, images, thumbnail } =
-    fyp;
+  const {
+    _id,
+    title,
+    year,
+    description,
+    likes,
+    views,
+    images,
+    thumbnail,
+    status,
+  } = fyp;
   const imagesArray = [thumbnail];
   for (const image of images) {
     imagesArray.push(image);
@@ -30,7 +39,7 @@ export default function FYPCard({ fyp }) {
     if (Array.isArray(likes)) {
       setAllLikes(likes);
     } else {
-      setAllLikes([]);  
+      setAllLikes([]);
     }
   }, [likes]);
 
@@ -91,16 +100,35 @@ export default function FYPCard({ fyp }) {
       </div>
 
       <CardHeader
-        className="space-y-2 p-4 cursor-pointer"
-        onClick={() => navigate(fypLink)}
+        className={`space-y-2 p-4 ${status === "Pending" ? "cursor-default" : "cursor-pointer"}`}
+        onClick={() => {
+          if (status !== "Pending") {
+            navigate(fypLink);
+          }
+        }}
       >
         <div className="flex items-center justify-between">
           <div to={fypLink}>
             <h3 className="font-semibold text-lg line-clamp-1">{title}</h3>
           </div>
-          <Badge variant="" className="ml-2 shrink-0">
-            {year}
-          </Badge>
+
+          <div className="flex items-center">
+            <Badge
+              variant=""
+              className={`ml-2 shrink-0 hover:bg-gray-100 ${
+                status === "Pending"
+                  ? "text-red-600 bg-white"
+                  : status === "Approved"
+                  ? "text-green-600 bg-white hover:bg-gray-100"
+                  : ""
+              }`}
+            >
+              {status}
+            </Badge>
+            <Badge variant="" className="ml-2 shrink-0">
+              {year}
+            </Badge>
+          </div>
         </div>
         <p className="text-sm text-muted-foreground line-clamp-2">
           {description}
