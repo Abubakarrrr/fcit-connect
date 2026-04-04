@@ -15,7 +15,16 @@ dotenv.config();
 const PORT = process.env.PORT || 5000;
 await connectToDB();
 
-app.use(cors({ origin: process.env.CLIENT_URL, credentials: true }));
+// If `origin` is omitted/falsy, the cors middleware skips setting headers entirely, which breaks
+// credentialed requests (axios withCredentials) even though vercel.json may still set Allow-Origin.
+const clientUrl = process.env.CLIENT_URL?.replace(/\/$/, "");
+const corsOrigin =
+  clientUrl ||
+  (process.env.NODE_ENV === "production"
+    ? "https://fcit-connect.vercel.app"
+    : true);
+
+app.use(cors({ origin: corsOrigin, credentials: true }));
 app.use(express.json());
 app.use(cookieParser());
 
